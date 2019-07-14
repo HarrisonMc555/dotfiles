@@ -53,6 +53,8 @@ function loop() {
   done
 }
 
+export RIPGREP_CONFIG_PATH=~/.ripgreprc
+
 function rgl() {
     rg "$@" --color=always | less
 }
