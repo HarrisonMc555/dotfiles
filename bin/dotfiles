@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 [[ "$1" == "source" ]] || \
 
-    echo 'Dotfiles - "Cowboy" Ben Alman - http://benalman.com/ -- Forked by Harrison McCullough "HarrisonMc555"'
+    echo 'Dotfiles - "Cowboy" Ben Alman - http://benalman.com/ -- Forked by Harrison McCullough'
 
 if [[ "$1" == "-h" || "$1" == "--help" ]]; then cat <<HELP
 
