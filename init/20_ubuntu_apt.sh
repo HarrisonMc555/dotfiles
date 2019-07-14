@@ -34,7 +34,7 @@ apt_packages+=(
     curl
     openssh-client
     openssh-server
-    fzf
+
   # awscli
   # build-essential
   # cmatrix
@@ -154,8 +154,8 @@ if is_ubuntu_desktop; then
 
   # https://github.com/colinkeenan/silentcast/#ubuntu
   # https://github.com/colinkeenan/silentcast/#ubuntu-linux-full-install
-  add_ppa ppa:sethj/silentcast
-  add_ppa ppa:webupd8team/y-ppa-manager
+  # add_ppa ppa:sethj/silentcast
+  # add_ppa ppa:webupd8team/y-ppa-manager
   apt_packages+=(
       # libav-tools
       # x11-xserver-utils
@@ -201,6 +201,10 @@ if is_ubuntu_desktop; then
   # # function postinstall_vagrant() {
   # #   sudo sed -i'' "s/Specification.all = nil/Specification.reset/" /usr/lib/ruby/vendor_ruby/vagrant/bundler.rb
   # # }
+
+  # https://github.com/sharkdp/fd#on-ubuntu
+  deb_installed+=(/usr/bin/fd-find)
+  deb_sources+=(https://github.com/sharkdp/fd/releases/download/v7.3.0/fd_7.3.0_amd64.deb)
 
   # # https://be5invis.github.io/Iosevka/
   # # https://launchpad.net/~laurent-boulard/+archive/ubuntu/fonts
@@ -272,6 +276,9 @@ function other_stuff() {
   # # Install misc bins from zip file.
   # install_from_zip ngrok 'https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip'
   # install_from_zip terraform 'https://releases.hashicorp.com/terraform/0.9.2/terraform_0.9.2_linux_amd64.zip'
+
+    # Install fzf
+    install_from_zip fzf 'https://github.com/junegunn/fzf-bin/releases/download/0.18.0/fzf-0.18.0-linux_amd64.tgz'
 }
 
 ####################
