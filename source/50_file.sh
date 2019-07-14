@@ -30,7 +30,7 @@ alias sl='ls'
 # Easier navigation: .., ..., -
 alias ..='cd ..'
 alias ...='cd ../..'
-alias ...='cd ../../..'
+alias ....='cd ../../..'
 alias -- -='cd -'
 
 # File size
