@@ -20,3 +20,4 @@
 
 # Emacs session files
 /link/.emacs.d/session.*
+/link/.emacs.d/meghanada

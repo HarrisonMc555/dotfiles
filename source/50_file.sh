@@ -23,7 +23,7 @@ alias lsd='CLICOLOR_FORCE=1 ll | grep --color=never "^d"'
 #   alias ll='ls -al'
 #   alias lsd='CLICOLOR_FORCE=1 ll | grep --color=never "^d"'
 # fi
-p
+
 # For typos
 alias sl='ls'
 
