@@ -12,7 +12,7 @@
 # https://github.com/cowboy/dotfiles
 
 # Abort if a prompt is already defined.
-[[ "$PROMPT_COMMAND" ]] && return
+# [[ "$PROMPT_COMMAND" ]] && return
 
 # ANSI CODES - SEPARATE MULTIPLE VALUES WITH ;
 #
@@ -25,21 +25,50 @@
 # 32  42  green     36  46  cyan
 # 33  43  yellow    37  47  white
 
-if [[ ! "${__prompt_colors[@]}" ]]; then
+declare -A FOREGROUND=(
+    [black]=30
+    [red]=31
+    [green]=32
+    [yellow]=33
+    [blue]=34
+    [magenta]=35
+    [cyan]=36
+    [white]=37
+)
+declare -A BACKGROUND=(
+    [black]=40
+    [red]=41
+    [green]=42
+    [yellow]=43
+    [blue]=44
+    [magenta]=45
+    [cyan]=46
+    [white]=47
+)
+RESET=0
+BOLD=1
+UNDERLINE=4
+INVERSE=7
+
+
+# if [[ ! "${__prompt_colors[@]}" ]]; then
+if true; then
   __prompt_colors=(
-    "36" # information color
-    "37" # bracket color
-    "31" # error color
+    "${FOREGROUND[cyan]}" # information color
+    "${FOREGROUND[white]}" # bracket color
+    "${FOREGROUND[red]}" # error color
   )
 
   if [[ "$SSH_TTY" ]]; then
     # connected via ssh
-    __prompt_colors[0]="32"
+    __prompt_colors[0]="${FOREGROUND[green]}"
   elif [[ "$USER" == "root" ]]; then
     # logged in as root
-    __prompt_colors[0]="35"
+    __prompt_colors[0]="${FOREGROUND[magenta]}"
   fi
 fi
+
+unset FOREGROUND BACKGROUND RESET BOLD UNDERLINE INVERSE
 
 # Inside a prompt function, run this alias to setup local $c0-$c9 color vars.
 alias __prompt_get_colors='__prompt_colors[9]=; local i; for i in ${!__prompt_colors[@]}; do local c$i="\[\e[0;${__prompt_colors[$i]}m\]"; done'
@@ -101,6 +130,31 @@ function __prompt_svn() {
 __prompt_stack=()
 trap '__prompt_stack=("${__prompt_stack[@]}" "$BASH_COMMAND")' DEBUG
 
+# User and host prompt.
+# Only displays the user (or host) if it is not the default user (or host)
+__DEFAULT_PROMPT_USER=harrison
+__DEFAULT_PROMPT_HOST=saturn
+
+function __set_prompt_user() {
+    unset __prompt_user
+    local user
+    user="$(whoami)"
+    [[ "$__DEFAULT_PROMPT_USER" == "$user" ]] || __prompt_user="$user"
+}
+
+function __set_prompt_host() {
+    unset __prompt_host
+    local host
+    host="$(hostname)"
+    [[ "$__DEFAULT_PROMPT_HOST" == "$host" ]] || __prompt_host="$host"
+}
+
+# Shows the level of bash you're in. Perhaps not terribly useful, but it's good
+# to be reminded if you accidentally enter a subshell
+__set_sublvl() {
+    if ((SHLVL > 1)); then printf " ($SHLVL)"; fi
+}
+
 function __prompt_command() {
   local i exit_code=$?
   # If the first command in the stack is __prompt_command, no command was run.
@@ -124,6 +178,20 @@ function __prompt_command() {
   __prompt_hg || \
   # svn: [repo:lastchanged]
   __prompt_svn
+  # path: [user@host:path]
+  __set_prompt_user
+  __set_prompt_host
+  PS1="$PS1$c1["
+  if [[ "$__prompt_user" ]] || [[ "$__prompt_host" ]]; then
+      if [[ "$__prompt_user" ]] && [[ "$__prompt_host" ]]; then
+          PS1="$PS1$c0$__prompt_user$c1@$c0$__prompt_host"
+      else
+          PS1="$PS1$c0$__prompt_user$__prompt_host"
+      fi
+      PS1="$PS1$c1:"
+  fi
+  PS1="$PS1$c0\w$c1]$c9"
+  # PS1="$PS1$c1[$c0\u$c1@$c0\h$c1:$c0\w$c1]$c9"
   # Iterate over all vcs info parts, outputting an escaped var name that will
   # be interpolated automatically. This ensures that malicious branch names
   # can't execute arbitrary commands. For more info, see this PR:
@@ -138,16 +206,24 @@ function __prompt_command() {
     done
     PS1="$PS1$c1]$c9"
   fi
+  # Shell sublevel (if greater than 1)
+  ((SHLVL > 1)) && PS1="$PS1$c1[${c0}sh$SHLVL$c1]$c9"
+  # exit code: 127
+  PS1="$PS1$(__prompt_exit_code "$exit_code")"
   # misc: [cmd#:hist#]
   # PS1="$PS1$c1[$c0#\#$c1:$c0!\!$c1]$c9"
-  # path: [user@host:path]
-  PS1="$PS1$c1[$c0\u$c1@$c0\h$c1:$c0\w$c1]$c9"
   PS1="$PS1\n"
   # date: [HH:MM:SS]
   PS1="$PS1$c1[$c0$(date +"%H$c1:$c0%M$c1:$c0%S")$c1]$c9"
-  # exit code: 127
-  PS1="$PS1$(__prompt_exit_code "$exit_code")"
   PS1="$PS1 \$ "
+
+  # If not root, store history with more information
+  [[ "$(id -u)" != 0 ]] &&
+      printf "%s %s %s %s" \
+             "$(date "+%H:%M:%S") $(pwd) $(history 1) #${exit_code}" >> \
+             ~/.logs/bash-history-$(date "+%Y-%m-%d").log
 }
+
+mkdir -p ~/.logs
 
 PROMPT_COMMAND="__prompt_command"

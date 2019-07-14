@@ -58,3 +58,8 @@ Desktop.ini
 .swo
 .*.swp
 .*.swo
+
+# Emacs
+*~
+\#*#
+.\#*

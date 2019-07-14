@@ -25,67 +25,66 @@ function add_ppa() {
 
 # Misc.
 apt_packages+=(
-  awscli
-  build-essential
-  cmatrix
-  cowsay
-  curl
-  docker.io
-  docker-compose
-  git-core
-  groff
-  hollywood
+    git
+    python-pip
+    ipython
+    ripgrep
+    nodejs
+    pandoc
+    curl
+    openssh-client
+    openssh-server
+    fzf
+  # awscli
+  # build-essential
+  # cmatrix
+  # cowsay
+  # curl
+  # docker.io
+  # docker-compose
+  # git-core
+  # groff
+  # hollywood
   htop
-  id3tool
+  # id3tool
   imagemagick
-  jq
-  mercurial
-  nmap
-  postgresql
+  # jq
+  # mercurial
+  # nmap
+  # postgresql
   python-pip
-  silversearcher-ag
-  sl
-  telnet
-  thefuck
+  # silversearcher-ag
+  # sl
+  # telnet
+  # thefuck
   tree
 )
 
-apt_packages+=(vim)
-is_ubuntu_desktop && apt_packages+=(vim-gnome)
+# # https://launchpad.net/~stebbins/+archive/ubuntu/handbrake-releases
+# add_ppa ppa:stebbins/handbrake-releases
+# apt_packages+=(handbrake-cli)
+# is_ubuntu_desktop && apt_packages+=(handbrake-gtk)
 
-# https://github.com/neovim/neovim/wiki/Installing-Neovim
-add_ppa ppa:neovim-ppa/stable
-apt_packages+=(neovim)
+# # https://github.com/rvm/ubuntu_rvm
+# add_ppa ppa:rael-gc/rvm
+# apt_packages+=(rvm)
 
-# https://launchpad.net/~stebbins/+archive/ubuntu/handbrake-releases
-add_ppa ppa:stebbins/handbrake-releases
-apt_packages+=(handbrake-cli)
-is_ubuntu_desktop && apt_packages+=(handbrake-gtk)
+# # https://github.com/rbenv/ruby-build/wiki
+# apt_packages+=(
+#   autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev
+#   libncurses5-dev libffi-dev libgdbm3 libgdbm-dev zlib1g-dev
+# )
 
-# https://github.com/rvm/ubuntu_rvm
-add_ppa ppa:rael-gc/rvm
-apt_packages+=(rvm)
+# # https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-ansible-on-ubuntu-16-04
+# add_ppa ppa:ansible/ansible
+# apt_packages+=(ansible)
 
-# https://github.com/rbenv/ruby-build/wiki
-apt_packages+=(
-  autoconf bison build-essential libssl-dev libyaml-dev libreadline6-dev
-  libncurses5-dev libffi-dev libgdbm3 libgdbm-dev zlib1g-dev
-)
+# # https://launchpad.net/~hnakamur/+archive/ubuntu/tmux
+# add_ppa ppa:hnakamur/tmux
 
-# https://www.digitalocean.com/community/tutorials/how-to-install-and-configure-ansible-on-ubuntu-16-04
-add_ppa ppa:ansible/ansible
-apt_packages+=(ansible)
-
-# http://tipsonubuntu.com/2016/09/13/vim-8-0-released-install-ubuntu-16-04/
-add_ppa ppa:jonathonf/vim
-apt_packages+=(vim)
-
-# https://launchpad.net/~hnakamur/+archive/ubuntu/tmux
-add_ppa ppa:hnakamur/tmux
-
-# https://github.com/greymd/tmux-xpanes
-add_ppa ppa:greymd/tmux-xpanes
-apt_packages+=(tmux-xpanes)
+# # https://github.com/greymd/tmux-xpanes
+# add_ppa ppa:greymd/tmux-xpanes
+# apt_packages+=(tmux-xpanes)
 
 if is_ubuntu_desktop; then
   # http://www.omgubuntu.co.uk/2016/06/install-latest-arc-gtk-theme-ubuntu-16-04
@@ -94,19 +93,19 @@ if is_ubuntu_desktop; then
   # apt_source_texts+=("deb http://download.opensuse.org/repositories/home:/Horst3180/xUbuntu_16.04/ /")
   # apt_packages+=(arc-theme)
 
-  add_ppa ppa:fossfreedom/arc-gtk-theme-daily
-  apt_packages+=(arc-theme)
+  # add_ppa ppa:fossfreedom/arc-gtk-theme-daily
+  # apt_packages+=(arc-theme)
 
   # https://www.techrepublic.com/article/how-to-connect-a-linux-machine-to-google-cloud-print/
   # sudo /usr/share/cloudprint-cups/setupcloudprint.py
-  add_ppa ppa:simon-cadman/niftyrepo
-  apt_packages+=(cupscloudprint)
+  # add_ppa ppa:simon-cadman/niftyrepo
+  # apt_packages+=(cupscloudprint)
 
-  # https://github.com/tagplus5/vscode-ppa
-  apt_keys+=(https://tagplus5.github.io/vscode-ppa/ubuntu/gpg.key)
-  apt_source_files+=(vscode.list)
-  apt_source_texts+=("deb https://tagplus5.github.io/vscode-ppa/ubuntu ./")
-  apt_packages+=(code code-insiders)
+  # # https://github.com/tagplus5/vscode-ppa
+  # apt_keys+=(https://tagplus5.github.io/vscode-ppa/ubuntu/gpg.key)
+  # apt_source_files+=(vscode.list)
+  # apt_source_texts+=("deb https://tagplus5.github.io/vscode-ppa/ubuntu ./")
+  # apt_packages+=(code code-insiders)
 
   # https://www.ubuntuupdates.org/ppa/google_chrome
   apt_keys+=(https://dl-ssl.google.com/linux/linux_signing_key.pub)
@@ -114,154 +113,165 @@ if is_ubuntu_desktop; then
   apt_source_texts+=("deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main")
   apt_packages+=(google-chrome-stable)
 
-  # https://www.charlesproxy.com/documentation/installation/apt-repository/
-  apt_keys+=(https://www.charlesproxy.com/packages/apt/PublicKey)
-  apt_source_files+=(charles)
-  apt_source_texts+=("deb https://www.charlesproxy.com/packages/apt/ charles-proxy3 main")
-  apt_packages+=(charles-proxy)
+  # # https://www.charlesproxy.com/documentation/installation/apt-repository/
+  # apt_keys+=(https://www.charlesproxy.com/packages/apt/PublicKey)
+  # apt_source_files+=(charles)
+  # apt_source_texts+=("deb https://www.charlesproxy.com/packages/apt/ charles-proxy3 main")
+  # apt_packages+=(charles-proxy)
 
-  # https://github.com/aluxian/Messenger-for-Desktop#linux
-  apt_keys+=('--keyserver pool.sks-keyservers.net --recv 6DDA23616E3FE905FFDA152AE61DA9241537994D')
-  apt_source_files+=(aluxian)
-  apt_source_texts+=("deb https://dl.bintray.com/aluxian/deb/ beta main")
-  apt_packages+=(messengerfordesktop)
+  # # https://github.com/aluxian/Messenger-for-Desktop#linux
+  # apt_keys+=('--keyserver pool.sks-keyservers.net --recv 6DDA23616E3FE905FFDA152AE61DA9241537994D')
+  # apt_source_files+=(aluxian)
+  # apt_source_texts+=("deb https://dl.bintray.com/aluxian/deb/ beta main")
+  # apt_packages+=(messengerfordesktop)
 
-  # https://www.spotify.com/us/download/linux/
-  apt_keys+=('--keyserver hkp://keyserver.ubuntu.com:80 --recv-keys BBEBDCB318AD50EC6865090613B00F1FD2C19886')
-  apt_source_files+=(spotify)
-  apt_source_texts+=("deb http://repository.spotify.com stable non-free")
-  apt_packages+=(spotify-client)
+  # # https://www.spotify.com/us/download/linux/
+  # apt_keys+=('--keyserver hkp://keyserver.ubuntu.com:80 --recv-keys BBEBDCB318AD50EC6865090613B00F1FD2C19886')
+  # apt_source_files+=(spotify)
+  # apt_source_texts+=("deb http://repository.spotify.com stable non-free")
+  # apt_packages+=(spotify-client)
 
-  # https://tecadmin.net/install-oracle-virtualbox-on-ubuntu/
-  apt_keys+=(https://www.virtualbox.org/download/oracle_vbox_2016.asc)
-  apt_source_files+=(virtualbox)
-  apt_source_texts+=("deb http://download.virtualbox.org/virtualbox/debian $release_name contrib")
-  apt_packages+=(virtualbox-5.1)
+  # # https://tecadmin.net/install-oracle-virtualbox-on-ubuntu/
+  # apt_keys+=(https://www.virtualbox.org/download/oracle_vbox_2016.asc)
+  # apt_source_files+=(virtualbox)
+  # apt_source_texts+=("deb http://download.virtualbox.org/virtualbox/debian $release_name contrib")
+  # apt_packages+=(virtualbox-5.1)
 
-  # https://www.skype.com/en/download-skype/skype-for-linux/
-  # https://community.skype.com/t5/Linux/Skype-for-Linux-Beta-signatures-couldn-t-be-verified-because-the/td-p/4645756
-  apt_keys+=(https://repo.skype.com/data/SKYPE-GPG-KEY)
-  apt_source_files+=(skype-stable)
-  apt_source_texts+=("deb https://repo.skype.com/deb stable main")
-  apt_packages+=(skypeforlinux)
+  # # https://www.skype.com/en/download-skype/skype-for-linux/
+  # # https://community.skype.com/t5/Linux/Skype-for-Linux-Beta-signatures-couldn-t-be-verified-because-the/td-p/4645756
+  # apt_keys+=(https://repo.skype.com/data/SKYPE-GPG-KEY)
+  # apt_source_files+=(skype-stable)
+  # apt_source_texts+=("deb https://repo.skype.com/deb stable main")
+  # apt_packages+=(skypeforlinux)
 
-  # http://askubuntu.com/a/190674
-  add_ppa ppa:webupd8team/java
-  apt_packages+=(oracle-java8-installer)
-  function preinstall_oracle-java8-installer() {
-    echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
-    echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
-  }
+  # # http://askubuntu.com/a/190674
+  # add_ppa ppa:webupd8team/java
+  # apt_packages+=(oracle-java8-installer)
+  # function preinstall_oracle-java8-installer() {
+  #   echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
+  #   echo debconf shared/accepted-oracle-license-v1-1 seen true | sudo debconf-set-selections
+  # }
 
   # https://github.com/colinkeenan/silentcast/#ubuntu
   # https://github.com/colinkeenan/silentcast/#ubuntu-linux-full-install
   add_ppa ppa:sethj/silentcast
   add_ppa ppa:webupd8team/y-ppa-manager
   apt_packages+=(
-    libav-tools x11-xserver-utils xdotool wininfo wmctrl python-gobject python-cairo xdg-utils yad
-    silentcast
+      # libav-tools
+      # x11-xserver-utils
+      xdotool
+      # wininfo
+      # wmctrl
+      # python-gobject
+      # python-cairo
+      xdg-utils
+      # yad
+      # silentcast
   )
 
-  # Misc
-  apt_packages+=(adb fastboot)
+  # # Misc
+  # apt_packages+=(adb fastboot)
   apt_packages+=(
-    chromium-browser
-    fonts-mplus
-    gnome-tweak-tool
-    k4dirstat
-    rofi
-    network-manager-openconnect
-    network-manager-openconnect-gnome
+      kolourpaint
+      baobab
+      okular
+    # chromium-browser
+    # fonts-mplus
+    # gnome-tweak-tool
+    # k4dirstat
+    # rofi
+    # network-manager-openconnect
+    # network-manager-openconnect-gnome
     openssh-server
     shutter
-    unity-tweak-tool
-    vlc
+    # unity-tweak-tool
+    # vlc
     xclip
-    zenmap
+    # zenmap
   )
 
-  # Manage online accounts via "gnome-control-center" in launcher
-  apt_packages+=(gnome-control-center gnome-online-accounts)
+  # # Manage online accounts via "gnome-control-center" in launcher
+  # apt_packages+=(gnome-control-center gnome-online-accounts)
 
-  # https://github.com/mitchellh/vagrant/issues/7411
-  deb_installed+=(/usr/bin/vagrant)
-  deb_sources+=(https://releases.hashicorp.com/vagrant/1.9.2/vagrant_1.9.2_x86_64.deb)
-  # https://github.com/vagrant-libvirt/vagrant-libvirt/issues/575
-  # apt_packages+=(vagrant)
-  # function postinstall_vagrant() {
-  #   sudo sed -i'' "s/Specification.all = nil/Specification.reset/" /usr/lib/ruby/vendor_ruby/vagrant/bundler.rb
-  # }
+  # # https://github.com/mitchellh/vagrant/issues/7411
+  # deb_installed+=(/usr/bin/vagrant)
+  # deb_sources+=(https://releases.hashicorp.com/vagrant/1.9.2/vagrant_1.9.2_x86_64.deb)
+  # # https://github.com/vagrant-libvirt/vagrant-libvirt/issues/575
+  # # apt_packages+=(vagrant)
+  # # function postinstall_vagrant() {
+  # #   sudo sed -i'' "s/Specification.all = nil/Specification.reset/" /usr/lib/ruby/vendor_ruby/vagrant/bundler.rb
+  # # }
 
-  # https://be5invis.github.io/Iosevka/
-  # https://launchpad.net/~laurent-boulard/+archive/ubuntu/fonts
-  add_ppa ppa:laurent-boulard/fonts
-  apt_packages+=(fonts-iosevka)
+  # # https://be5invis.github.io/Iosevka/
+  # # https://launchpad.net/~laurent-boulard/+archive/ubuntu/fonts
+  # add_ppa ppa:laurent-boulard/fonts
+  # apt_packages+=(fonts-iosevka)
 
-  # https://launchpad.net/grub-customizer
-  add_ppa ppa:danielrichter2007/grub-customizer
-  apt_packages+=(grub-customizer)
+  # # https://launchpad.net/grub-customizer
+  # add_ppa ppa:danielrichter2007/grub-customizer
+  # apt_packages+=(grub-customizer)
 
-  # https://support.gitkraken.com/how-to-install
-  deb_installed+=(/usr/bin/gitkraken)
-  deb_sources+=(https://release.gitkraken.com/linux/gitkraken-amd64.deb)
+  # # https://support.gitkraken.com/how-to-install
+  # deb_installed+=(/usr/bin/gitkraken)
+  # deb_sources+=(https://release.gitkraken.com/linux/gitkraken-amd64.deb)
 
-  # http://www.get-notes.com/linux-download-debian-ubuntu
-  apt_packages+=(libqt5concurrent5)
-  deb_installed+=(/usr/bin/notes)
-  deb_sources+=("https://github.com/nuttyartist/notes/releases/download/v1.0.0/notes_1.0.0_amd64-$release_name.deb")
+  # # http://www.get-notes.com/linux-download-debian-ubuntu
+  # apt_packages+=(libqt5concurrent5)
+  # deb_installed+=(/usr/bin/notes)
+  # deb_sources+=("https://github.com/nuttyartist/notes/releases/download/v1.0.0/notes_1.0.0_amd64-$release_name.deb")
 
   # https://www.dropbox.com/install-linux
   apt_packages+=(python-gtk2 python-gpgme)
   deb_installed+=(/usr/bin/dropbox)
   deb_sources+=("https://www.dropbox.com/download?dl=packages/ubuntu/dropbox_2015.10.28_amd64.deb")
 
-  # http://askubuntu.com/a/852727
-  apt_packages+=(cabextract)
-  deb_installed+=(/usr/share/fonts/truetype/msttcorefonts)
-  deb_sources+=(deb_source_msttcorefonts)
-  function deb_source_msttcorefonts() {
-    echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | sudo debconf-set-selections
-    echo http://ftp.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.6_all.deb
-  }
-
-  # https://slack.com/downloads/instructions/linux
-  deb_installed+=(/usr/bin/slack)
-  deb_sources+=(https://downloads.slack-edge.com/linux_releases/slack-desktop-2.5.2-amd64.deb)
-
-  # https://discordapp.com/download
-  deb_installed+=(/usr/bin/discord)
-  deb_sources+=("https://discordapp.com/api/download?platform=linux&format=deb")
-
-  # http://askubuntu.com/questions/854480/how-to-install-the-steam-client/854481#854481
-  apt_packages+=(python-apt)
-  deb_installed+=(/usr/bin/steam)
-  deb_sources+=(deb_source_steam)
-  function deb_source_steam() {
-    local steam_root steam_file
-    steam_root=http://repo.steampowered.com/steam/pool/steam/s/steam/
-    steam_file="$(wget -q -O- "$steam_root?C=M;O=D" | sed -En '/steam-launcher/{s/.*href="([^"]+)".*/\1/;p;q;}')"
-    echo "$steam_root$steam_file"
-  }
-  # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=772598
-  # apt_packages+=(steam)
-  # function preinstall_steam() {
-  #   echo steam steam/question select I AGREE | sudo debconf-set-selections
-  #   echo steam steam/license note | sudo debconf-set-selections
+  # # http://askubuntu.com/a/852727
+  # apt_packages+=(cabextract)
+  # deb_installed+=(/usr/share/fonts/truetype/msttcorefonts)
+  # deb_sources+=(deb_source_msttcorefonts)
+  # function deb_source_msttcorefonts() {
+  #   echo ttf-mscorefonts-installer msttcorefonts/accepted-mscorefonts-eula select true | sudo debconf-set-selections
+  #   echo http://ftp.debian.org/debian/pool/contrib/m/msttcorefonts/ttf-mscorefonts-installer_3.6_all.deb
   # }
+
+  # # https://slack.com/downloads/instructions/linux
+  # deb_installed+=(/usr/bin/slack)
+  # deb_sources+=(https://downloads.slack-edge.com/linux_releases/slack-desktop-2.5.2-amd64.deb)
+
+  # # https://discordapp.com/download
+  # deb_installed+=(/usr/bin/discord)
+  # deb_sources+=("https://discordapp.com/api/download?platform=linux&format=deb")
+
+  # # http://askubuntu.com/questions/854480/how-to-install-the-steam-client/854481#854481
+  # apt_packages+=(python-apt)
+  # deb_installed+=(/usr/bin/steam)
+  # deb_sources+=(deb_source_steam)
+  # function deb_source_steam() {
+  #   local steam_root steam_file
+  #   steam_root=http://repo.steampowered.com/steam/pool/steam/s/steam/
+  #   steam_file="$(wget -q -O- "$steam_root?C=M;O=D" | sed -En '/steam-launcher/{s/.*href="([^"]+)".*/\1/;p;q;}')"
+  #   echo "$steam_root$steam_file"
+  # }
+  # # https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=772598
+  # # apt_packages+=(steam)
+  # # function preinstall_steam() {
+  # #   echo steam steam/question select I AGREE | sudo debconf-set-selections
+  # #   echo steam steam/license note | sudo debconf-set-selections
+  # # }
 fi
 
 function other_stuff() {
-  # Install Git Extras
-  if [[ ! "$(type -P git-extras)" ]]; then
-    e_header "Installing Git Extras"
-    (
-      cd $DOTFILES/vendor/git-extras &&
-      sudo make install
-    )
-  fi
-  # Install misc bins from zip file.
-  install_from_zip ngrok 'https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip'
-  install_from_zip terraform 'https://releases.hashicorp.com/terraform/0.9.2/terraform_0.9.2_linux_amd64.zip'
+  # # Install Git Extras
+  # if [[ ! "$(type -P git-extras)" ]]; then
+  #   e_header "Installing Git Extras"
+  #   (
+  #     cd $DOTFILES/vendor/git-extras &&
+  #     sudo make install
+  #   )
+  # fi
+  # # Install misc bins from zip file.
+  # install_from_zip ngrok 'https://bin.equinox.io/c/4VmDzA7iaHb/ngrok-stable-linux-amd64.zip'
+  # install_from_zip terraform 'https://releases.hashicorp.com/terraform/0.9.2/terraform_0.9.2_linux_amd64.zip'
 }
 
 ####################

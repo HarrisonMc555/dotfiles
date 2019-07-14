@@ -1,0 +1,29 @@
+;; -*- emacs-lisp -*-
+;; Tramp connection history.  Don't change this file.
+;; You can delete it, forcing Tramp to reapply the checks.
+
+((["scp" "wildfir2" "ssh.et.byu.edu" nil nil]
+  ("locale" "LC_ALL=en_US.utf8")
+  ("uname" "Linux 3.10.0-327.28.2.el7.x86_64")
+  ("test" "test")
+  ("remote-path"
+   ("/usr/bin" "/bin" "/sbin" "/usr/sbin" "/usr/local/bin" "/usr/local/sbin" "/local/bin"))
+  ("remote-shell" "/bin/sh")
+  ("~" "/fsd/wildfir2")
+  ("file-exists" "test -e")
+  ("readlink" "\\readlink")
+  ("stat" "\\stat")
+  ("id" "/usr/bin/id")
+  ("gid-integer" 11860)
+  ("gid-string" "wildfir2")
+  ("gvfs-monitor-dir" "/usr/bin/gvfs-monitor-dir")
+  ("perl-file-spec" t)
+  ("perl-cwd-realpath" t)
+  ("perl" "\\perl")
+  ("uid-integer" 4511)
+  ("tmpdir" "/scp:wildfir2@ssh.et.byu.edu:/tmp")
+  ("touch-t" t)
+  ("touch" "\\touch")
+  ("ls" "/usr/bin/ls --color=never"))
+ (["ssh" nil "phoenix" nil nil]
+  nil))

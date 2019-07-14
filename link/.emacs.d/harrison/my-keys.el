@@ -1,0 +1,99 @@
+;;; my-keys.el --- Generic key bindings                 -*- lexical-binding: t; -*-
+
+;; Copyright (C) 2017  Harrison
+
+;; Author: Harrison <harrison@saturn>
+;; Keywords: 
+
+;; This program is free software; you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; This program is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; 
+
+;;; Code:
+
+(with-library
+ simple
+ (global-set-key (kbd "C-j") 'newline)
+ (global-set-key (kbd "RET") 'newline-and-indent))
+
+(with-library
+ subword
+ (global-set-key (kbd "M-s") 'subword-mode))
+
+(with-library
+ shell
+ (global-set-key (kbd "C-c s") 'shell))
+(with-library
+ align
+ (global-set-key (kbd "C-=") 'align-regexp))
+
+(with-library
+ rect
+ (global-set-key (kbd "C-x r q") 'string-insert-rectangle))
+
+(with-library
+ ibuffer
+ (global-set-key (kbd "C-x C-b") 'ibuffer))
+
+(with-library
+ whitespace
+ (global-set-key (kbd "C-c C-w") 'whitespace-mode)
+ (global-set-key (kbd "C-c M-w") 'whitespace-cleanup)
+ (global-set-key (kbd "C-c w") 'whitespace-cleanup))
+
+(with-library
+ my-files
+ (global-set-key (kbd "<f12>") 'write-file)
+ (global-set-key (kbd "<M-f4>") 'save-buffers-kill-terminal)
+ (global-set-key (kbd "C-c C-l") 'load-current-file))
+
+(with-library
+ my-functions
+ (global-set-key (kbd "<f5>") 'revert-buffer-no-confirmation)
+ (global-set-key (kbd "C-<f1>") 'show-file-name)
+ (global-set-key (kbd "C-;") 'comment-and-copy)
+ (global-set-key (kbd "M-;") 'comment-dwim-custom)
+ (global-set-key (kbd "M-k") 'copy-line)
+ (global-set-key (kbd "C-/") 'indent-dwim)
+ (global-set-key (kbd "M-'") 'indent-dwim)
+ (global-set-key (kbd "C-x l") 'load-current-file)
+ (global-set-key (kbd "C-x k") 'kill-current-buffer)
+ (global-set-key (kbd "C-S-t") 'reopen-killed-file)
+ (global-set-key (kbd "C-(") 'surround-with-parentheses)
+ (global-set-key (kbd "C-+") 'toggle-hiding)
+ (global-set-key (kbd "C-\\") 'toggle-selective-display))
+
+(with-library
+ view
+ (global-set-key (kbd "C-v") 'View-scroll-half-page-forward)
+ (global-set-key (kbd "M-v") 'View-scroll-half-page-backward))
+
+(with-library
+ magit
+ (global-set-key (kbd "C-x g") 'magit-status))
+
+(with-library
+ flycheck
+ (global-set-key (kbd "C-c f") 'flycheck-next-error)
+ (global-set-key (kbd "C-c b") 'flycheck-previous-error))
+
+;; (global-set-key (kbd "C-c <right>") 'hs-show-block)
+;; (global-set-key (kbd "C-c <left>")  'hs-hide-block)
+;; (global-set-key (kbd "C-c <up>")    'hs-hide-all)
+;; (global-set-key (kbd "C-c <down>")  'hs-show-all)
+
+(provide 'my-keys)
+;;; my-keys.el ends here

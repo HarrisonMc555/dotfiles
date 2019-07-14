@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 [[ "$1" == "source" ]] || \
 
-echo 'Dotfiles - "Cowboy" Ben Alman - http://benalman.com/'
+    echo 'Dotfiles - "Cowboy" Ben Alman - http://benalman.com/ -- Forked by Harrison McCullough "HarrisonMc555"'
 
 if [[ "$1" == "-h" || "$1" == "--help" ]]; then cat <<HELP
 
@@ -67,7 +67,9 @@ function is_ubuntu() {
   [[ "$(cat /etc/issue 2> /dev/null)" =~ Ubuntu ]] || return 1
 }
 function is_ubuntu_desktop() {
-  dpkg -l ubuntu-desktop >/dev/null 2>&1 || return 1
+  # dpkg -l ubuntu-desktop >/dev/null 2>&1 || return 1
+  # https://unix.stackexchange.com/a/338862/238000
+  xhost >& /dev/null
 }
 function get_os() {
   for os in osx ubuntu ubuntu_desktop; do

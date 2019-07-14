@@ -1,24 +1,30 @@
 [user]
-  name = Ben Alman
-  email = EMAIL
+	name = Harrison McCullough
+	email = EMAIL
 [core]
+	editor = "emacsclient"
   autocrlf = input
-  whitespace = fix,space-before-tab,tab-in-indent,trailing-space
+  # whitespace = fix,space-before-tab,tab-in-indent,trailing-space
   excludesfile = ~/.gitignore_global
 [apply]
-  whitespace = fix
+  # whitespace = fix
 [alias]
-  br = branch
-  ci = commit
-  co = checkout
-  df = diff
+  s = status
+  b = branch
+  c = commit
+  ch = checkout
+  d = diff
   g = grep -I
-  lg = log -p
   pp = !"echo 'Pull'; git pull; echo 'Push'; git push"
-  rb = rbranch
-  rv = review
-  st = status
-  ksdiff = difftool -y -t Kaleidoscope
+  forgot = "commit --amend -C HEAD"
+  lp = log -p
+  lg = !"git lg1"
+  lg1 = !"git lg1-specific --all"
+  lg2 = !"git lg2-specific --all"
+  lg3 = !"git lg3-specific --all"
+  lg1-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'
+  lg2-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)'
+  lg3-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) %C(bold cyan)(committed: %cD)%C(reset) %C(auto)%d%C(reset)%n''          %C(white)%s%C(reset)%n''          %C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)'
 [branch "master"]
   remote = origin
   merge = refs/heads/master
@@ -41,8 +47,8 @@
   default = simple
 [merge]
   log = true
-[difftool "Kaleidoscope"]
-  cmd = ksdiff-wrapper git \"$LOCAL\" \"$REMOTE\"
+# [difftool "Kaleidoscope"]
+#   cmd = ksdiff-wrapper git \"$LOCAL\" \"$REMOTE\"
 [rerere]
   enabled = 1
 [url "git@github.com:"]

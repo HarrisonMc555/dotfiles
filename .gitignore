@@ -7,9 +7,6 @@
 /link/.ssh/*.pem
 /link/.ssh/known_hosts*
 
-# Don't commit Vim plugins, vim-plug will install them.
-/link/.vim/plugged
-
 # Don't commit rbenv temp files.
 /link/.rbenv/shims/
 /link/.rbenv/versions/
@@ -20,3 +17,6 @@
 
 # Ignore any file with LOCAL in the name (good for per-machine vars/functions)
 *LOCAL*
+
+# Emacs session files
+/link/.emacs.d/session.*
