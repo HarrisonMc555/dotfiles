@@ -88,5 +88,7 @@
 
 (setq linum-format "%d ")
 
+(setq vc-follow-symlinks t)
+
 (provide 'my-personal)
 ;;; my-personal.el ends here
