@@ -95,5 +95,10 @@
 ;; (global-set-key (kbd "C-c <up>")    'hs-hide-all)
 ;; (global-set-key (kbd "C-c <down>")  'hs-show-all)
 
+(require 'hi-lock)
+(global-set-key (kbd "C->") 'hi-lock-face-symbol-at-point)
+(require  'my-functions)
+(global-set-key (kbd "C-<") 'unhighlight-all-in-buffer)
+
 (provide 'my-keys)
 ;;; my-keys.el ends here

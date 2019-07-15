@@ -181,5 +181,13 @@ converted to PDF at the same location."
     (browse-url url)))
 (setq flymd-browser-open-function 'my-flymd-browser-function)
 
+(with-library
+ hi-lock
+ (defun unhighlight-all-in-buffer ()
+   "Remove all highlights made by `hi-lock' from the current buffer.
+The same result can also be be achieved by \\[universal-argument] \\[unhighlight-regexp]."
+   (interactive)
+   (unhighlight-regexp t)))
+
 (provide 'my-functions)
 ;;; my-functions.el ends here
