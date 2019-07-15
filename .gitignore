@@ -18,6 +18,7 @@
 # Ignore any file with LOCAL in the name (good for per-machine vars/functions)
 *LOCAL*
 
-# Emacs session files
+# Emacs
 /link/.emacs.d/session.*
 /link/.emacs.d/meghanada
+*.elc
