@@ -1,3 +1,4 @@
+#!/bin/bash
 # OSX-only stuff. Abort if not OSX.
 is_osx || return 1
 
@@ -6,13 +7,20 @@ is_osx || return 1
 
 # Homebrew recipes
 recipes=(
+  emacs
+  ripgrep
+  pandoc
+  ipython
+  fd
+  google-chrome
+
   # ansible
   # awscli
-  # bash
+  bash
   # cmatrix
   # coreutils
   # cowsay
-  # git
+  git
   # git-extras
   # htop-osx
   # hub
@@ -25,14 +33,14 @@ recipes=(
   # postgresql
   # reattach-to-user-namespace
   # sl
-  # ssh-copy-id
+  ssh-copy-id
   # terminal-notifier
   # the_silver_searcher
   # thefuck
   # tmux
   # tmux-xpanes
-  # tree
-  # wget
+  tree
+  wget
 )
 
 brew_install_recipes

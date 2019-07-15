@@ -34,7 +34,7 @@ apt_packages+=(
     curl
     openssh-client
     openssh-server
-
+    emacs26
   # awscli
   # build-essential
   # cmatrix
