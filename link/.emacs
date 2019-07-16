@@ -136,7 +136,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(region ((t (:background "dark orange" :distant-foreground "dark orange")))))
+ '(region ((t (:inherit highlight :background "medium blue")))))
 
 ;; list the packages you want
 (setq package-list '(ac-haskell-process ac-js2 async
