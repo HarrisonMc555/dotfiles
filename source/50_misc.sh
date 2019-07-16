@@ -81,3 +81,5 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+export SHELLCHECK_OPTS="-e SC1090"
