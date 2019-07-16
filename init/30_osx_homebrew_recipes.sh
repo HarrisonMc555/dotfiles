@@ -12,7 +12,6 @@ recipes=(
   pandoc
   ipython
   fd
-  google-chrome
 
   # ansible
   # awscli
