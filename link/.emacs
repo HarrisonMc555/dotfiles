@@ -21,6 +21,7 @@
  '(custom-safe-themes
    (quote
     ("f78de13274781fbb6b01afd43327a4535438ebaeec91d93ebdbba1e3fba34d3c" "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "c7a9a68bd07e38620a5508fef62ec079d274475c8f92d75ed0c33c45fbe306bc" default)))
+ '(debug-on-error t)
  '(default-frame-alist (quote ((fullscreen . maximized))))
  '(delete-selection-mode t)
  '(ediff-split-window-function (quote split-window-horizontally))
@@ -77,10 +78,11 @@
  '(package-archives
    (quote
     (("gnu" . "http://elpa.gnu.org/packages/")
-     ("melpa" . "http://melpa.org/packages/"))))
+     ("melpa" . "http://melpa.org/packages/")
+     ("melpa stable" . "https://stable.melpa.org/packages/"))))
  '(package-selected-packages
    (quote
-    (clang-format flycheck-kotlin kotlin-mode groovy-mode gradle-mode paredit cider clojure-mode clojure-mode-extra-font-locking flycheck-clojure inf-clojure haskell-mode htmlize epl cmake-font-lock cmake-mode eglot tide tss typescript-mode matlab-mode elm-mode flycheck-elm flycheck-gradle csv csv-mode toml toml-mode flycheck flycheck-rust rust-mode meghanada yaml-mode web-mode tabbar solarized-theme smartparens ruby-extra-highlight omnisharp monokai-theme markdown-mode magit json-mode jinja2-mode haskell-tab-indent haskell-emacs-text haskell-emacs-base go-complete go-autocomplete ghci-completion ghc-imported-from ghc flymd flymake-ruby flymake-python-pyflakes flymake-hlint flymake-haskell-multi flycheck-hdevtools flycheck-haskell flycheck-ghcmod exec-path-from-shell django-mode company-inf-ruby ac-js2 ac-inf-ruby ac-haskell-process 2048-game)))
+    (free-keys clang-format flycheck-kotlin kotlin-mode groovy-mode gradle-mode paredit cider clojure-mode clojure-mode-extra-font-locking flycheck-clojure inf-clojure haskell-mode htmlize epl cmake-font-lock cmake-mode eglot tide tss typescript-mode matlab-mode elm-mode flycheck-elm flycheck-gradle csv csv-mode toml toml-mode flycheck flycheck-rust rust-mode meghanada yaml-mode web-mode tabbar solarized-theme smartparens ruby-extra-highlight omnisharp monokai-theme markdown-mode magit json-mode jinja2-mode haskell-tab-indent haskell-emacs-text haskell-emacs-base go-complete go-autocomplete ghci-completion ghc-imported-from ghc flymd flymake-ruby flymake-python-pyflakes flymake-hlint flymake-haskell-multi flycheck-hdevtools flycheck-haskell flycheck-ghcmod exec-path-from-shell django-mode company-inf-ruby ac-js2 ac-inf-ruby ac-haskell-process 2048-game)))
  '(paradox-github-token t)
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
@@ -136,25 +138,52 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(region ((t (:background "dark orange" :distant-foreground "dark orange")))))
+ '(region ((t (:inherit highlight :background "dark blue")))))
 
 ;; list the packages you want
-(setq package-list '(ac-haskell-process ac-js2 async
-                     auto-complete company dash django-mode epl
-                     exec-path-from-shell flymd git-commit
-                     go-autocomplete go-complete go-mode
-                     haskell-emacs haskell-emacs-base
-                     haskell-emacs-text haskell-mode helm
-                     helm-core helm-make inf-ruby jinja2-mode
-                     js2-mode magit magit-popup monokai-theme
-                     pkg-info popup projectile s simple-httpd
-                     skewer-mode solarized-theme tabbar web-mode
-                     with-editor yaml-mode))
+(defvar package-list '())
 
-;; list the repositories containing them
-;; (setq package-archives '(("elpa" . "http://tromey.com/elpa/")
-;;                          ("gnu" . "http://elpa.gnu.org/packages/")
-;;                          ("marmalade" . "http://marmalade-repo.org/packages/")))
+(setq package-list
+  '(ac-haskell-process
+    ac-js2
+    async
+    auto-complete
+    company
+    dash
+    django-mode
+    epl
+    exec-path-from-shell
+    flymd
+    git-commit
+    go-autocomplete
+    go-complete
+    go-mode
+    haskell-emacs
+    haskell-emacs-base
+    haskell-emacs-text
+    haskell-mode
+    helm
+    helm-core
+    helm-make
+    inf-ruby
+    jinja2-mode
+    js2-mode
+    magit
+    magit-popup
+    monokai-theme
+    pkg-info
+    popup
+    projectile
+    s
+    simple-httpd
+    skewer-mode
+    solarized-theme
+    tabbar
+    visual-fill-column
+    web-mode
+    with-editor
+    yaml-mode
+))
 
 ;; activate all the packages (in particular autoloads)
 (package-initialize)
@@ -170,6 +199,9 @@
       (package-install package))))
 
 (defmacro with-library (symbol &rest body)
+  "Include library dentoed by SYMBOL, and install it if necessary.
+
+Execute contents of BODY if included."
   `(condition-case nil
        (progn
          (require ',symbol)
@@ -177,42 +209,25 @@
      (error (message (format "I guess we don't have %s available." ',symbol))
             nil)))
 
-(add-to-list 'load-path "~/.emacs.d/harrison")
-(require 'my-personal)
-(require 'my-keys)
-(require 'my-windows)
-(require 'my-functions)
-(require 'my-files)
-(require 'my-programming)
-;; (when (display-graphic-p)
-;;     (require 'my-gui))
-(require 'my-gui)
-(require 'visual-fill-column)
-(require 'xah)
+;; https://www.emacswiki.org/emacs/LoadingLispFiles
+(defun load-directory (dir)
+  "Load all .el files in DIR."
+  (let ((load-it (lambda (f)
+                   (load-file (concat (file-name-as-directory dir) f)))
+                 ))
+    (mapc load-it (directory-files dir nil "\\.el$"))))
+(load-directory "~/.emacs.d/harrison")
+(load-directory "~/.emacs.d/others")
+;; (add-to-list 'load-path "~/.emacs.d/harrison")
+;; (require 'my-personal)
+;; (require 'my-keys)
+;; (require 'my-windows)
+;; (require 'my-functions)
+;; (require 'my-files)
+;; (require 'my-programming)
+;; ;; (when (display-graphic-p)
+;; ;;     (require 'my-gui))
+;; (require 'my-gui)
 
-(add-to-list 'load-path "~/.emacs.d/others")
-(require 'zoom-frm)
-
-;; https://stackoverflow.com/a/2079146/7343786
-(defconst user-init-dir
-  (cond ((boundp 'user-emacs-directory)
-         user-emacs-directory)
-        ((boundp 'user-init-directory)
-         user-init-directory)
-        (t "~/.emacs.d/")))
-
-(defun load-user-file (file)
-  (interactive "f")
-  "Load a file in current user's configuration directory"
-  (load-file (expand-file-name file user-init-dir)))
-
-(defun load-gui-mode ()
-  "Load gui mode customizations"
-  (load-user-file "custom-gui.el"))
-
-(add-hook 'after-init-hook #'global-flycheck-mode)
-
-(add-to-list 'package-archives
-             '("melpa-stable" . "https://stable.melpa.org/packages/") t)
-(put 'upcase-region 'disabled nil)
-(put 'downcase-region 'disabled nil)
+(provide '.emacs)
+;;; .emacs ends here

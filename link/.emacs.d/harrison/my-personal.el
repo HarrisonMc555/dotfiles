@@ -54,7 +54,7 @@
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 ;; Default font size
-(set-face-attribute 'default nil :height 105)
+(set-face-attribute 'default nil :height 150)
 
 ;; No yes-or-no, only y-or-n
 (defalias 'yes-or-no-p 'y-or-n-p)
@@ -89,6 +89,20 @@
 (setq linum-format "%d ")
 
 (setq vc-follow-symlinks t)
+
+(defun my-terminal-visible-bell ()
+  "A friendlier visual bell effect."
+  (invert-face 'mode-line)
+  (run-with-timer 0.1 nil 'invert-face 'mode-line))
+
+(setq visible-bell       nil
+      ring-bell-function #'my-terminal-visible-bell)
+;; (setq visible-bell 1)
+
+(add-hook 'after-init-hook #'global-flycheck-mode)
+
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
 
 (provide 'my-personal)
 ;;; my-personal.el ends here
