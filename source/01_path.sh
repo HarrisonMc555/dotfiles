@@ -1,6 +1,7 @@
 paths=(
   ~/.local/bin
   $DOTFILES/bin
+  /usr/local/sbin
 )
 
 export PATH
