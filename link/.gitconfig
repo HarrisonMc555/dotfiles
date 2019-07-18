@@ -1,6 +1,5 @@
-[user]
-	name = Harrison McCullough
-	email = EMAIL
+[include]
+  path = .gitconfig.local
 [core]
 	editor = "emacsclient"
   autocrlf = input
@@ -10,6 +9,7 @@
   # whitespace = fix
 [alias]
   s = status
+  a = add
   b = branch
   c = commit
   ch = checkout
