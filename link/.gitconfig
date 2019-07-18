@@ -15,7 +15,9 @@
   ch = checkout
   d = diff
   g = grep -I
+  dc = diff --cached
   pp = !"echo 'Pull'; git pull; echo 'Push'; git push"
+  amend = "commit --amend"
   forgot = "commit --amend -C HEAD"
   lp = log -p
   lg = !"git lg1"
