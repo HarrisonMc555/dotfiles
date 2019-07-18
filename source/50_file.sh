@@ -6,6 +6,7 @@ umask 022
 # Always use color output for `ls`
 if is_osx; then
   alias ls="command ls -G"
+  alias la='ls -a'
 else
   alias ls="command ls --color -v"
   alias la='ls -A'
@@ -31,6 +32,7 @@ alias sl='ls'
 alias ..='cd ..'
 alias ...='cd ../..'
 alias ....='cd ../../..'
+alias .....='cd ../../../..'
 alias -- -='cd -'
 
 # File size
