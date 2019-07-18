@@ -81,3 +81,7 @@ if ! shopt -oq posix; then
     . /etc/bash_completion
   fi
 fi
+
+is_osx &&
+    test -e ~/.iterm2_shell_integration.bash &&
+    source ~/.iterm2_shell_integration.bash
