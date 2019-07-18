@@ -85,3 +85,6 @@ fi
 is_osx &&
     test -e ~/.iterm2_shell_integration.bash &&
     source ~/.iterm2_shell_integration.bash
+
+export SHELLCHECK_OPTS="-e SC1090"
+
