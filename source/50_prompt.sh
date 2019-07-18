@@ -132,8 +132,8 @@ trap '__prompt_stack=("${__prompt_stack[@]}" "$BASH_COMMAND")' DEBUG
 
 # User and host prompt.
 # Only displays the user (or host) if it is not the default user (or host)
-__DEFAULT_PROMPT_USER=harrison
-__DEFAULT_PROMPT_HOST=saturn
+__DEFAULT_PROMPT_USER=user # replace this in a LOCAL file
+__DEFAULT_PROMPT_HOST=host # replace this in a LOCAL file
 
 function __set_prompt_user() {
     unset __prompt_user
@@ -171,6 +171,7 @@ function __prompt_command() {
   __prompt_get_colors
   # http://twitter.com/cowboy/status/150254030654939137
   PS1="\n"
+  is_osx && PS1="$PS1\[$(iterm2_prompt_mark)\]"
   __prompt_vcs_info=()
   # git: [branch:flags]
   __prompt_git || \
