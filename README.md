@@ -1,6 +1,6 @@
 # Dotfiles
 
-Harrison McCullough's Ubuntu /  OSX dotfiles.
+Harrison McCullough's Ubuntu / macOS dotfiles.
 
 ## About this project
 
