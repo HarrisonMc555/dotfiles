@@ -1,7 +1,7 @@
-#!/usr/bin/env bash
+#!/usr/local/bin/bash
 [[ "$1" == "source" ]] || \
-
-    echo 'Dotfiles - "Cowboy" Ben Alman - http://benalman.com/ -- Forked by Harrison McCullough'
+    echo 'Dotfiles - "Cowboy" Ben Alman - http://benalman.com/' \
+         'Forked by Harrison McCullough'
 
 if [[ "$1" == "-h" || "$1" == "--help" ]]; then cat <<HELP
 
@@ -342,6 +342,7 @@ function config_test() {
 }
 function config_do() {
   e_success "Linking ~/.config/$1."
+  mkdir -p ~/.config/
   ln -sf ../${2#$HOME/} ~/.config/
 }
 
