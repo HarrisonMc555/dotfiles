@@ -1,7 +1,9 @@
-#!/usr/local/bin/bash
-[[ "$1" == "source" ]] || \
-    echo 'Dotfiles - "Cowboy" Ben Alman - http://benalman.com/' \
-         'Forked by Harrison McCullough'
+#!/usr/bin/env bash
+
+if ! [[ "$1" == "source" ]]; then
+    echo "Harrison McCullough's dotfiles"
+    echo "Inspired by \"Cowboy\" Ben Alman - http://benalman.com/"
+fi
 
 if [[ "$1" == "-h" || "$1" == "--help" ]]; then cat <<HELP
 
