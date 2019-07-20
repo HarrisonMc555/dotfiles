@@ -54,7 +54,7 @@
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 ;; Default font size
-(set-face-attribute 'default nil :height 150)
+(set-face-attribute 'default nil :height 115)
 
 ;; No yes-or-no, only y-or-n
 (defalias 'yes-or-no-p 'y-or-n-p)
