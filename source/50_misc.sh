@@ -100,3 +100,6 @@ is_osx &&
 
 export SHELLCHECK_OPTS="-e SC1090"
 
+function path() {
+    echo "$PATH" | tr ':' '\n'
+}
