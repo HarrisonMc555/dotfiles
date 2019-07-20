@@ -1,8 +1,9 @@
 paths=(
   ~/bin
   ~/.local/bin
-  $DOTFILES/bin
+  "$DOTFILES"/bin
   /usr/local/sbin
+  "$HOME"/.cargo/bin
 )
 
 export PATH
