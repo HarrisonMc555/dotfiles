@@ -38,23 +38,8 @@
 ;; Flyspell mode
 (add-hook 'text-mode-hook #'flyspell-mode)
 
-;; Save interprogram clipboard
-(setq save-interprogram-paste-before-kill t)
-
 ;; Electric minibuffer mode
 (minibuffer-electric-default-mode nil)
-
-;; Set frame title as file name
-(setq-default frame-title-format
-              '(:eval
-                (format "%s"
-                        (buffer-name))))
-
-;; This is intended to maximize emacs on startup.
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
-
-;; Default font size
-(set-face-attribute 'default nil :height 115)
 
 ;; No yes-or-no, only y-or-n
 (defalias 'yes-or-no-p 'y-or-n-p)
