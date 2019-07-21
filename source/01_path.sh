@@ -4,6 +4,7 @@ paths=(
   "$DOTFILES"/bin
   /usr/local/sbin
   "$HOME"/.cargo/bin
+  /opt/gradle/gradle-5.5.1/bin
 )
 
 export PATH
