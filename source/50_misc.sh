@@ -56,7 +56,7 @@ function loop() {
 export RIPGREP_CONFIG_PATH=~/.ripgreprc
 
 function rgl() {
-    rg --color-always "$@" | less
+    rg --color=always "$@" | less
 }
 
 function rgh() {
@@ -64,7 +64,7 @@ function rgh() {
 }
 
 function rghl() {
-    rg --hidden --no-ignore "$@" | less
+    rg --hidden --no-ignore --color=always "$@" | less
 }
 
 function rglh() {
