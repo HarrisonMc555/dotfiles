@@ -68,10 +68,10 @@ if is_ubuntu_desktop; then
     xdotool
   )
 
-  # https://www.dropbox.com/install-linux
-  apt_packages+=(python-gtk2 python-gpgme)
-  deb_installed+=(/usr/bin/dropbox)
-  deb_sources+=("https://www.dropbox.com/download?dl=packages/ubuntu/dropbox_2015.10.28_amd64.deb")
+  # # https://www.dropbox.com/install-linux
+  # apt_packages+=(python-gtk2 python-gpgme)
+  # deb_installed+=(/usr/bin/dropbox)
+  # deb_sources+=("https://www.dropbox.com/download?dl=packages/ubuntu/dropbox_2015.10.28_amd64.deb")
 
   # # https://slack.com/downloads/instructions/linux
   # deb_installed+=(/usr/bin/slack)
