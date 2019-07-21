@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+# If the command the user runs uses the dir name, they can use this exported variable
+export eachdir
+
 function _eachdir() {
 
 if [[ "$1" == "-h" || "$1" == "--help" ]]; then cat <<HELP
@@ -62,6 +65,8 @@ done
 local nops=()
 # Do stuff for each specified dir, in each dir. Non-dirs are ignored.
 for d in "${dirs[@]}"; do
+  # Store the dir name in exported variable
+  eachdir="${d%/}"
   # Skip non-dirs.
   [[ ! -d "$d" ]] && continue
   # If the dir isn't /, strip the trailing /.
