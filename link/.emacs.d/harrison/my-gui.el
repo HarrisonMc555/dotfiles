@@ -27,6 +27,21 @@
 (when (package-installed-p 'monokai-theme)
   (load-theme 'monokai t))
 
+;; Set frame title as file name
+(setq-default frame-title-format
+              '(:eval
+                (format "%s"
+                        (buffer-name))))
+
+;; This is intended to maximize emacs on startup.
+(add-to-list 'default-frame-alist '(fullscreen . maximized))
+
+;; Default font size
+(set-face-attribute 'default nil :height 115)
+
+;; Save interprogram clipboard
+(setq save-interprogram-paste-before-kill t)
+
 (with-library
  tabbar
  (tabbar-mode)
