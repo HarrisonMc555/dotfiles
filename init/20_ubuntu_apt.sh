@@ -44,7 +44,7 @@ add_ppa ppa:kelleyk/emacs/ubuntu
 apt_packages+=(emacs26)
 
 # https://github.com/sharkdp/fd#on-ubuntu
-deb_installed+=(/usr/bin/fd-find)
+deb_installed+=(/usr/bin/fd)
 deb_sources+=(https://github.com/sharkdp/fd/releases/download/v7.3.0/fd_7.3.0_amd64.deb)
 
 if is_ubuntu_desktop; then
