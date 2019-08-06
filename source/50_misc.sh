@@ -1,4 +1,3 @@
-#!/bin/bash
 # Case-insensitive globbing (used in pathname expansion)
 shopt -s nocaseglob
 
@@ -16,7 +15,7 @@ shopt -s checkwinsize
 alias grep='grep --color=auto'
 
 # Prevent less from clearing the screen while still showing colors.
-export LESS=-XR
+export LESS=-XRi
 
 # Set the terminal's title bar.
 function titlebar() {
@@ -56,7 +55,7 @@ function loop() {
 export RIPGREP_CONFIG_PATH=~/.ripgreprc
 
 function rgl() {
-    rg --color=always "$@" | less
+    rg --color=always "$@" --sort path | less
 }
 
 function rgh() {
@@ -64,12 +63,23 @@ function rgh() {
 }
 
 function rghl() {
-    rg --hidden --no-ignore --color=always "$@" | less
+    rg --hidden --no-ignore --color=always "$@" --sort path | less
 }
 
 function rglh() {
     rghl "$@"
 }
+
+function svndiff()
+{
+    svn diff "$@" | colordiff | less -RFX
+}
+
+function svnpraise()
+{
+    svn praise "$@" | cat -n | less
+}
+alias svnblame=svnpraise
 
 function sbashrc() {
     source ~/.bashrc
@@ -102,4 +112,61 @@ export SHELLCHECK_OPTS="-e SC1090"
 
 function path() {
     echo "$PATH" | tr ':' '\n'
+}
+
+__tput_smul="$(tput smul)"
+__tput_rmul="$(tput rmul)"
+
+function e_underline()   {
+    if [[ $# != 1 ]]; then
+        echo "usage: e_underline <message>"
+        return
+    fi
+
+    str="$1"
+    echo -e "\n${__tput_smul}${str}${__tput_rmul}"
+}
+
+export PAGER=/usr/bin/less
+
+function editbin() {
+    local bin_name="$1"
+    shift
+
+    if [[ ! "$bin_name" ]]; then
+        echo "Usage: editbin <binary>"
+        return 1
+    fi
+
+    if [[ $(type -t "$bin_name") != file ]]; then
+        echo "Argument must be a file"
+        echo "(it was a $(type -f "$bin_name"))"
+        return 1
+    fi
+
+    bin_location="$(which "$bin_name")"
+
+    if [[ ! -r "$bin_location" ]]; then
+        echo "Argument must be a readable file"
+        return 1
+    fi
+
+    local editor
+    if [[ "$VISUAL" ]]; then
+        editor="$VISUAL"
+    elif [[ "$EDITOR" ]]; then
+        editor="$EDITOR"
+    else
+        editor=vi
+    fi
+
+    $editor "$bin_location" $@
+}
+
+function psg() {
+    ps aux |
+        rg -v -e "rg $@" -e "rg -v -e \"'rg $@'\"" |
+        rg $@ --color=always |
+        sed -e 'G' |
+        less
 }
