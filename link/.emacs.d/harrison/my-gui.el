@@ -54,7 +54,13 @@
  (global-set-key (kbd "<M-up>") 'tabbar-forward-group)
  (global-set-key (kbd "<M-down>") 'tabbar-backward-group)
  (global-set-key (kbd "<M-wheel-up>") 'tabbar-forward-group)
- (global-set-key (kbd "<M-wheel-down>") 'tabbar-backward-group))
+ (global-set-key (kbd "<M-wheel-down>") 'tabbar-backward-group)
+ (if (string-equal system-type "darwin")
+     (global-set-key (kbd "s-{") 'tabbar-backward-tab)
+   (global-set-key (kbd "s-}") 'tabbar-forward-tab)))
+
+(if (string-equal system-type "darwin")
+    (global-unset-key (kbd "C-z")))
 
 (provide 'my-gui)
 ;;; my-gui.el ends here
