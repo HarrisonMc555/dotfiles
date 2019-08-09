@@ -21,7 +21,7 @@
  '(custom-safe-themes
    (quote
     ("f78de13274781fbb6b01afd43327a4535438ebaeec91d93ebdbba1e3fba34d3c" "a8245b7cc985a0610d71f9852e9f2767ad1b852c2bdea6f4aadc12cce9c4d6d0" "d677ef584c6dfc0697901a44b885cc18e206f05114c8a3b7fde674fce6180879" "8aebf25556399b58091e533e455dd50a6a9cba958cc4ebb0aab175863c25b9a4" "c7a9a68bd07e38620a5508fef62ec079d274475c8f92d75ed0c33c45fbe306bc" default)))
- '(debug-on-error t)
+ '(debug-on-error nil)
  '(default-frame-alist (quote ((fullscreen . maximized))))
  '(delete-selection-mode t)
  '(ediff-split-window-function (quote split-window-horizontally))
@@ -82,7 +82,7 @@
      ("melpa stable" . "https://stable.melpa.org/packages/"))))
  '(package-selected-packages
    (quote
-    (free-keys clang-format flycheck-kotlin kotlin-mode groovy-mode gradle-mode paredit cider clojure-mode clojure-mode-extra-font-locking flycheck-clojure inf-clojure haskell-mode htmlize epl cmake-font-lock cmake-mode eglot tide tss typescript-mode matlab-mode elm-mode flycheck-elm flycheck-gradle csv csv-mode toml toml-mode flycheck flycheck-rust rust-mode meghanada yaml-mode web-mode tabbar solarized-theme smartparens ruby-extra-highlight omnisharp monokai-theme markdown-mode magit json-mode jinja2-mode haskell-tab-indent haskell-emacs-text haskell-emacs-base go-complete go-autocomplete ghci-completion ghc-imported-from ghc flymd flymake-ruby flymake-python-pyflakes flymake-hlint flymake-haskell-multi flycheck-hdevtools flycheck-haskell flycheck-ghcmod exec-path-from-shell django-mode company-inf-ruby ac-js2 ac-inf-ruby ac-haskell-process 2048-game)))
+    (helm fzf free-keys clang-format flycheck-kotlin kotlin-mode groovy-mode gradle-mode paredit cider clojure-mode clojure-mode-extra-font-locking flycheck-clojure inf-clojure haskell-mode htmlize epl cmake-font-lock cmake-mode eglot tide tss typescript-mode matlab-mode elm-mode flycheck-elm flycheck-gradle csv csv-mode toml toml-mode flycheck flycheck-rust rust-mode meghanada yaml-mode web-mode tabbar solarized-theme smartparens ruby-extra-highlight omnisharp monokai-theme markdown-mode magit json-mode jinja2-mode haskell-tab-indent haskell-emacs-text haskell-emacs-base go-complete go-autocomplete ghci-completion ghc-imported-from ghc flymd flymake-ruby flymake-python-pyflakes flymake-hlint flymake-haskell-multi flycheck-hdevtools flycheck-haskell flycheck-ghcmod exec-path-from-shell django-mode company-inf-ruby ac-js2 ac-inf-ruby ac-haskell-process 2048-game)))
  '(paradox-github-token t)
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
