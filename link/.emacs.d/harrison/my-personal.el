@@ -84,8 +84,6 @@
       ring-bell-function #'my-terminal-visible-bell)
 ;; (setq visible-bell 1)
 
-(add-hook 'after-init-hook #'global-flycheck-mode)
-
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 
