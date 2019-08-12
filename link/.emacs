@@ -74,6 +74,7 @@
    (quote
     ("#dc322f" "#cb4b16" "#b58900" "#546E00" "#B4C342" "#00629D" "#2aa198" "#d33682" "#6c71c4")))
  '(org-adapt-indentation t)
+ '(org-cycle-include-plain-lists (quote integrate))
  '(org-indent-mode-turns-off-org-adapt-indentation nil)
  '(package-archives
    (quote
