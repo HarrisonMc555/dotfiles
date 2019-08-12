@@ -170,3 +170,37 @@ function psg() {
         sed -e 'G' |
         less
 }
+
+function space2lines() {
+    if [[ $# > 1 ]]; then
+        echo "Usage: lines [file]"
+        return 1
+    fi
+
+    if [[ "$1" ]]; then
+        cat "$1" | __space2lines
+    else
+        __space2lines
+    fi
+}
+
+function __space2lines() {
+    tr ' ' '\n'
+}
+
+function doublelines() {
+    if [[ $# > 1 ]]; then
+        echo "Usage: doublelines [file]"
+        return 1
+    fi
+
+    if [[ "$1" ]]; then
+        cat "$1" | __doublelines
+    else
+        __doublelines
+    fi
+}
+
+function __doublelines() {
+    awk '{ print; print "" }'
+}
