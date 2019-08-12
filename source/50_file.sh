@@ -34,6 +34,7 @@ alias ...='cd ../..'
 alias ....='cd ../../..'
 alias .....='cd ../../../..'
 alias -- -='cd -'
+alias ~=cd
 
 # File size
 alias fs="stat -f '%z bytes'"
