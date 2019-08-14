@@ -3,7 +3,7 @@
 ;; Copyright (C) 2017  Harrison
 
 ;; Author: Harrison <harrison@saturn>
-;; Keywords: 
+;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;; 
+;;
 
 ;;; Code:
 
@@ -148,10 +148,25 @@ converted to PDF at the same location."
           (1+ (current-column)))))))
 
 ;; org mode
-(require 'org-mouse)
-(global-set-key (kbd "M-o") 'org-mode)
-(global-set-key (kbd "C-M-o") 'org-indent-mode)
-(global-set-key (kbd "M-t") 'text-mode)
+(defun org-insert-checkbox-goto-next-item ()
+  "Inserts a checkbox at the current item, then goes to the next item."
+  (interactive)
+  (move-beginning-of-line nil)
+  (search-forward-regexp "[^ ]")
+  (forward-char 1)
+  (insert "[ ] ")
+  (org-next-item))
+
+(defun org-insert-checkboxes-all-items ()
+  "Inserts checkboxes in all items at the current level."
+  (interactive)
+  (save-excursion
+    (condition-case nil
+        (while (org-previous-item))
+      ('error))
+    (condition-case nil
+        (while (insert-checkbox-goto-next-item))
+      ('error))))
 
 ;; Debugging printing information about selected region
 (defun region-info ()
