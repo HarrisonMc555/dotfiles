@@ -3,7 +3,7 @@
 ;; Copyright (C) 2017  Harrison
 
 ;; Author: Harrison <harrison@saturn>
-;; Keywords: 
+;; Keywords:
 
 ;; This program is free software; you can redistribute it and/or modify
 ;; it under the terms of the GNU General Public License as published by
@@ -20,7 +20,7 @@
 
 ;;; Commentary:
 
-;; 
+;;
 
 ;;; Code:
 
@@ -99,6 +99,20 @@
 (with-library
  my-functions
  (global-set-key (kbd "C-<") 'unhighlight-all-in-buffer))
+
+(when (fboundp 'org-mode)
+  (global-set-key (kbd "M-o") 'org-mode)
+  (global-set-key (kbd "C-M-o") 'org-indent-mode)
+  (global-set-key (kbd "M-t") 'text-mode)
+
+  (defun my-org-mode-hook ()
+    "Custom org-mode hook."
+    (local-set-key (kbd "M-[") 'org-metaleft)
+    (local-set-key (kbd "M-]") 'org-metaright)
+    (local-set-key (kbd "C-c C-6") 'org-up-element)
+    )
+
+  (add-hook 'org-mode-hook 'my-org-mode-hook))
 
 (provide 'my-keys)
 ;;; my-keys.el ends here
