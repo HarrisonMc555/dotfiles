@@ -27,7 +27,7 @@ Run one or more commands forever (or a number of times).
 
 Multiple commands must be specified as a single string argument.
 
-You can access the current iteration with \$_i. The slash is necessary to
+You can access the current iteration with \$i. The slash is necessary to
 prevent the shell from interpreting the variable before passing it into this
 command.
 
@@ -41,7 +41,7 @@ Display how much space is used and available every five seconds:
   forever -s 5 df / -h
 
 Count from 0 to 9, waiting 1 second in between each number:
-  forever -c 10 echo "Number: \$_i"
+  forever -c 10 echo "Number: \$i"
 
 Copyright (c) 2019 Harrison McCullough
 Licensed under the MIT license.
@@ -94,15 +94,15 @@ HELP
     header="$(tput smul)"
     endheader="$(tput rmul)"
 
-    local _i=0
+    local i=0
     while true; do
         echo -e "${header}$(date +"%H:%M:%S")${endheader}"
         eval "$@" 2>&1
         echo
         sleep "$seconds"
         if [[ "$count" ]]; then
-            ((_i++))
-            if [[ "$_i" -ge "$count" ]]; then
+            ((i++))
+            if [[ "$i" -ge "$count" ]]; then
                 break
             fi
         fi
