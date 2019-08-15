@@ -59,3 +59,21 @@ mkdir -p $DOTFILES/caches/z
 _Z_NO_PROMPT_COMMAND=1
 _Z_DATA=$DOTFILES/caches/z/z
 . $DOTFILES/vendor/z/z.sh
+
+function findnewer() {
+    if [[ $# != 1 ]] && [[ $# != 2 ]]; then
+        echo "Usage: findnewer val[ymwdHMS] [dir]"
+        echo "  Ex: findnewer 1d"
+        return 1
+    fi
+    valstring="$1"
+    if [[ "$2" ]]; then
+        dir="$2"
+    else
+        dir=.
+    fi
+    find "$dir" \
+         -newermt "$(date -v -"$valstring" "+%Y-%m-%d %H:%M:%S")" \
+         -type f \
+         -print
+}
