@@ -46,6 +46,8 @@ alias dottilde="find . -name '*~' -type f -ls -delete"
 
 # Aliasing eachdir like this allows you to use aliases/functions as commands.
 alias eachdir=". eachdir"
+alias eachfile=". eachfile"
+alias forever=". forever"
 
 # Create a new directory and enter it
 function md() {

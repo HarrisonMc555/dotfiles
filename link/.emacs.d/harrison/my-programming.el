@@ -154,6 +154,8 @@
       (let ((web-mode-enable-part-face nil))
         ad-do-it)
     ad-do-it))
+(add-to-list 'auto-mode-alist '("\\.tera\\'" . jinja2-mode))
+
 
 ;; web-mode files
 (add-to-list 'auto-mode-alist '("\\.html\\'" . web-mode))
