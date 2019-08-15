@@ -87,5 +87,21 @@
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 
+(defvar backtick-electric-pairs '((?` . ?`)) "Electric pairs for backticks.")
+(defvar org-electric-pairs backtick-electric-pairs)
+(defvar markdown-electric-pairs backtick-electric-pairs)
+
+(defun org-add-electric-pairs ()
+  (setq-local electric-pair-pairs (append electric-pair-pairs org-electric-pairs))
+  (setq-local electric-pair-text-pairs electric-pair-pairs))
+
+(defun markdown-add-electric-pairs ()
+  (setq-local electric-pair-pairs
+              (append electric-pair-pairs markdown-electric-pairs))
+  (setq-local electric-pair-text-pairs electric-pair-pairs))
+
+(add-hook 'org-mode-hook 'org-add-electric-pairs)
+(add-hook 'markdown-mode-hook 'markdown-add-electric-pairs)
+
 (provide 'my-personal)
 ;;; my-personal.el ends here
