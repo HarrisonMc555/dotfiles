@@ -1,0 +1,111 @@
+#!/usr/bin/env bash
+
+# If the command the user runs uses the dir name, they can use this exported variable
+export eachfile
+
+function _eachfile() {
+
+    if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+        cat <<HELP
+eachfile
+
+Usage: eachfile [files --] commands
+
+Run one or more commands on one or more files.
+
+By default, all files in the current dir will be iterated over, but if -- is
+specified as an arg, the files list will be made up of all args specified before
+it. All remaining args are the command(s) to be executed for each dir.
+
+Multiple commands must be specified as a single string argument.
+
+In bash, aliasing like this allows you to specify aliases/functions:
+  alias eachfile=". eachfile"
+
+By default, the file is passed as the last argument to the given command(s). If
+you pass "-f" as the first argument, then you can specify where the file appears
+in the command with \$f. The slash is necessary to prevent the shell from
+interpreting the variable before it is run by this command.
+
+Print out the first line of each file:
+  eachfile head -n 1
+
+Count the number of lines with the word "hello" in each file:
+  eachfile -f "grep hello \$f | wc -l"
+
+Copyright (c) 2019 Harrison McCullough
+Licensed under the MIT license.
+HELP
+        return;
+    fi
+
+    # See if the first argument is -f
+    local dashf
+    if [[ "$1" = -f ]]; then
+        dashf="dashf"
+        shift
+    fi
+
+    if [ ! "$1" ]; then
+        echo 'You must specify one or more commands to run.'
+        return 1
+    fi
+
+    # For underlining headers.
+    local header="$(tput smul)"
+    local endheader="$(tput rmul)"
+
+    # Store any files passed before -- in an array.
+    local dashes f
+    local files=()
+    for f in "$@"; do
+        if [[ "$f" == "--" ]]; then
+            dashes=1
+            shift $(( ${#files[@]} + 1 ))
+            break
+        fi
+        files=("${files[@]}" "$f")
+    done
+
+    # If -- wasn't specified, default to all files in the current dir.
+    if [[ ! "$dashes" ]]; then
+        files=()
+        while IFS=  read -r -d $'\0'; do
+            files+=("$REPLY")
+        done < <(find . -maxdepth 1 -type f -print0)
+    fi
+
+    local nops=()
+    # Do stuff for each specified file, in each file. Non-files are ignored.
+    for f in "${files[@]}"; do
+        # Skip non-files.
+        [[ ! -f "$f" ]] && continue
+        # Strip the leading ./ if there
+        f="${f#./}"
+        # Execute the command, grabbing all stdout and stderr.
+        if [[ "$dashf" ]]; then
+            output="$( eval "$@" 2>&1 )"
+        else
+            output="$( eval "$@" "$f" 2>&1 )"
+        fi
+        if [[ "$output" ]]; then
+            # If the command had output, display a header and that output.
+            echo -e "${header}${f}${endheader}\n$output\n"
+        else
+            # Otherwise push it onto an array for later display.
+            nops=("${nops[@]}" "$f")
+        fi
+    done
+
+    # List any files that had no output.
+    if [[ ${#nops[@]} > 0 ]]; then
+        echo "${header}no output from${endheader}"
+        for f in "${nops[@]}"; do echo "$f"; done
+    fi
+
+}
+
+# By putting the above code inside a function, if this file is sourced (which
+# is required for external aliases/functions to be used as commands), vars
+# can be local and return can be used to exit.
+_eachfile "$@"
