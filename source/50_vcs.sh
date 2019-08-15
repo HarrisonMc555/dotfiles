@@ -201,3 +201,7 @@ function gstat() {
 #     fi
 #   }
 # fi
+
+# SVN shortcuts
+alias s='svn'
+alias ss='svn st'
