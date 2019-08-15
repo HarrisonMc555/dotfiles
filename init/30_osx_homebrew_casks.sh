@@ -19,6 +19,8 @@ brew cask info this-is-somewhat-annoying 2>/dev/null
 casks=(
   google-chrome
   emacs
+  # rocket-typist
+  jumpcut
   # Applications
   # a-better-finder-rename
   # alfred

@@ -11,6 +11,7 @@ recipes=(
   pandoc
   ipython
   fd
+  node
 
   # ansible
   # awscli
