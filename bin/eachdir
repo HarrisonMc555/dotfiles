@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# If the command the user runs uses the dir name, they can use this exported variable
-export eachdir
-
 function _eachdir() {
 
 if [[ "$1" == "-h" || "$1" == "--help" ]]; then cat <<HELP
@@ -18,6 +15,9 @@ is specified as an arg, the dirs list will be made up of all args specified
 before it. All remaining args are the command(s) to be executed for each dir.
 
 Multiple commands must be specified as a single string argument.
+
+You can access the current directory with \$d. The slash is necessary to prevent
+the shell from interpreting the variable before passing it into this command.
 
 In bash, aliasing like this allows you to specify aliases/functions:
   alias eachdir=". eachdir"
@@ -65,8 +65,6 @@ done
 local nops=()
 # Do stuff for each specified dir, in each dir. Non-dirs are ignored.
 for d in "${dirs[@]}"; do
-  # Store the dir name in exported variable
-  eachdir="${d%/}"
   # Skip non-dirs.
   [[ ! -d "$d" ]] && continue
   # If the dir isn't /, strip the trailing /.
