@@ -185,12 +185,12 @@ function __prompt_command() {
   __set_prompt_host
   PS1="$PS1$c1["
   if [[ "$__prompt_user" ]] || [[ "$__prompt_host" ]]; then
-      if [[ "$__prompt_user" ]] && [[ "$__prompt_host" ]]; then
-          PS1="$PS1$c0$__prompt_user$c1@$c0$__prompt_host"
-      else
-          PS1="$PS1$c0$__prompt_user$__prompt_host"
-      fi
-      PS1="$PS1$c1:"
+    if [[ "$__prompt_user" ]] && [[ "$__prompt_host" ]]; then
+      PS1="$PS1$c0$__prompt_user$c1@$c0$__prompt_host"
+    else
+      PS1="$PS1$c0$__prompt_user$__prompt_host"
+    fi
+    PS1="$PS1$c1:"
   fi
   PS1="$PS1$c0\w$c1]$c9"
   # PS1="$PS1$c1[$c0\u$c1@$c0\h$c1:$c0\w$c1]$c9"
