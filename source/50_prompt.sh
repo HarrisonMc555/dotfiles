@@ -26,24 +26,24 @@
 # 33  43  yellow    37  47  white
 
 declare -A FOREGROUND=(
-    [black]=30
-    [red]=31
-    [green]=32
-    [yellow]=33
-    [blue]=34
-    [magenta]=35
-    [cyan]=36
-    [white]=37
+  [black]=30
+  [red]=31
+  [green]=32
+  [yellow]=33
+  [blue]=34
+  [magenta]=35
+  [cyan]=36
+  [white]=37
 )
 declare -A BACKGROUND=(
-    [black]=40
-    [red]=41
-    [green]=42
-    [yellow]=43
-    [blue]=44
-    [magenta]=45
-    [cyan]=46
-    [white]=47
+  [black]=40
+  [red]=41
+  [green]=42
+  [yellow]=43
+  [blue]=44
+  [magenta]=45
+  [cyan]=46
+  [white]=47
 )
 RESET=0
 BOLD=1
@@ -136,23 +136,23 @@ __DEFAULT_PROMPT_USER=user # replace this in a LOCAL file
 __DEFAULT_PROMPT_HOST=host # replace this in a LOCAL file
 
 function __set_prompt_user() {
-    unset __prompt_user
-    local user
-    user="$(whoami)"
-    [[ "$__DEFAULT_PROMPT_USER" == "$user" ]] || __prompt_user="$user"
+  unset __prompt_user
+  local user
+  user="$(whoami)"
+  [[ "$__DEFAULT_PROMPT_USER" == "$user" ]] || __prompt_user="$user"
 }
 
 function __set_prompt_host() {
-    unset __prompt_host
-    local host
-    host="$(hostname)"
-    [[ "$__DEFAULT_PROMPT_HOST" == "$host" ]] || __prompt_host="$host"
+  unset __prompt_host
+  local host
+  host="$(hostname)"
+  [[ "$__DEFAULT_PROMPT_HOST" == "$host" ]] || __prompt_host="$host"
 }
 
 # Shows the level of bash you're in. Perhaps not terribly useful, but it's good
 # to be reminded if you accidentally enter a subshell
 __set_sublvl() {
-    if ((SHLVL > 1)); then printf " ($SHLVL)"; fi
+  if ((SHLVL > 1)); then printf " ($SHLVL)"; fi
 }
 
 function __prompt_command() {
