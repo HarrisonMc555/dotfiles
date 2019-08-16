@@ -7,7 +7,7 @@ function src() {
   if [[ "$1" ]]; then
     source "$DOTFILES/source/$1.sh"
   else
-    for file in $DOTFILES/source/*; do
+    for file in "$DOTFILES"/source/*; do
       source "$file"
     done
   fi
@@ -15,7 +15,7 @@ function src() {
 
 # Run dotfiles script, then source.
 function dotfiles() {
-  $DOTFILES/bin/dotfiles "$@" && src
+  "$DOTFILES"/bin/dotfiles "$@" && src
 }
 
 src

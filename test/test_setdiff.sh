@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-source $DOTFILES/source/00_dotfiles.sh
+source "$DOTFILES"/source/00_dotfiles.sh
 
 e_header "$(basename "$0" .sh)"
 
