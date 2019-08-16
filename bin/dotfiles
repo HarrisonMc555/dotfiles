@@ -276,7 +276,7 @@ function cleanup {
 trap cleanup EXIT
 
 # Initialize.
-init_file=$DOTFILES/caches/init/selected
+init_file="$DOTFILES"/caches/init/selected
 function init_files() {
   local i f dirname oses os opt remove
   dirname="$(dirname "$1")"
@@ -351,7 +351,7 @@ function config_do() {
 # Copy, link, init, etc.
 function do_stuff() {
   local base dest skip
-  local files=($DOTFILES/$1/*)
+  local files=("$DOTFILES"/$1/*)
   [[ $(declare -f "$1_files") ]] && files=($($1_files "${files[@]}"))
   # No files? abort.
   if (( ${#files[@]} == 0 )); then return; fi
@@ -474,16 +474,16 @@ if [[ ! "$(type -P git)" ]]; then
 fi
 
 # Initialize.
-if [[ ! -d $DOTFILES ]]; then
+if [[ ! -d "$DOTFILES" ]]; then
   # Dotfiles directory doesn't exist? Clone it!
   e_header "Downloading dotfiles"
   git clone --branch ${DOTFILES_GH_BRANCH:-master} --recursive \
-    git://github.com/${DOTFILES_GH_USER:-HarrisonMc555}/dotfiles.git $DOTFILES
-  cd $DOTFILES
+    git://github.com/${DOTFILES_GH_USER:-HarrisonMc555}/dotfiles.git "$DOTFILES"
+  cd "$DOTFILES"
 elif [[ "$1" != "restart" ]]; then
   # Make sure we have the latest files.
   e_header "Updating dotfiles"
-  cd $DOTFILES
+  cd "$DOTFILES"
   prev_head="$(git rev-parse HEAD)"
   git pull
   git submodule update --init --recursive --quiet
@@ -499,7 +499,7 @@ elif [[ "$1" != "restart" ]]; then
 fi
 
 # Add binaries into the path
-[[ -d $DOTFILES/bin ]] && export PATH=$DOTFILES/bin:$PATH
+[[ -d "$DOTFILES"/bin ]] && export PATH="$DOTFILES"/bin:$PATH
 
 # Tweak file globbing.
 shopt -s dotglob

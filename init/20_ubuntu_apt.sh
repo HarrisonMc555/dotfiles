@@ -83,7 +83,7 @@ function other_stuff() {
   # if [[ ! "$(type -P git-extras)" ]]; then
   #   e_header "Installing Git Extras"
   #   (
-  #     cd $DOTFILES/vendor/git-extras &&
+  #     cd "$DOTFILES"/vendor/git-extras &&
   #     sudo make install
   #   )
   # fi
@@ -98,7 +98,7 @@ function other_stuff() {
 ####################
 
 # Add APT keys.
-keys_cache=$DOTFILES/caches/init/apt_keys
+keys_cache="$DOTFILES"/caches/init/apt_keys
 IFS=$'\n' GLOBIGNORE='*' command eval 'setdiff_cur=($(<$keys_cache))'
 setdiff_new=("${apt_keys[@]}"); setdiff; apt_keys=("${setdiff_out[@]}")
 unset setdiff_new setdiff_cur setdiff_out
