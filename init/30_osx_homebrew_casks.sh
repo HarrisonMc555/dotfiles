@@ -21,6 +21,7 @@ casks=(
   emacs
   # rocket-typist
   jumpcut
+  hex-fiend
   # Applications
   # a-better-finder-rename
   # alfred
