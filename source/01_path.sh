@@ -1,13 +1,27 @@
-paths=(
-  /opt/gradle/gradle-5.5.1/bin
+paths_rev=(
+  "$DOTFILES"/bin
+  ~/.local/sbin
+  ~/.local/bin
   ~/.cargo/bin
+  ~/.cabal/bin
+  ~/.ghcup/bin
+  ~/bin
+  /sbin
+  /bin
+  /usr/sbin
+  /usr/bin
   /usr/local/sbin
   /usr/local/bin
-  ~/bin
-  ~/.local/bin
-  ~/.local/sbin
-  "$DOTFILES"/bin
+  /opt/local/sbin
+  /opt/local/bin
+  /opt/gradle/gradle-5.5.1/bin
 )
+
+paths=()
+
+for p in "${paths_rev[@]}"; do
+  paths=("$p" "${paths_rev[@]}")
+done
 
 export PATH
 for p in "${paths[@]}"; do
