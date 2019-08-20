@@ -110,6 +110,7 @@
     (local-set-key (kbd "M-[") 'org-metaleft)
     (local-set-key (kbd "M-]") 'org-metaright)
     (local-set-key (kbd "C-c C-6") 'org-up-element)
+    (local-set-key (kbd "<M-S-return>") 'org-insert-checkbox-respect-contents)
     )
 
   (add-hook 'org-mode-hook 'my-org-mode-hook))
