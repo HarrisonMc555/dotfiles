@@ -35,9 +35,6 @@
 (add-hook 'text-mode-hook #'turn-on-auto-fill)
 (add-hook 'prog-mode-hook #'turn-on-auto-fill)
 
-;; Flyspell mode
-(add-hook 'text-mode-hook #'flyspell-mode)
-
 ;; Electric minibuffer mode
 (minibuffer-electric-default-mode nil)
 
