@@ -148,16 +148,20 @@ converted to PDF at the same location."
           (1+ (current-column)))))))
 
 ;; org mode
-(defun org-insert-checkbox-goto-next-item ()
-  "Inserts a checkbox at the current item, then goes to the next item."
+(defun org-convert-to-checkbox ()
   (interactive)
   (move-beginning-of-line nil)
   (search-forward-regexp "[^ ]")
   (forward-char 1)
-  (insert "[ ] ")
+  (insert "[ ] "))
+
+(defun org-convert-to-checkbox-goto-next-item ()
+  "Inserts a checkbox at the current item, then goes to the next item."
+  (interactive)
+  (org-convert-to-checkbox)
   (org-next-item))
 
-(defun org-insert-checkboxes-all-items ()
+(defun org-convert-all-items-to-checkboxes ()
   "Inserts checkboxes in all items at the current level."
   (interactive)
   (save-excursion
@@ -165,8 +169,19 @@ converted to PDF at the same location."
         (while (org-previous-item))
       ('error))
     (condition-case nil
-        (while (insert-checkbox-goto-next-item))
+        (while (add-checkbox-goto-next-item))
       ('error))))
+
+(defun org-insert-checkbox-respect-contents ()
+  "Inserts a checkbox after the contents of the current item"
+  (interactive)
+  (condition-case nil
+      (progn
+        (org-next-item)
+        (org-insert-item t))
+    ('error
+     (move-end-of-line nil)
+     (org-insert-todo-heading nil))))
 
 ;; Debugging printing information about selected region
 (defun region-info ()
