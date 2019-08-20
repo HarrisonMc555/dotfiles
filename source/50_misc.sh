@@ -204,3 +204,9 @@ function doublelines() {
 function __doublelines() {
     awk '{ print; print "" }'
 }
+
+[[ -f ~/.ghcup/env ]] && source ~/.ghcup/env
+
+alias e="echo"
+alias l="less"
+alias em="emacs"

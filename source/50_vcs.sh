@@ -205,3 +205,4 @@ function gstat() {
 # SVN shortcuts
 alias s='svn'
 alias ss='svn st'
+alias sd='svndiff'
