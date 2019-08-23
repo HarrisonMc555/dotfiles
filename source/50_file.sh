@@ -77,3 +77,6 @@ function findnewer() {
          -type f \
          -print
 }
+
+alias wdiff="git diff --word-diff"
+is_osx && alias ls='gls -v --color=auto'
