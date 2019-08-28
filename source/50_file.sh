@@ -42,6 +42,7 @@ alias df="df -h"
 
 # Recursively delete `.DS_Store` files
 alias dsstore="find . -name '*.DS_Store' -type f -ls -delete"
+# alias dottilde="find . -type d ! -perm -g+r,u+r,o+r -prune -o -name \"*~\" -delete"
 alias dottilde="find . -name '*~' -type f -ls -delete"
 
 # Aliasing eachdir like this allows you to use aliases/functions as commands.
