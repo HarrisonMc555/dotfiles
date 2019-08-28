@@ -217,5 +217,10 @@ The same result can also be be achieved by \\[universal-argument] \\[unhighlight
   (interactive)
   (unhighlight-regexp t))
 
+(defun sort-lines-nocase ()
+  (interactive)
+  (let ((sort-fold-case t))
+    (call-interactively 'sort-lines)))
+
 (provide 'my-functions)
 ;;; my-functions.el ends here
