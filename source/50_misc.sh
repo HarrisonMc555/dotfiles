@@ -129,7 +129,8 @@ function editbin() {
 
     if [[ $(type -t "$bin_name") != file ]]; then
         echo "Argument must be a file"
-        echo "(it was a $(type -f "$bin_name"))"
+        msg="$(type -f "$bin_name" 2>&1)"
+        echo "(it was a ${msg})"
         return 1
     fi
 
