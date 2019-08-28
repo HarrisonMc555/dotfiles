@@ -16,6 +16,7 @@ function gap() { git add -p "${@:-.}"; } # Add all files by default
 alias gs='git status'
 # alias gst='gs'
 alias gd='git diff'
+alias gdw='gd --word-diff'
 # alias gdc='gd --cached'
 # alias gm='git commit -m'
 # alias gma='git commit -am'
