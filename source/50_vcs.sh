@@ -6,6 +6,7 @@ alias gcam="git commit -a -m"
 
 alias g='git'
 function ga() { git add "${@:-.}"; } # Add all files by default
+function gap() { git add -p "${@:-.}"; } # Add all files by default
 # alias gp='git push'
 # alias gpup='gp --set-upstream origin $(gbs)'
 # alias gpa='gp --all'
@@ -14,7 +15,7 @@ function ga() { git add "${@:-.}"; } # Add all files by default
 # alias gg='gl --decorate --oneline --graph --date-order --all'
 alias gs='git status'
 # alias gst='gs'
-# alias gd='git diff'
+alias gd='git diff'
 # alias gdc='gd --cached'
 # alias gm='git commit -m'
 # alias gma='git commit -am'
