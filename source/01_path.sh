@@ -20,11 +20,11 @@ paths_rev=(
 paths=()
 
 for p in "${paths_rev[@]}"; do
-  paths=("$p" "${paths_rev[@]}")
+  paths=("$p" "${paths[@]}")
 done
 
 export PATH
 for p in "${paths[@]}"; do
   [[ -d "$p" ]] && PATH="$p:$(path_remove "$p")"
 done
-unset p paths
+unset p paths paths_rev
