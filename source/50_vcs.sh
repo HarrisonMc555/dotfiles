@@ -203,6 +203,19 @@ function gstat() {
 # fi
 
 # SVN shortcuts
+function svndiff()
+{
+    svn diff "$@" | colordiff | less -RFX
+}
+
+function svnpraise()
+{
+    svn praise "$@" | cat -n | less
+}
+
 alias s='svn'
 alias ss='svn st'
 alias sd='svndiff'
+alias sp='svnpraise'
+alias sr='svn revert'
+alias svnblame=svnpraise

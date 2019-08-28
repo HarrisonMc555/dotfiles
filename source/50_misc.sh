@@ -70,17 +70,6 @@ function rglh() {
     rghl "$@"
 }
 
-function svndiff()
-{
-    svn diff "$@" | colordiff | less -RFX
-}
-
-function svnpraise()
-{
-    svn praise "$@" | cat -n | less
-}
-alias svnblame=svnpraise
-
 function sbashrc() {
     source ~/.bashrc
 }
