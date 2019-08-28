@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+
+function usage() {
+    echo "Usage: $0 OPENING CLOSING [file*]"
+}
+
+if [[ $# -lt 2 ]]; then
+   usage
+   exit 1
+fi
+
+opening="$1"
+closing="$2"
+if [[ $# -gt 2 ]]; then
+    has_files=true
+fi
+shift; shift
+
+delimiter="/"
+opening="${opening//\//\\\/}"
+closing="${closing//\//\\\/}"
+
+o="$opening"
+c="$closing"
+
+command="awk '/${opening}/ { found=1; } found { print } /${closing}/ { found=0; }'"
+
+if [[ "$has_files" ]]; then
+    eachfile "$@" -- $command
+else
+    $command
+fi
