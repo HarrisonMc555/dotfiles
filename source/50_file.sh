@@ -81,3 +81,7 @@ function findnewer() {
 
 alias wdiff="git diff --word-diff"
 is_osx && alias ls='gls -v --color=auto'
+
+function maxlinelength() {
+    awk '{print length}' "$@" | sort -nr | head -1
+}
