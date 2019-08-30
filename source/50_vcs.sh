@@ -215,9 +215,15 @@ function svnpraise()
     svn praise "$@" | cat -n | less
 }
 
+function svncommitupdate()
+{
+    svn commit "$@" && svn update
+}
+
 alias s='svn'
 alias ss='svn st'
 alias sd='svndiff'
 alias sp='svnpraise'
 alias sr='svn revert'
+alias sci='svncommitupdate'
 alias svnblame=svnpraise
