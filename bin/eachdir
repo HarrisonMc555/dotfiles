@@ -20,6 +20,9 @@ Multiple commands must be specified as a single string argument.
 You can access the current directory with \$d. The slash is necessary to prevent
 the shell from interpreting the variable before passing it into this command.
 
+If you want to execute commands on each directory without entering each
+directory, specify -d as the first argument.
+
 In bash, aliasing like this allows you to specify aliases/functions:
   alias eachdir=". eachdir"
 
@@ -38,6 +41,13 @@ Licensed under the MIT license.
 http://benalman.com/about/license/
 HELP
         return;
+    fi
+
+    # See if the first argument is -d
+    local no_enter
+    if [[ "$1" = -d ]]; then
+        no_enter="no_enter"
+        shift
     fi
 
     if [ ! "$1" ]; then
@@ -72,7 +82,11 @@ HELP
         # If the dir isn't /, strip the trailing /.
         [[ "$d" != "/" ]] && d="${d%/}"
         # Execute the command, grabbing all stdout and stderr.
-        output="$( (cd "$d"; eval "$@") 2>&1 )"
+        if [[ "$no_enter" ]]; then
+            output="$( (eval "$@") 2>&1 )"
+        else
+            output="$( (cd "$d"; eval "$@") 2>&1 )"
+        fi
         if [[ "$output" ]]; then
             # If the command had output, display a header and that output.
             echo -e "${h1}${d}${h2}\n$output\n"
