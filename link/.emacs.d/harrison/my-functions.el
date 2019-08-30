@@ -222,5 +222,20 @@ The same result can also be be achieved by \\[universal-argument] \\[unhighlight
   (let ((sort-fold-case t))
     (call-interactively 'sort-lines)))
 
+(defun cells-to-identifier ()
+  (interactive)
+  ;; http://ergoemacs.org/emacs/elisp_find_replace_text.html
+  (save-restriction
+    (narrow-to-region (point) (mark))
+    (goto-char (point-min))
+    (while (search-forward " " nil t)
+      (replace-match ""))
+    (while (search-forward "	" nil t)
+      (replace-match "_"))
+    (while (re-search-forward "\\W" nil t)
+      (replace-match ""))
+    (downcase-region (point-min) (point-max))
+    (goto-char (point-min))))
+
 (provide 'my-functions)
 ;;; my-functions.el ends here
