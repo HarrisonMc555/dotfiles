@@ -79,7 +79,7 @@ function findnewer() {
          -print
 }
 
-alias wdiff="git diff --word-diff"
+alias wdiff="git diff --no-index --word-diff"
 is_osx && alias ls='gls -v --color=auto'
 
 function maxlinelength() {
