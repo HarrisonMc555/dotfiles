@@ -2,7 +2,8 @@
 
 function _eachdir() {
 
-if [[ "$1" == "-h" || "$1" == "--help" ]]; then cat <<HELP
+    if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+        cat <<HELP
 eachdir
 http://benalman.com/
 
@@ -36,55 +37,56 @@ Copyright (c) 2012 "Cowboy" Ben Alman
 Licensed under the MIT license.
 http://benalman.com/about/license/
 HELP
-return; fi
+        return;
+    fi
 
-if [ ! "$1" ]; then
-  echo 'You must specify one or more commands to run.'
-  return 1
-fi
+    if [ ! "$1" ]; then
+        echo 'You must specify one or more commands to run.'
+        return 1
+    fi
 
-# For underlining headers.
-local h1="$(tput smul)"
-local h2="$(tput rmul)"
+    # For underlining headers.
+    local h1="$(tput smul)"
+    local h2="$(tput rmul)"
 
-# Store any dirs passed before -- in an array.
-local dashes d
-local dirs=()
-for d in "$@"; do
-  if [[ "$d" == "--" ]]; then
-    dashes=1
-    shift $(( ${#dirs[@]} + 1 ))
-    break
-  fi
-  dirs=("${dirs[@]}" "$d")
-done
+    # Store any dirs passed before -- in an array.
+    local dashes d
+    local dirs=()
+    for d in "$@"; do
+        if [[ "$d" == "--" ]]; then
+            dashes=1
+            shift $(( ${#dirs[@]} + 1 ))
+            break
+        fi
+        dirs=("${dirs[@]}" "$d")
+    done
 
-# If -- wasn't specified, default to all subdirs of the current dir.
-[[ "$dashes" ]] || dirs=(*/)
+    # If -- wasn't specified, default to all subdirs of the current dir.
+    [[ "$dashes" ]] || dirs=(*/)
 
-local nops=()
-# Do stuff for each specified dir, in each dir. Non-dirs are ignored.
-for d in "${dirs[@]}"; do
-  # Skip non-dirs.
-  [[ ! -d "$d" ]] && continue
-  # If the dir isn't /, strip the trailing /.
-  [[ "$d" != "/" ]] && d="${d%/}"
-  # Execute the command, grabbing all stdout and stderr.
-  output="$( (cd "$d"; eval "$@") 2>&1 )"
-  if [[ "$output" ]]; then
-    # If the command had output, display a header and that output.
-    echo -e "${h1}${d}${h2}\n$output\n"
-  else
-    # Otherwise push it onto an array for later display.
-    nops=("${nops[@]}" "$d")
-  fi
-done
+    local nops=()
+    # Do stuff for each specified dir, in each dir. Non-dirs are ignored.
+    for d in "${dirs[@]}"; do
+        # Skip non-dirs.
+        [[ ! -d "$d" ]] && continue
+        # If the dir isn't /, strip the trailing /.
+        [[ "$d" != "/" ]] && d="${d%/}"
+        # Execute the command, grabbing all stdout and stderr.
+        output="$( (cd "$d"; eval "$@") 2>&1 )"
+        if [[ "$output" ]]; then
+            # If the command had output, display a header and that output.
+            echo -e "${h1}${d}${h2}\n$output\n"
+        else
+            # Otherwise push it onto an array for later display.
+            nops=("${nops[@]}" "$d")
+        fi
+    done
 
-# List any dirs that had no output.
-if [[ ${#nops[@]} > 0 ]]; then
-  echo "${h1}no output from${h2}"
-  for d in "${nops[@]}"; do echo "$d"; done
-fi
+    # List any dirs that had no output.
+    if [[ ${#nops[@]} > 0 ]]; then
+        echo "${h1}no output from${h2}"
+        for d in "${nops[@]}"; do echo "$d"; done
+    fi
 
 }
 
