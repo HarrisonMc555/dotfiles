@@ -19,6 +19,7 @@
 *LOCAL*
 
 # Emacs
+*.elc
 /link/.emacs.d/session.*
 /link/.emacs.d/meghanada
-*.elc
+/link/.emacs.d/cider-history
