@@ -115,5 +115,9 @@
 
   (add-hook 'org-mode-hook 'my-org-mode-hook))
 
+(with-library
+ paredit
+ (global-set-key (kbd "M-(") 'paredit-wrap-round))
+
 (provide 'my-keys)
 ;;; my-keys.el ends here
