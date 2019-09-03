@@ -50,7 +50,7 @@ function dsstore() {
 }
 
 # Recursively delete `*~` files
-function dottilde() {
+function tilde() {
     dirs="$@"
     if [[ ! "$1" ]]; then
         dirs=( . )
