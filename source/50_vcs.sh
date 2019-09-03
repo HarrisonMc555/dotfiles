@@ -220,10 +220,24 @@ function svncommitupdate()
     svn commit "$@" && svn update
 }
 
+function svnroot()
+{
+    if [[ $# -gt 1 ]]; then
+        echo "Usage: svnroot [DIR]"
+        return 1
+    fi
+
+    dir="$1"
+    dir="${dir:=.}"
+
+    svn info "$dir" | sed -n 's/^Working Copy Root Path: \(.*\)/\1/p'
+}
+
 alias s='svn'
 alias ss='svn st'
 alias sd='svndiff'
 alias sp='svnpraise'
 alias sr='svn revert'
 alias sci='svncommitupdate'
+alias sup='svn update $(svnroot)'
 alias svnblame=svnpraise
