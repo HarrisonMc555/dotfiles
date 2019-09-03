@@ -217,7 +217,7 @@ function svnpraise()
 
 function svncommitupdate()
 {
-    svn commit "$@" && svn update
+    svn commit "$@" && svn update "$(svnroot)"
 }
 
 function svnroot()
