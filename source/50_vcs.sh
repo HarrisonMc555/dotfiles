@@ -233,6 +233,11 @@ function svnroot()
     svn info "$dir" | sed -n 's/^Working Copy Root Path: \(.*\)/\1/p'
 }
 
+function svnhelp()
+{
+    svn help "$@" | less
+}
+
 alias s='svn'
 alias ss='svn st'
 alias sd='svndiff'
@@ -240,4 +245,5 @@ alias sp='svnpraise'
 alias sr='svn revert'
 alias sci='svncommitupdate'
 alias sup='svn update $(svnroot)'
+alias shelp='svnhelp'
 alias svnblame=svnpraise
