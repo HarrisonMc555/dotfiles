@@ -22,6 +22,7 @@ casks=(
   # rocket-typist
   jumpcut
   hex-fiend
+  daisydisk
   # Applications
   # a-better-finder-rename
   # alfred
