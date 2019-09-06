@@ -98,3 +98,38 @@ is_osx && alias ls='gls -v --color=auto'
 function maxlinelength() {
     awk '{print length}' "$@" | sort -nr | head -1
 }
+
+function editbin() {
+    local bin_name="$1"
+    shift
+
+    if [[ ! "$bin_name" ]]; then
+        echo "Usage: editbin <binary>"
+        return 1
+    fi
+
+    if [[ $(type -t "$bin_name") != file ]]; then
+        echo "Argument must be a file"
+        msg="$(type -f "$bin_name" 2>&1)"
+        echo "(it was a ${msg})"
+        return 1
+    fi
+
+    bin_location="$(which "$bin_name")"
+
+    if [[ ! -r "$bin_location" ]]; then
+        echo "Argument must be a readable file"
+        return 1
+    fi
+
+    local editor
+    if [[ "$VISUAL" ]]; then
+        editor="$VISUAL"
+    elif [[ "$EDITOR" ]]; then
+        editor="$EDITOR"
+    else
+        editor=vi
+    fi
+
+    $editor "$bin_location" $@
+}
