@@ -133,3 +133,5 @@ function editbin() {
 
     $editor "$bin_location" $@
 }
+
+alias gdn='git diff --no-index'
