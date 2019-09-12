@@ -207,7 +207,7 @@ function gstat() {
 # SVN shortcuts
 function svndiff()
 {
-    svn diff "$@" | colordiff | less -RFX
+    svn diff "$@" | colordiff | less -RX
 }
 
 function svnpraise()
