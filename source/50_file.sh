@@ -46,7 +46,7 @@ function dsstore() {
     if [[ ! "$1" ]]; then
         dirs=( . )
     fi
-    find "${dirs[@]}" -name '*.DS_Store' -type f -ls -delete
+    find_no_err "${dirs[@]}" -name '*.DS_Store' -type f -ls -delete
 }
 
 # Recursively delete `*~` files
@@ -55,7 +55,13 @@ function tilde() {
     if [[ ! "$1" ]]; then
         dirs=( . )
     fi
-    find "${dirs[@]}" -name '*~' -type f -ls -delete
+    find_no_err "${dirs[@]}" -name '*~' -type f -ls -delete
+}
+
+function find_no_err() {
+    find "$@" 2> >(grep -v -E \
+                        -e '^find: .*: Permission denied$' \
+                        -e '^find: .*: Operation not permitted$')
 }
 
 # Aliasing eachdir like this allows you to use aliases/functions as commands.
