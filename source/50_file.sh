@@ -226,3 +226,11 @@ function num-diff-lines() {
     # region line numbers with @ symbols
     diff -U0 "$1" "$2" | tail -n+3 | grep -cv '^@'
 }
+
+function ediff() {
+    if [[ $# -ne 2 ]]; then
+        echo "Usage: ediff FILE1 FILE2"
+    fi
+    emacsclient -e "(ediff \"$1\" \"$2\")" &&
+        open -a Emacs
+}
