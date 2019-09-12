@@ -141,3 +141,88 @@ function editbin() {
 }
 
 alias gdn='git diff --no-index'
+
+function lines() {
+    wc -l "$@" | awk '{print $1}'
+}
+
+function words() {
+    wc -w "$@" | awk '{print $1}'
+}
+
+function diff-percentage() {
+    if [[ $# -ne 2 ]]; then
+        echo "Usage: diff-percentage FILE1 FILE2"
+        return 1
+    fi
+
+    if [[ ! -f "$1" ]] || [[ ! -r "$1" ]] || \
+           [[ ! -f "$2" ]] || [[ ! -r "$2" ]]; then
+        echo "Both arguments must be readable files"
+        return 1
+    fi
+
+    num_diff_lines=$(num-diff-lines "$1" "$2")
+    file1_lines=$(lines "$1")
+    file2_lines=$(lines "$2")
+    max_lines="$file1_lines"
+    if [[ "$file2_lines" -gt "$max_lines" ]]; then
+        max_lines="$file2_lines"
+    fi
+    math="100 * ${num_diff_lines} / ${max_lines}"
+    ratio=$(round "$math" 1)
+    # ratio=$(echo "scale=1; 100 * ${num_diff_lines} / ${max_lines}" | bc)
+
+    echo "diff-percentage for $1 and $2:"
+    echo "${ratio}% different"
+    echo "${num_diff_lines} / ${max_lines} lines are different"
+}
+
+function diffp() {
+    if [[ $# -ne 2 ]]; then
+        echo "Usage: diff-percentage FILE1 FILE2"
+        return 1
+    fi
+
+    if [[ ! -f "$1" ]] || [[ ! -r "$1" ]] || \
+           [[ ! -f "$2" ]] || [[ ! -r "$2" ]]; then
+        echo "Both arguments must be readable files"
+        return 1
+    fi
+
+    num_diff_lines=$(num-diff-lines "$1" "$2")
+    file1_lines=$(lines "$1")
+    file2_lines=$(lines "$2")
+    max_lines="$file1_lines"
+    if [[ "$file2_lines" -gt "$max_lines" ]]; then
+        max_lines="$file2_lines"
+    fi
+    math="100 * ${num_diff_lines} / ${max_lines}"
+    ratio=$(round "$math" 0)
+
+    echo "$ratio"
+}
+
+function round() {
+    if [[ $# -ne 2 ]]; then
+        echo "Usage: round (VALUE|MATH) SCALE"
+        return 1
+    fi
+
+    scale="$2"
+    value=$(echo "scale=$((scale + 1)); $1" | bc)
+    result=$(echo "scale=${scale}; "\
+                  "(((10^${scale})*${value})+0.5)/(10^${scale})" | bc)
+    echo $(printf "%.${scale}f" "$result")
+}
+
+function num-diff-lines() {
+    if [[ $# -ne 2 ]]; then
+        echo "Usage: num-diff-lines FILE1 FILE2"
+        return 1
+    fi
+
+    # The diff command lists the file names as the first two lines and the
+    # region line numbers with @ symbols
+    diff -U0 "$1" "$2" | tail -n+3 | grep -cv '^@'
+}
