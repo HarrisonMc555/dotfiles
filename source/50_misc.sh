@@ -165,3 +165,7 @@ function __doublelines() {
 alias e="echo"
 alias l="less"
 alias em="emacs"
+
+if [[ -f ~/.config/exercism/exercism_completion.bash ]]; then
+    source ~/.config/exercism/exercism_completion.bash
+fi
