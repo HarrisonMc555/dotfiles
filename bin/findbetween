@@ -28,5 +28,5 @@ command="awk '/${opening}/ { found=1; } found { print } /${closing}/ { found=0; 
 if [[ "$has_files" ]]; then
     eachfile "$@" -- $command
 else
-    $command
+    eval $command
 fi
