@@ -234,3 +234,12 @@ function ediff() {
     emacsclient -e "(ediff \"$1\" \"$2\")" &&
         open -a Emacs
 }
+
+function csvheaders() {
+    if [[ $# -eq 0 ]]; then
+        echo "Usage: csvheaders FILE [FILE]*"
+        return 1
+    fi
+
+    eachfile "$@" -- head -n1 | tr ',' ' ' | space2lines
+}
