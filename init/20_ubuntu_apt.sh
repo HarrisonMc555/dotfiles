@@ -90,6 +90,7 @@ function other_stuff() {
 
   # Install fzf
   install_from_zip fzf 'https://github.com/junegunn/fzf-bin/releases/download/0.18.0/fzf-0.18.0-linux_amd64.tgz'
+  install_golang
   install_gradle
 }
 
@@ -194,6 +195,18 @@ function install_from_zip() {
     done
     rm -rf $tmp
   fi
+}
+
+# install the Go language
+go_version=1.13
+os=linux
+arch=amd64
+function install_golang() {
+  tarname="go$go_version.$os-$arch.tar.gz"
+  url=https://dl.google.com/go/"$tarname"
+  tarpath="$installers_path/$(echo "$url" | sed 's#.*/##')"
+  wget -O "$tarpath" "$url"
+  tar xf "$tarpath" -C /usr/local
 }
 
 # install gradle
