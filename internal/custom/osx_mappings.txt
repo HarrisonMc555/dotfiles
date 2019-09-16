@@ -1,0 +1,8 @@
+# Each line is a mapping between the file/directory in $DOTFILES/custom and its
+# location in the user's home directory. Each column is separated by a colon (:)
+
+# Column 1: Name of file/directory in $DOTFILES/custom
+# Column 2: Destination directory relative to $HOME
+# Column 3: Optional, name of file/directory when placed in destination
+#           (defaults to name in $DOTFILES/custom)
+
