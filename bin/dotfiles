@@ -348,9 +348,66 @@ function config_do() {
   ln -sf ../${2#$HOME/} ~/.config/
 }
 
+# Link custom files.
+# Create outside function to be available in other functions.
+declare -A custom_to_dir custom_to_name
+mappings_file="$DOTFILES"/internal/custom_mappings.txt
+function custom_prep() {
+  IFS=$'\n' read -d '' -r -a lines < "$mappings_file"
+  line_num=0
+  err=
+  for line in "${lines[@]}"; do
+    ((line_num++))
+    # Skip comment lines
+    [[ "$line" =~ ^[[:space:]]*#.*$ ]] && continue
+    # Skip blank lines
+    [[ "$line" =~ ^[[:space:]]*$ ]] && continue
+    IFS=$':' read -r -a elems <<< "$line"
+    num_elems=${#elems[@]}
+    if [[ "$num_elems" -ne 2 ]] && [[ "$num_elems" -ne 3 ]]; then
+      if ! [[ "$err" ]]; then
+        e_header "Parsing $mappings_file"
+        err=1
+      fi
+      e_error "Bad file format for $mappings_file on line $line_num: $line"
+      continue
+    fi
+    key="${elems[0]}"
+    dir="${elems[1]}"
+    name="${elems[2]}"
+
+    custom_to_dir["$key"]="$dir"
+    [[ "$name" ]] && custom_to_name["$key"]="$name"
+  done
+}
+function custom_header() { e_header "Linking files into custom directories"; }
+function custom_test() {
+  [[ "$1" -ef "$2" ]] && echo "same file"
+}
+function custom_dest() {
+  local base dest_dir dest_name
+  base="$1"
+  [[ "${custom_to_dir[$base]}" ]] || return 1
+  dest_dir="${custom_to_dir[$base]}"
+  dest_name="${custom_to_name[$base]:-$base}"
+  echo "$HOME/$dest_dir/$dest_name"
+}
+function custom_do() {
+  local base file dest dest_dir dest_name
+  base="$1"
+  file="$2"
+  dest="$3"
+  dest_dir="$(dirname "$dest")"
+  dest_name="$(basename "$dest")"
+  e_success "Linking $dest_dir/$dest_name."
+  mkdir -p "$dest_dir"
+  ln -sf "$file" "$dest"
+}
+
 # Copy, link, init, etc.
 function do_stuff() {
   local base dest skip
+  [[ $(declare -f "$1_prep") ]] && $1_prep
   local files=("$DOTFILES"/$1/*)
   [[ $(declare -f "$1_files") ]] && files=($($1_files "${files[@]}"))
   # No files? abort.
@@ -362,7 +419,10 @@ function do_stuff() {
     base="$(basename $file)"
     # Get dest path.
     if [[ $(declare -f "$1_dest") ]]; then
-      dest="$("$1_dest" "$base")"
+      dest="$("$1_dest" "$base")" || {
+        e_error "Could not get destination for $base, skipping"
+        continue
+      }
     else
       dest="$HOME/$base"
     fi
@@ -371,7 +431,7 @@ function do_stuff() {
       # If _test function returns a string, skip file and print that message.
       skip="$("$1_test" "$file" "$dest")"
       if [[ "$skip" ]]; then
-        e_error "Skipping ~/$base, $skip."
+        e_error "Skipping $base, $skip."
         continue
       fi
       # Destination file already exists in ~/. Back it up!
@@ -386,7 +446,7 @@ function do_stuff() {
       fi
     fi
     # Do stuff.
-    "$1_do" "$base" "$file"
+    "$1_do" "$base" "$file" "$dest"
   done
 }
 
@@ -516,6 +576,7 @@ backup=
 do_stuff copy
 do_stuff link
 do_stuff config
+do_stuff custom
 do_stuff init
 
 # Alert if backups were made.
