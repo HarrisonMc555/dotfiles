@@ -387,7 +387,8 @@ function custom_test() {
 function custom_dest() {
   local base dest_dir dest_name
   base="$1"
-  dest_dir="${custom_to_dir[$base]:-.}"
+  [[ "${custom_to_dir[$base]}" ]] || return 1
+  dest_dir="${custom_to_dir[$base]}"
   dest_name="${custom_to_name[$base]:-$base}"
   echo "$HOME/$dest_dir/$dest_name"
 }
@@ -418,7 +419,10 @@ function do_stuff() {
     base="$(basename $file)"
     # Get dest path.
     if [[ $(declare -f "$1_dest") ]]; then
-      dest="$("$1_dest" "$base")"
+      dest="$("$1_dest" "$base")" || {
+        e_error "Could not get destination for $base, skipping"
+        continue
+      }
     else
       dest="$HOME/$base"
     fi
