@@ -1,0 +1,68 @@
+[File/Save As]
+Forced Quality=75
+
+[General Settings]
+Color Similarity=0
+First Time=false
+Last Document Size=79,39
+Open Images in the Same Window=false
+Resize Scale - Last Keep Aspect=false
+Resize Scale - ScaleType=0
+Show Grid=true
+
+[KFileDialog Settings]
+Height 768=390
+Recent Files[$e]=$HOME/alpine/classes/robotics-2/topics/electricity/multimeter/multimeter-resistor-censored.jpg,$HOME/Pictures/cannot_renew_item.png,$HOME/alpine/classes/robotics-2/topics/electricity/multimeter/multimeter-resistor.jpg,$HOME/alpine/classes/robotics-2/topics/electricity/multimeter/multimeter-battery-censored.jpg,$HOME/Pictures/27750133_10215363156101874_7367754098212654274_n.jpg,$HOME/Pictures/20626805_10213788801024455_3993237086973432183_o.jpg,$HOME/alpine/resources/kahoot/identify-components/pictures/for_loop_syntax_blocked.png,$HOME/alpine/resources/kahoot/identify-components/pictures/for_loop_syntax.png
+Recent URLs[$e]=$HOME/Pictures/,$HOME/alpine/resources/kahoot/identify-components/pictures/,$HOME/alpine/resources/kahoot/identify-components/,$HOME/alpine/classes/robotics-2/topics/electricity/multimeter/,$HOME/alpine/classes/robotics-2/topics/electricity/,/tmp/
+Width 1366=683
+
+[MainWindow]
+Height 768=769
+State=AAAA/wAAAAD9AAAAAQAAAAMAAAUOAAAAbPwBAAAAAfsAAAASAEMAbwBsAG8AcgAgAEIAbwB4AQAAAEgAAAUOAAACEQEAAAMAAAUOAAAB/wAAAAQAAAAEAAAAAQAAAAL8AAAAAgAAAAAAAAABAAAAEABUAG8AbwBsACAAQgBvAHgDAAAAAP////8AAAAAAAAAAAAAAAIAAAACAAAAFgBtAGEAaQBuAFQAbwBvAGwAQgBhAHIBAAAAAP////8AAAAAAAAAAAAAABYAdABlAHgAdABUAG8AbwBsAEIAYQByAAAAAqb/////AAAAAAAAAAA=
+ToolBarsMovable=Disabled
+Width 1366=1367
+
+[MainWindow][Toolbar Tool Box]
+ToolButtonStyle=IconOnly
+
+[MimeType Properties Version 1.2-3]
+Configurable Color Depth=image/png,image/bmp,image/x-pcx,image/x-rgb,image/x-xpixmap
+Configurable Quality Setting=image/jp2,image/jpeg,image/x-webp
+Maximum Color Depth=image/x-eps:32,image/x-portable-bitmap:1,image/x-portable-graymap:8,image/x-xbitmap:1
+
+[Recent Dirs]
+dir[$e]=file://$HOME/alpine/classes/robotics-2/topics/electricity/multimeter/,file://$HOME/Downloads/Circuit%20Symbols/,file://$HOME/Downloads/
+
+[Recent Files]
+File1[$e]=$HOME/alpine/classes/robotics-2/topics/electricity/multimeter/multimeter-battery.jpg
+File2[$e]=$HOME/alpine/classes/robotics-2/topics/electricity/multimeter/multimeter-battery-censored.jpg
+File3[$e]=$HOME/alpine/classes/robotics-2/topics/electricity/multimeter/multimeter-resistor.jpg
+File4[$e]=$HOME/alpine/classes/robotics-2/topics/electricity/multimeter/multimeter-resistor-censored.jpg
+File5[$e]=/tmp/Spectacle.q10194.png
+File6[$e]=$HOME/Pictures/cannot_renew_item.png
+Name1[$e]=multimeter-battery.jpg
+Name2[$e]=multimeter-battery-censored.jpg
+Name3[$e]=multimeter-resistor.jpg
+Name4[$e]=multimeter-resistor-censored.jpg
+Name5[$e]=Spectacle.q10194.png
+Name6[$e]=cannot_renew_item.png
+
+[Tool Settings]
+Last Used Tool=7
+Tool Widget Brush Col=1
+Tool Widget Brush Row=0
+Tool Widget Eraser Size Col=0
+Tool Widget Eraser Size Row=1
+Tool Widget Fill Style Col=0
+Tool Widget Fill Style Row=2
+Tool Widget Line Width Col=0
+Tool Widget Line Width Row=0
+Tool Widget Opaque/Transparent Col=0
+Tool Widget Opaque/Transparent Row=1
+Tool Widget Spraycan Size Col=0
+Tool Widget Spraycan Size Row=0
+
+[Undo/Redo Settings]
+Max Limit=500
+Max Limit Size Limit=16777216
+Min Limit=10
