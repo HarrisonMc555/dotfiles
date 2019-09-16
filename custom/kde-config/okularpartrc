@@ -1,0 +1,16 @@
+[$Version]
+update_info=okular.upd:sep_settings
+
+[Core General]
+ObeyDRM=false
+
+[General]
+ObeyDRM[$d]
+UseKTTSD=false
+
+[Main View]
+ShowLeftPanel=false
+SplitterSizes=170,438
+
+[PageView]
+MouseMode=RectSelect
