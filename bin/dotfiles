@@ -351,9 +351,21 @@ function config_do() {
 # Link custom files.
 # Create outside function to be available in other functions.
 declare -A custom_to_dir custom_to_name
-mappings_file="$DOTFILES"/internal/custom_mappings.txt
+mappings_files_dir="$DOTFILES"/internal/custom/
 function custom_prep() {
-  IFS=$'\n' read -d '' -r -a lines < "$mappings_file"
+  declare -a lines
+  oses=($(get_os 1))
+  for file in "$mappings_files_dir"/*; do
+    for os in "${oses[@]}"; do
+      if [[ "$file" =~ (^|[^a-z])$os($|[^a-z]) ]]; then
+         # It matches a different OS, skip it
+         continue
+      fi
+      IFS=$'\n' read -d '' -r -a new_lines < "$file"
+      lines+=( "$new_lines" )
+    done
+  done
+
   line_num=0
   err=
   for line in "${lines[@]}"; do
