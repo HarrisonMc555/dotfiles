@@ -5,4 +5,6 @@
 # Column 2: Destination directory relative to $HOME
 # Column 3: Optional, name of file/directory when placed in destination
 #           (defaults to name in $DOTFILES/custom)
+
 konsole:.local/share:konsole
+kde-config:.kde/share:config

@@ -1,0 +1,47 @@
+[FavIcons]
+InfoOutput=4
+
+[KSharedDataCache]
+InfoOutput=4
+
+[LibreOffice]
+InfoOutput=4
+
+[akonadi_baloo_indexer]
+InfoOutput=2
+
+[amarok]
+InfoOutput=4
+
+[kaccessibleapp]
+InfoOutput=4
+
+[kbuildsycoca4]
+InfoOutput=4
+
+[kdecore (KConfigSkeleton)]
+InfoOutput=2
+
+[kdecore (services)]
+InfoOutput=2
+
+[kded]
+InfoOutput=4
+
+[kdialog]
+InfoOutput=4
+
+[kio (delegateanimationhandler)]
+InfoOutput=4
+
+[kio_trash]
+InfoOutput=4
+
+[knotify]
+InfoOutput=4
+
+[kuiserver]
+InfoOutput=4
+
+[kwalletd]
+InfoOutput=4

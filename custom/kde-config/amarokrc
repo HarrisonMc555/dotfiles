@@ -1,0 +1,78 @@
+[$Version]
+update_info=amarok.upd:1
+
+[Analyzer Applet]
+Current Analyzer=Blocky
+Height=120
+
+[Collection Browser]
+TreeCategory=3,1
+View Mode=NormalCollections
+
+[Collection Folders]
+1=./home/harrison/Music
+
+[File Browser]
+Current Directory=file:///home/harrison
+
+[General]
+Browser Path=root list
+First Run=false
+HiddenOnExit=true
+
+[General Options]
+PlayFirstRunJingle=false
+
+[KFileDialog Settings]
+Height 768=390
+Recent Files[$e]=2011-08,$HOME/Dropbox/Music/Files/Men's Chorus/2013-01,$HOME/Dropbox/Music/Files/Men's Chorus/2012-08,$HOME/Dropbox/Music/Files/Men's Chorus/2011-08
+Recent URLs[$e]=$HOME/Dropbox/Music/Files/Men's Chorus/
+Width 1366=683
+
+[MainWindow]
+Height 768=512
+State=AAAA/wAAAAD9AAAAAQAAAAAAAAOOAAABqvwBAAAAA/sAAAAkAE0AZQBkAGkAYQAgAFMAbwB1AHIAYwBlAHMAIABkAG8AYwBrAQAAAAAAAADMAAAAzAEAAAP7AAAAGABDAG8AbgB0AGUAeAB0ACAAZABvAGMAawEAAADNAAAB9AAAAZQBAAAD+wAAABoAUABsAGEAeQBsAGkAcwB0ACAAZABvAGMAawEAAALCAAAAzAAAAMwBAAADAAAAAAAAAaoAAAAEAAAABAAAAAgAAAAI/AAAAAEAAAACAAAAAgAAABYATQBhAGkAbgBUAG8AbwBsAGIAYQByAQAAAAD/////AAAAAAAAAAAAAAAYAFMAbABpAG0AIABUAG8AbwBsAGIAYQByAAAAAAD/////AAAAAAAAAAA=
+ToolBarsMovable=Disabled
+Width 1366=910
+
+[Playback]
+Master Volume=100
+
+[Playlist Search]
+MatchAlbum=true
+MatchArtist=true
+MatchTrack=true
+ShowOnlyMatches=false
+
+[Playlist Sorting]
+SortPath=
+
+[Podcast View]
+Merged View=false
+
+[Podcasts]
+AutoUpdate Interval=30
+Maximum Simultaneous Downloads=4
+Maximum Simultaneous Updates=4
+
+[Recently Played]
+Display Names=Mike Koenig - Slow HeartBeat,Walter Wanderley - The Girl From Ipanema,Unknown Artist - Track 1,BYU Men's Chorus - Let Zion in Her Beauty Rise,BYU Men's Chorus - I'll Go Where You Want Me to Go,BYU Men's Chorus - Choose the Right,BYU Men's Chorus - Press Forward Saints,BYU Men's Chorus - I Love The Lord,BYU Men's Chorus - Onward Christian Soldiers,allMeadow & Rob Costlow - Art Of Nations (Amarok Theme)
+Last Played Dates=2017-04-25T10:52:31,2017-04-25T12:39:16,2018-07-25T10:54:53,2018-09-02T21:03:34,2018-09-02T21:08:40,2018-09-02T21:13:45,2018-09-02T21:17:04,2018-09-02T21:21:57,2018-09-02T23:36:36,2018-10-02T21:46:16
+Urls=file:///media/harrison/LINUX_HSM/Slow_HeartBeat-Mike_Koenig-1853475164.mp3,file:///media/harrison/LINUX_HSM/Walter%20Wanderley%20-%20The%20Girl%20From%20Ipanema.mp3,file:///media/harrison/Seagate%20Backup%20Plus%20Drive/Files/Sync/Dropbox%20Linux/Dropbox/Save/Lewis%20memories/%231%20Malin%20&amp;%20Myreel%20Lewis%20Life%20Recollections.wma,file:///media/harrison/Seagate%20Backup%20Plus%20Drive/Files/Music/BYU%20Men's%20Chorus%20-%20Set%20ApartAlbum-2017/01%20Let%20Zion%20in%20Her%20Beauty%20Rise.mp3,file:///media/harrison/Seagate%20Backup%20Plus%20Drive/Files/Music/BYU%20Men's%20Chorus%20-%20Set%20ApartAlbum-2017/02%20I'll%20Go%20Where%20You%20Want%20Me%20to%20Go.mp3,file:///media/harrison/Seagate%20Backup%20Plus%20Drive/Files/Music/BYU%20Men's%20Chorus%20-%20Set%20ApartAlbum-2017/03%20Choose%20the%20Right.mp3,file:///media/harrison/Seagate%20Backup%20Plus%20Drive/Files/Music/BYU%20Men's%20Chorus%20-%20Set%20ApartAlbum-2017/04%20Press%20Forward%20Saints.mp3,file:///media/harrison/Seagate%20Backup%20Plus%20Drive/Files/Music/BYU%20Men's%20Chorus%20-%20Set%20ApartAlbum-2017/05%20I%20Love%20The%20Lord.mp3,file:///media/harrison/Seagate%20Backup%20Plus%20Drive/Files/Music/BYU%20Men's%20Chorus%20-%20Set%20ApartAlbum-2017/06%20Onward%20Christian%20Soldiers.mp3,file:///usr/share/kde4/apps/amarok/data/first_run_jingle.ogg
+
+[Saved Playlists View]
+Merged View=false
+
+[ScriptManager]
+Enable Scripts=true
+LastUpdateCheck=1541031785
+
+[Session]
+LastPlaying=0
+
+[StatSyncing]
+checkedFields=rating,firstplay,lastplay,playcount,label
+excludedLabels=
+providerEnabledStatuses=true,false,false,false,false
+providerIds=localCollection,1fc6-ab97,090d-165e,805c21ba5c21ac3a,d407-7ee5
+providerNames=Local Collection,LINUX_HSM (not activated),EOS_DIGITAL (not activated),Seagate Backup Plus Drive (not activated),1.9 GiB Removable Media (not activated)
