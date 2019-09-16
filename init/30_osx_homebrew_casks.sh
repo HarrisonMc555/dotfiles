@@ -23,6 +23,7 @@ casks=(
   jumpcut
   hex-fiend
   daisydisk
+  vanilla
   # Applications
   # a-better-finder-rename
   # alfred
