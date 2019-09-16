@@ -12,6 +12,7 @@ recipes=(
   ipython
   fd
   node
+  go
 
   # ansible
   # awscli
@@ -65,3 +66,6 @@ if [[ "$(dscl . -read ~ UserShell | awk '{print $2}')" != "$binroot/bash" ]]; th
   sudo chsh -s "$binroot/bash" "$USER" >/dev/null 2>&1
   e_arrow "Please exit and restart all your shells."
 fi
+
+# Go development
+go get -u golang.org/x/lint/golint
