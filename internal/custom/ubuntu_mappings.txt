@@ -6,5 +6,6 @@
 # Column 3: Optional, name of file/directory when placed in destination
 #           (defaults to name in $DOTFILES/custom)
 
-konsole:.local/share:konsole
+konsole:.local/share
 kde-config:.kde/share:config
+kxmlgui5:.local/share

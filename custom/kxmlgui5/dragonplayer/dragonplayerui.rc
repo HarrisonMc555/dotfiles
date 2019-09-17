@@ -1,0 +1,57 @@
+<!DOCTYPE kpartgui>
+<kpartgui name="dragonplayer" translationDomain="dragonplayer" version="5">
+ <MenuBar alreadyVisited="1">
+  <Menu alreadyVisited="1" noMerge="1" name="file">
+   <text translationDomain="dragonplayer">&amp;Play</text>
+   <Action name="file_open"/>
+   <Separator/>
+   <Action name="play"/>
+   <Action name="stop"/>
+   <Separator/>
+   <Action name="prev_chapter"/>
+   <Action name="next_chapter"/>
+   <Separator/>
+   <Action name="file_quit"/>
+  </Menu>
+  <Separator weakSeparator="1"/>
+  <Menu alreadyVisited="1" noMerge="1" name="settings">
+   <text translationDomain="dragonplayer">&amp;Settings</text>
+   <Action name="fullscreen"/>
+   <Action name="aspect_ratio_menu"/>
+   <Action name="subtitle_channels_menu"/>
+   <Action name="audio_channels_menu"/>
+   <Action name="toggle_dvd_menu"/>
+   <Separator/>
+   <Action name="video_settings"/>
+   <Separator/>
+   <Action name="options_configure_keybinding"/>
+   <Action name="options_configure_toolbars"/>
+   <Action name="options_show_menubar"/>
+   <Action name="unique"/>
+  </Menu>
+  <Separator weakSeparator="1"/>
+  <Menu alreadyVisited="1" noMerge="1" name="help">
+   <text translationDomain="kxmlgui5">&amp;Help</text>
+   <Action name="help_contents"/>
+   <Action name="help_whats_this"/>
+   <Separator weakSeparator="1"/>
+   <Action name="help_report_bug"/>
+   <Separator weakSeparator="1"/>
+   <Action name="help_donate"/>
+   <Separator weakSeparator="1"/>
+   <Action name="switch_application_language"/>
+   <Separator weakSeparator="1"/>
+   <Action name="help_about_app"/>
+   <Action name="help_about_kde"/>
+  </Menu>
+ </MenuBar>
+ <ToolBar alreadyVisited="1" noMerge="1" name="mainToolBar">
+  <text translationDomain="kxmlgui5">Main Toolbar</text>
+  <Action name="file_open"/>
+  <Separator weakSeparator="1" name="separator_0"/>
+  <Action name="play"/>
+  <Action name="position_slider"/>
+  <Action name="volume"/>
+  <Action name="fullscreen"/>
+ </ToolBar>
+</kpartgui>
