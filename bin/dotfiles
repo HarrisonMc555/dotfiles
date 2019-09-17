@@ -358,11 +358,11 @@ function custom_prep() {
   for file in "$mappings_files_dir"/*; do
     for os in "${oses[@]}"; do
       if [[ "$file" =~ (^|[^a-z])$os($|[^a-z]) ]]; then
-         # It matches a different OS, skip it
-         continue
+        # It matches a different OS, skip it
+        continue
       fi
       IFS=$'\n' read -d '' -r -a new_lines < "$file"
-      lines+=( "$new_lines" )
+      lines+=( "${new_lines[@]}" )
     done
   done
 
