@@ -24,14 +24,15 @@ In bash, aliasing like this allows you to specify aliases/functions:
 
 By default, the file is passed as the last argument to the given command(s). If
 you pass "-f" as the first argument, then you can specify where the file appears
-in the command with \$f. The slash is necessary to prevent the shell from
-interpreting the variable before it is run by this command.
+in the command with $f. However, you either need to escape the dollar sign with
+a slash or by quoting the command in single quotes. This is necessary to prevent
+the shell from interpreting the variable before it is run by this command.
 
 Print out the first line of each file:
   eachfile head -n 1
 
 Count the number of lines with the word "hello" in each file:
-  eachfile -f "grep hello \$f | wc -l"
+  eachfile -f 'grep hello $f | wc -l'
 
 Copyright (c) 2019 Harrison McCullough
 Licensed under the MIT license.
