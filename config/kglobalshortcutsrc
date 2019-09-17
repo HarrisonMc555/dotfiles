@@ -47,7 +47,7 @@ _k_friendly_name=KDE Daemon
 display=Display\tMeta+P,Display\tMeta+P,Switch Display
 
 [khotkeys]
-_k_friendly_name=System Settings
+_k_friendly_name=KDE Daemon
 {56571012-661f-4b93-8c82-9f50d19f1ebf}=,none,Google Chrome
 {58c7c60f-0ccd-4a50-acac-9d13a0e04d3b}=Meta+2,none,Dolphin
 {5b463f17-dece-453d-a777-0d57b40d1ed7}=Meta+Shift+Print,none,Take Rectangular Region Screenshot
