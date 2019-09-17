@@ -169,7 +169,7 @@ converted to PDF at the same location."
         (while (org-previous-item))
       ('error))
     (condition-case nil
-        (while (add-checkbox-goto-next-item))
+        (while (org-convert-to-checkbox-goto-next-item))
       ('error))))
 
 (defun org-insert-checkbox-respect-contents ()
