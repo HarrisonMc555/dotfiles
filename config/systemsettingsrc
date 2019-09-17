@@ -1,0 +1,26 @@
+[KFileDialog Settings]
+Recent Files[$e]=saturn-planet-space-background-wallpaper.jpg,file:$HOME/tmp,file:$HOME/Pictures/wallpapers/saturn-planet-space-background-wallpaper.jpg
+Recent URLs[$e]=file:$HOME/Pictures/wallpapers/,file:$HOME/Pictures/
+
+[MainWindow]
+Height 1050=560
+Height 1080=480
+Height 768=699
+MenuBar=Disabled
+State=AAAA/wAAAAD9AAAAAAAABQAAAAKVAAAABAAAAAQAAAAIAAAACPwAAAABAAAAAgAAAAEAAAAWAG0AYQBpAG4AVABvAG8AbABCAGEAcgAAAAAA/////wAAAAAAAAAA
+ToolBarsMovable=Disabled
+Width 1360=676
+Width 1366=679
+Width 1680=1256
+Width 1920=640
+Window-Maximized 1080x1920=true
+Window-Maximized 1366x768=true
+Window-Maximized 720x1280=true
+Window-Maximized 768x1366=true
+
+[Open-with settings]
+CompletionMode=5
+History=poweroff
+
+[PlasmaRunnerManager]
+LaunchCounts=
