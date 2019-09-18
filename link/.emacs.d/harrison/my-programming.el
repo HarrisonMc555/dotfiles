@@ -242,4 +242,7 @@
 ;; Try rust projects before version-control (vc) projects
 (add-hook 'project-find-functions 'my-project-try-cargo-toml nil nil)
 
+;;; Tmp ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(add-to-list 'auto-mode-alist '("\\.tmp$" . text-mode))
+
 ;;; my-programming.el ends here
