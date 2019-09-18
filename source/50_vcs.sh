@@ -207,7 +207,12 @@ function gstat() {
 # SVN shortcuts
 function svndiff()
 {
-    svn diff --diff-cmd="/Users/harrisonmccullough/.dotfiles/bin/wdiff" "$@" | colordiff | less -RX
+    svn diff "$@" | colordiff | less -RX
+}
+
+function svnwdiff()
+{
+    svn diff --diff-cmd="/Users/harrisonmccullough/.dotfiles/bin/svnwdiffhelper" "$@" | less -RX
 }
 
 function svnpraise()
@@ -241,6 +246,8 @@ function svnhelp()
 alias s='svn'
 alias ss='svn st'
 alias sd='svndiff'
+alias sdw='svnwdiff'
+alias swd='svnwdiff'
 alias sp='svnpraise'
 alias sr='svn revert'
 alias sci='svncommitupdate'
