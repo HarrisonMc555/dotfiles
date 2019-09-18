@@ -207,7 +207,7 @@ function gstat() {
 # SVN shortcuts
 function svndiff()
 {
-    svn diff "$@" | colordiff | less -RX
+    svn diff --diff-cmd="/Users/harrisonmccullough/.dotfiles/bin/wdiff" "$@" | colordiff | less -RX
 }
 
 function svnpraise()
