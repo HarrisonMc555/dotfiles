@@ -83,7 +83,7 @@
      ("melpa stable" . "https://stable.melpa.org/packages/"))))
  '(package-selected-packages
    (quote
-    (helm fzf free-keys clang-format flycheck-kotlin kotlin-mode groovy-mode gradle-mode paredit cider clojure-mode clojure-mode-extra-font-locking flycheck-clojure inf-clojure haskell-mode htmlize epl cmake-font-lock cmake-mode eglot tide tss typescript-mode matlab-mode elm-mode flycheck-elm flycheck-gradle csv csv-mode toml toml-mode flycheck flycheck-rust rust-mode meghanada yaml-mode web-mode tabbar solarized-theme smartparens ruby-extra-highlight omnisharp monokai-theme markdown-mode magit json-mode jinja2-mode haskell-tab-indent haskell-emacs-text haskell-emacs-base go-complete go-autocomplete ghci-completion ghc-imported-from ghc flymd flymake-ruby flymake-python-pyflakes flymake-hlint flymake-haskell-multi flycheck-hdevtools flycheck-haskell flycheck-ghcmod exec-path-from-shell django-mode company-inf-ruby ac-js2 ac-inf-ruby ac-haskell-process 2048-game)))
+    (wucuo helm fzf free-keys clang-format flycheck-kotlin kotlin-mode groovy-mode gradle-mode paredit cider clojure-mode clojure-mode-extra-font-locking flycheck-clojure inf-clojure haskell-mode htmlize epl cmake-font-lock cmake-mode eglot tide tss typescript-mode matlab-mode elm-mode flycheck-elm flycheck-gradle csv csv-mode toml toml-mode flycheck flycheck-rust rust-mode meghanada yaml-mode web-mode tabbar solarized-theme smartparens ruby-extra-highlight omnisharp monokai-theme markdown-mode magit json-mode jinja2-mode haskell-tab-indent haskell-emacs-text haskell-emacs-base go-complete go-autocomplete ghci-completion ghc-imported-from ghc flymd flymake-ruby flymake-python-pyflakes flymake-hlint flymake-haskell-multi flycheck-hdevtools flycheck-haskell flycheck-ghcmod exec-path-from-shell django-mode company-inf-ruby ac-js2 ac-inf-ruby ac-haskell-process 2048-game)))
  '(paradox-github-token t)
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
@@ -182,7 +182,6 @@
     skewer-mode
     solarized-theme
     tabbar
-    visual-fill-column
     web-mode
     with-editor
     yaml-mode

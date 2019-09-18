@@ -6,9 +6,9 @@
                          (or (file-name-directory #$) (car load-path))))
 
 
-;;;### (autoloads nil "visual-fill-column" "visual-fill-column.el"
-;;;;;;  (0 0 0 0))
-;;; Generated autoloads from visual-fill-column.el
+;;;### (autoloads nil "visual-fill-column" "../../../../../.emacs.d/elpa/visual-fill-column-20190422.2154/visual-fill-column.el"
+;;;;;;  "35f57e7000016c9ade2784c751d442cf")
+;;; Generated autoloads from ../../../../../.emacs.d/elpa/visual-fill-column-20190422.2154/visual-fill-column.el
 
 (autoload 'visual-fill-column-mode "visual-fill-column" "\
 Wrap lines according to `fill-column' in `visual-line-mode'.
@@ -49,8 +49,21 @@ for a vertical split.  This function can be used as the value of
 windows with wide margins.
 
 \(fn &optional WINDOW)" nil nil)
+
+;;;### (autoloads "actual autoloads are elsewhere" "visual-fill-column"
+;;;;;;  "../../../../../.emacs.d/elpa/visual-fill-column-20190422.2154/visual-fill-column.el"
+;;;;;;  (0 0 0 0))
+;;; Generated autoloads from ../../../../../.emacs.d/elpa/visual-fill-column-20190422.2154/visual-fill-column.el
 
 (if (fboundp 'register-definition-prefixes) (register-definition-prefixes "visual-fill-column" '("visual-fill-column-" "turn-on-visual-fill-column-mode")))
+
+;;;***
+
+;;;***
+
+;;;### (autoloads nil nil ("../../../../../.emacs.d/elpa/visual-fill-column-20190422.2154/visual-fill-column-autoloads.el"
+;;;;;;  "../../../../../.emacs.d/elpa/visual-fill-column-20190422.2154/visual-fill-column.el")
+;;;;;;  (0 0 0 0))
 
 ;;;***
 
