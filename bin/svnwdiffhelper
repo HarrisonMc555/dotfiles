@@ -4,4 +4,4 @@
 # options
 shift $(($# - 2))
 
-git diff --no-index --word-diff --color=always "$@"
+git diff --no-index --word-diff-regex='\w+' -w --color=always "$@"
