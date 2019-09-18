@@ -55,15 +55,15 @@ function loop() {
 export RIPGREP_CONFIG_PATH=~/.ripgreprc
 
 function rgl() {
-    rg --color=always --sort path "$@" | less
+    rg -n --color=always --sort path "$@" | less
 }
 
 function rgh() {
-    rg --hidden --no-ignore "$@"
+    rg -n --hidden --no-ignore "$@"
 }
 
 function rghl() {
-    rg --hidden --no-ignore --color=always --sort path  "$@" | less
+    rg -n --hidden --no-ignore --color=always --sort path  "$@" | less
 }
 
 function rglh() {
