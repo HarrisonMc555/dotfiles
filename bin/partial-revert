@@ -1,0 +1,41 @@
+#!/bin/bash
+
+function die() {
+    echo $@
+    exit 1
+}
+
+if [[ $# = 0 ]] || [[ $# -gt 2 ]]; then
+    echo "Usage: $0 file [tempdir]"
+    exit 0
+fi
+
+file="$1"
+
+if [[ ! -r "$file" ]] || [[ ! -w "$file" ]]; then
+    echo "Could not read file $file"
+    exit 1
+fi
+
+tempdir="${2:-$HOME/code/backup}"
+
+if ! mkdir -p "$tempdir" &>/dev/null || [[ ! -d "$tempdir" ]]; then
+    echo "Could not create directory $tempdir"
+    exit 1
+fi
+
+filename="$(basename "$file")"
+file_ext="${filename##*.}"
+file_before_ext="${filename%.*}"
+altered_file="${tempdir}/${file_before_ext}.altered.${file_ext}"
+reverted_file="${tempdir}/${file_before_ext}.reverted.${file_ext}"
+
+diff_cmd=ediff
+
+cp "$file" "$altered_file" || die "Could not create temp file $altered_file"
+svn revert "$file" || die "Could not revert file $file"
+cp "$file" "$reverted_file" || die "Could not create temp file $reverted_file"
+cp "$altered_file" "$file" || die "Could not copy changes back into $file"
+$diff_cmd "$reverted_file" "$file"
+    # emacsclient -e "(ediff-files \"$altered_file\" \"$file\")" &&
+    # open -a Emacs
