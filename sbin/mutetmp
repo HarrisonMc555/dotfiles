@@ -1,0 +1,15 @@
+#!/bin/bash
+
+seconds="$1"
+if [[ ! "$1" ]]; then
+    seconds=60
+fi
+
+(
+    was_muted=$(osascript -e 'output muted of (get volume settings)')
+    osascript -e 'set volume output muted true'
+    sleep "$seconds"
+    if [[ "$was_muted" == "false" ]]; then
+        osascript -e 'set volume output muted false'
+    fi
+) & &>/dev/null
