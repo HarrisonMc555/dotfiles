@@ -260,3 +260,10 @@ function csvheaders() {
 
     eachfile "$@" -- head -n1 | tr ',' ' ' | space2lines
 }
+
+# cdf - cd into the directory of the selected file
+function cdf() {
+   local file
+   local dir
+   file=$(fzf +m -q "$1") && dir=$(dirname "$file") && cd "$dir"
+}
