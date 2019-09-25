@@ -74,7 +74,8 @@
  (global-set-key (kbd "C-S-t") 'reopen-killed-file)
  (global-set-key (kbd "C-(") 'surround-with-parentheses)
  (global-set-key (kbd "C-+") 'toggle-hiding)
- (global-set-key (kbd "C-\\") 'toggle-selective-display))
+ (global-set-key (kbd "C-\\") 'toggle-selective-display)
+ (global-set-key (kbd "C-S-J") 'join-line))
 
 (with-library
  view
