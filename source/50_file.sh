@@ -323,3 +323,6 @@ export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git --exclu
 
 # To apply the command to CTRL-T as well
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
+
+# Preview file with Ctrl-T
+export FZF_CTRL_T_OPTS="--preview '(bat --style=numbers --color=always 2> /dev/null {} || highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200'"
