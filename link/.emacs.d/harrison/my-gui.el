@@ -62,5 +62,7 @@
 (if (string-equal system-type "darwin")
     (global-unset-key (kbd "C-z")))
 
+(add-hook 'server-switch-hook (lambda () (select-frame-set-input-focus (selected-frame))))
+
 (provide 'my-gui)
 ;;; my-gui.el ends here
