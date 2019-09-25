@@ -243,6 +243,31 @@ function svnhelp()
     svn help "$@" | less
 }
 
+# Install (one or multiple) selected application(s)
+# using "brew search" as source input
+# mnemonic [B]rew [I]nstall [P]lugin
+bip() {
+    local inst=$(brew search | fzf -m)
+
+    if [[ $inst ]]; then
+        for prog in $(echo $inst); do
+            histeval brew install $prog
+        done
+    fi
+}
+
+# Update (one or multiple) selected application(s)
+# mnemonic [B]rew [U]pdate [P]lugin
+bup() {
+    local upd=$(brew leaves | fzf -m)
+
+    if [[ $upd ]]; then
+        for prog in $(echo $upd); do
+            histeval brew upgrade $prog
+        done
+    fi
+}
+
 alias s='svn'
 alias ss='svn st'
 alias sd='svndiff'
