@@ -5,4 +5,4 @@
 # Column 2: Destination directory relative to $HOME
 # Column 3: Optional, name of file/directory when placed in destination
 #           (defaults to name in $DOTFILES/custom)
-
+karabiner.json:.config/karabiner

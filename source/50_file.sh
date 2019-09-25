@@ -105,12 +105,46 @@ function maxlinelength() {
     awk '{print length}' "$@" | sort -nr | head -1
 }
 
+export EDITBIN_COMMAND="emacsclient -a ''"
 function editbin() {
+    local editor
+    if [[ "$EDITBIN_COMMAND" ]]; then
+        editor="$EDITBIN_COMMAND"
+    elif [[ "$VISUAL" ]]; then
+        editor="$VISUAL"
+    elif [[ "$EDITOR" ]]; then
+        editor="$EDITOR"
+    else
+        editor=vi
+    fi
+
+    commandbin "$editor" "$@"
+}
+
+export OPENBIN_COMMAND="emacsclient -a '' -n"
+function openbin() {
+    local opener
+    if [[ "$OPENBIN_COMMAND" ]]; then
+        opener="$OPENBIN_COMMAND"
+    elif [[ "$VISUAL" ]]; then
+        opener="$VISUAL"
+    elif [[ "$EDITOR" ]]; then
+        opener="$EDITOR"
+    else
+        opener=vi
+    fi
+
+    commandbin "$opener" "$@"
+}
+
+function commandbin() {
+    local command="$1"
+    shift
     local bin_name="$1"
     shift
 
-    if [[ ! "$bin_name" ]]; then
-        echo "Usage: editbin <binary>"
+    if [[ ! "$command" ]] || [[ ! "$bin_name" ]]; then
+        echo "Usage: commandbin <command> <binary> [args]*"
         return 1
     fi
 
@@ -128,16 +162,7 @@ function editbin() {
         return 1
     fi
 
-    local editor
-    if [[ "$VISUAL" ]]; then
-        editor="$VISUAL"
-    elif [[ "$EDITOR" ]]; then
-        editor="$EDITOR"
-    else
-        editor=vi
-    fi
-
-    $editor "$bin_location" $@
+    $command "$bin_location" "$@"
 }
 
 alias gdn='git diff --no-index'
@@ -227,14 +252,6 @@ function num-diff-lines() {
     diff -U0 "$1" "$2" | tail -n+3 | grep -cv '^@'
 }
 
-function ediff() {
-    if [[ $# -ne 2 ]]; then
-        echo "Usage: ediff FILE1 FILE2"
-    fi
-    emacsclient -e "(ediff \"$1\" \"$2\")" &&
-        open -a Emacs
-}
-
 function csvheaders() {
     if [[ $# -eq 0 ]]; then
         echo "Usage: csvheaders FILE [FILE]*"
@@ -242,4 +259,11 @@ function csvheaders() {
     fi
 
     eachfile "$@" -- head -n1 | tr ',' ' ' | space2lines
+}
+
+# cdf - cd into the directory of the selected file
+function cdf() {
+   local file
+   local dir
+   file=$(fzf +m -q "$1") && dir=$(dirname "$file") && cd "$dir"
 }
