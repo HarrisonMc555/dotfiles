@@ -237,5 +237,17 @@ The same result can also be be achieved by \\[universal-argument] \\[unhighlight
     (downcase-region (point-min) (point-max))
     (goto-char (point-min))))
 
+(defun is-at-end-of-line ()
+  "Returns t if the point is at the end of the current line"
+  (looking-at "$"))
+
+(defun join-line ()
+  (interactive)
+  (delete-horizontal-space)
+  (when (not (is-at-end-of-line))
+    (user-error "Not at end of line"))
+  (delete-char 1)
+  (delete-horizontal-space))
+
 (provide 'my-functions)
 ;;; my-functions.el ends here
