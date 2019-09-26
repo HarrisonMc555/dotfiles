@@ -338,3 +338,10 @@ function nth_after_match()
     shift; shift;
     awk "c&&!--c; /$pattern/{c=$count}" "$@"
 }
+
+function cdl()
+{
+    dir="$1"
+    shift
+    cd "$dir" && ls "$@"
+}
