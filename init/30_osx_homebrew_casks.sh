@@ -56,7 +56,7 @@ casks=(
   # skype
   # slack
   # sourcetree
-  # spotify
+  spotify
   # steam
   # the-unarchiver
   # totalfinder
