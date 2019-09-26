@@ -2,7 +2,7 @@
 DefaultProfile=Harrison.profile
 
 [Favorite Profiles]
-Favorites=Harrison.profile,Fixed Width.profile
+Favorites=Fixed Width.profile,Harrison.profile
 
 [KonsoleWindow]
 ShowMenuBarByDefault=false
