@@ -326,3 +326,15 @@ export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 
 # Preview file with Ctrl-T
 export FZF_CTRL_T_OPTS="--preview '(bat --style=numbers --color=always 2> /dev/null {} || highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200'"
+
+function nth_after_match()
+{
+    if [[ $# -lt 2 ]]; then
+        echo "Usage: nth_after_match PATTERN COUNT [FILE]"
+        return 1
+    fi
+    pattern="$1"
+    count="$2"
+    shift; shift;
+    awk "c&&!--c; /$pattern/{c=$count}" "$@"
+}
