@@ -1,8 +1,5 @@
 #!/usr/bin/env bash
 
-# Exit on error
-set -e
-
 if [[ $# -gt 1 ]]; then
     echo "Usage: $0 [OUTFILE]"
     exit 1
@@ -11,33 +8,49 @@ fi
 if [[ "$1" ]]; then
     bashrc_file="$1"
 else
-    bashrc_dir="$DOTFILES"/caches/bashrc/.bashrc
+    bashrc_file="$DOTFILES"/caches/bashrc/.bashrc
 fi
 
 # bashrc_file="$bashrc_dir"/.bashrc
 bashrc_dir="$(dirname "$bashrc_file")"
 # Only exit if we can't create it AND it doesn't already exist
-mkdir -p "$bashrc_dir" || [[ -d "$bashrc_dir" ]]
+mkdir -p "$bashrc_dir" || [[ -d "$bashrc_dir" ]] || {
+    echo "Could not create $bashrc_dir"
+    exit 1
+}
 
-> "$bashrc_file"
+echo "#!/usr/bin/env bash" > "$bashrc_file"
 
 files=(
-    ~/.dotfiles/source/01_prompt.sh
-    ~/.dotfiles/source/40_functions.sh
-    ~/.dotfiles/source/50_editor.sh
-    ~/.dotfiles/source/50_env_vars.sh
-    ~/.dotfiles/source/50_file.sh
-    ~/.dotfiles/source/50_file_alter.sh
-    ~/.dotfiles/source/50_file_info.sh
-    ~/.dotfiles/source/50_find.sh
-    ~/.dotfiles/source/50_misc.sh
-    ~/.dotfiles/source/50_navigation.sh
-    ~/.dotfiles/source/50_net.sh
-    ~/.dotfiles/source/50_prompt.sh
-    ~/.dotfiles/source/50_shopt.sh
-    ~/OneDrive/bin/source/60_LOCAL_Romaric_bash_profile.sh
-    ~/OneDrive/bin/source/70_LOCAL_romaric.sh
+    ~/.dotfiles/source/*.sh
+    ~/OneDrive/bin/source/*.sh
 )
+ignore_files_list=(
+    ~/.dotfiles/source/00_dotfiles.sh
+    ~/.dotfiles/source/50_history.sh
+    ~/.dotfiles/source/*LOCAL*.sh
+)
+declare -A ignore_files
+for f in "${ignore_files_list[@]}"; do
+    ignore_files["$f"]=1
+done
+# explicit_files=(
+#     ~/.dotfiles/source/01_prompt.sh
+#     ~/.dotfiles/source/40_functions.sh
+#     ~/.dotfiles/source/50_editor.sh
+#     ~/.dotfiles/source/50_env_vars.sh
+#     ~/.dotfiles/source/50_file.sh
+#     ~/.dotfiles/source/50_file_alter.sh
+#     ~/.dotfiles/source/50_file_info.sh
+#     ~/.dotfiles/source/50_find.sh
+#     ~/.dotfiles/source/50_misc.sh
+#     ~/.dotfiles/source/50_navigation.sh
+#     ~/.dotfiles/source/50_net.sh
+#     ~/.dotfiles/source/50_prompt.sh
+#     ~/.dotfiles/source/50_shopt.sh
+#     ~/OneDrive/bin/source/60_LOCAL_Romaric_bash_profile.sh
+#     ~/OneDrive/bin/source/70_LOCAL_romaric.sh
+# )
 
 dotfiles_bin="$DOTFILES"/bin/dotfiles
 if [[ -r "$dotfiles_bin" ]]; then
@@ -49,10 +62,8 @@ if [[ -r "$dotfiles_bin" ]]; then
     ) >> "$bashrc_file"
 fi
 
-# for file in "$DOTFILES"/source/*.sh; do
-# [[ "$file" = *LOCAL* ]] && continue
-# [[ "$file" = */00_dotfiles.sh ]] && continue
 for file in "${files[@]}"; do
+    [[ "${ignore_files[$file]+isset}" ]] && continue
     (
         echo "# ===== $(basename $file) ====="
         echo
