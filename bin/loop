@@ -16,42 +16,39 @@ function _isnumber() {
     [[ "$input" =~ ^[0-9]+([.][0-9]+)?$ ]]
 }
 
-function _forever {
+function _loop {
     if [[ "$1" == "-h" || "$1" == "--help" ]]; then
         cat <<HELP
-forever
+loop
 
-Usage: forever [-s seconds] [-c count] commands
+Usage: loop [-s seconds] [-c count] commands
 
-Run one or more commands forever (or a number of times).
+Run one or more commands repeatedly.
 
 Multiple commands must be specified as a single string argument.
 
 You can access the current iteration with \$i. The slash is necessary to
 prevent the shell from interpreting the variable before passing it into this
-command.
+command. Alternatively, you can wrap it in single quotes (but not both).
 
 In bash, aliasing like this allows you to specify aliases/functions:
-  alias forever=". forever"
+  alias loop=". loop"
+
+Examples: 
 
 Display the contents of the current directory every second:
-  forever ls
+  loop ls
 
 Display how much space is used and available every five seconds:
-  forever -s 5 df / -h
+  loop -s 5 df / -h
 
 Count from 0 to 9, waiting 1 second in between each number:
-  forever -c 10 echo "Number: \$i"
+  loop -c 10 echo 'Number: $i'
 
 Copyright (c) 2019 Harrison McCullough
 Licensed under the MIT license.
 HELP
         return;
-    fi
-
-    if [[ $# -lt 1 ]]; then
-        echo "You must specify seconds and at least one command to run."
-        return 1
     fi
 
     local seconds=1
@@ -74,6 +71,11 @@ HELP
                 ;;
         esac
     done
+
+    if [[ $# -lt 1 ]]; then
+        echo "Usage: loop [-s SECONDS | -c COUNT] CMD [CMD]*"
+        return 1
+    fi
 
     _isnumber "$seconds" || {
         echo "Argument to -s must be a number"
@@ -109,4 +111,4 @@ HELP
     done
 }
 
-_forever "$@"
+_loop "$@"
