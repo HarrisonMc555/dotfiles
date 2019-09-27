@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+# Exit on error
+set -e
+
+if [[ $# -gt 1 ]]; then
+    echo "Usage: $0 [OUTFILE]"
+    exit 1
+fi
+
+if [[ "$1" ]]; then
+    bashrc_dir="$1"
+else
+    bashrc_dir="$DOTFILES"/caches/bashrc
+fi
+mkdir -p "$bashrc_dir"
+
+bashrc_file="$bashrc_dir"/.bashrc
+
+> "$bashrc_file"
+
+dotfiles_bin="$DOTFILES"/bin/dotfiles
+if [[ -r "$dotfiles_bin" ]]; then
+    (
+        echo "===== $(basename "$dotfiles_bin") ====="
+        begin_pat='^# GENERAL PURPOSE EXPORTED VARS / FUNCTIONS$'
+        end_pat='^\[\[ "\$1" == "source" \]\] && return$'
+        cat "$dotfiles_bin" | findbetween "$begin_pat" "$end_pat"
+    ) >> "$bashrc_file"
+fi
+
+for file in "$DOTFILES"/source/*.sh; do
+    [[ "$file" = *LOCAL* ]] && continue
+    [[ "$file" = */00_dotfiles.sh ]] && continue
+    (
+        echo "===== $(basename $file) ====="
+        echo
+        cat "$file"
+        echo
+    ) >> "$bashrc_file"
+done
+
+echo "Exported bashrc file to $bashrc_file"
