@@ -18,8 +18,25 @@ if is_available ssh && [[ -e ~/.ssh/known_hosts ]]; then
   complete -o default -W "$(cat ~/.ssh/known_hosts | sed 's/[, ].*//' | sort | uniq | grep -v '[0-9]')" ssh scp sftp
 fi
 
-# Custom completions
-ssh_completion="$(complete -p ssh)"
-ssh_completion_minus_ssh="${ssh_completion%ssh}"
-sshrc_completion="${ssh_completion_minus_ssh}sshrc"
-eval "$sshrc_completion"
+# Use completions for commands to create completions for other commands
+command_to_completion_commands=(
+    "sshrc:ssh"
+    "g:git"
+    "s:svn"
+    "em:ls"
+    "l:ls"
+    ""
+)
+
+for command_to_completion_command in "${command_to_completion_commands[@]}"; do
+    IFS=':' read -r -a arr <<< "$command_to_completion_command"
+    command="${arr[0]}"
+    completion_command="${arr[1]}"
+    if ! [[ "$command" ]] || ! [[ "$completion_command" ]]; then
+        continue
+    fi
+    completion="$(complete -p "$completion_command")"
+    completion_minus_completion_command="${completion%$completion_command}"
+    new_completion="${completion_minus_completion_command}$command"
+    eval "$new_completion"
+done
