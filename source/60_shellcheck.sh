@@ -1,4 +1,5 @@
-is_available shellcheck || return 1
+if is_available shellcheck; then
 
-export SHELLCHECK_OPTS="-e SC1090"
+    export SHELLCHECK_OPTS="-e SC1090"
 
+fi

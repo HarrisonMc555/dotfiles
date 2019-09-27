@@ -1,3 +1,5 @@
-is_available rustc || return 1
+if is_available rustc; then
 
-export RUST_BACKTRACE=1
+    export RUST_BACKTRACE=1
+
+fi

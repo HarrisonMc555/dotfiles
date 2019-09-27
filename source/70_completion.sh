@@ -17,3 +17,9 @@ fi
 if is_available ssh && [[ -e ~/.ssh/known_hosts ]]; then
   complete -o default -W "$(cat ~/.ssh/known_hosts | sed 's/[, ].*//' | sort | uniq | grep -v '[0-9]')" ssh scp sftp
 fi
+
+# Custom completions
+ssh_completion="$(complete -p ssh)"
+ssh_completion_minus_ssh="${ssh_completion%ssh}"
+sshrc_completion="${ssh_completion_minus_ssh}sshrc"
+eval "$sshrc_completion"

@@ -1,3 +1,5 @@
-is_available ghc || return 1
+if is_available ghc; then
 
-[[ -f ~/.ghcup/env ]] && source ~/.ghcup/env
+    [[ -f ~/.ghcup/env ]] && source ~/.ghcup/env
+
+fi

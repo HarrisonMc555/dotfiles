@@ -1,7 +1,9 @@
-is_available z || return 1
+if is_available z; then
 
-# Fast directory switching
-mkdir -p "$DOTFILES"/caches/z
-_Z_NO_PROMPT_COMMAND=1
-_Z_DATA="$DOTFILES"/caches/z/z
-. "$DOTFILES"/vendor/z/z.sh
+    # Fast directory switching
+    mkdir -p "$DOTFILES"/caches/z
+    _Z_NO_PROMPT_COMMAND=1
+    _Z_DATA="$DOTFILES"/caches/z/z
+    . "$DOTFILES"/vendor/z/z.sh
+
+fi
