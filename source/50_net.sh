@@ -26,18 +26,19 @@ if is_available ssh; then
         orig_file=~/.ssh/config
         backup_orig_file="$orig_file.bak"
         if [[ -f "$orig_file" ]]; then
-            if [[ -f "$backup_orig_file" ]]; then
-                cat "$backup_orig_file" >> "$tmp_file"
-            else
-                cat "$orig_file" >> "$tmp_file"
-            fi
-            cp "$orig_file" "$orig_file.bak"
+            # if [[ -f "$backup_orig_file" ]]; then
+            #     cat "$backup_orig_file" >> "$tmp_file"
+            # else
+            #     cat "$orig_file" >> "$tmp_file"
+            # fi
+            echo cp "$orig_file" "$backup_orig_file"
+            cp "$orig_file" "$backup_orig_file"
         fi
-        for f in ~/.ssh/*.config; do
+        for f in ~/.ssh/configs/*; do
             (
-                echo
                 echo "# $(basename "$f")"
                 cat "$f"
+                echo
             ) >> "$tmp_file"
         done
         [[ -s "$tmp_file" ]] && mv "$tmp_file" "$orig_file"
