@@ -9,31 +9,52 @@ if [[ $# -gt 1 ]]; then
 fi
 
 if [[ "$1" ]]; then
-    bashrc_dir="$1"
+    bashrc_file="$1"
 else
-    bashrc_dir="$DOTFILES"/caches/bashrc
+    bashrc_dir="$DOTFILES"/caches/bashrc/.bashrc
 fi
-mkdir -p "$bashrc_dir"
 
-bashrc_file="$bashrc_dir"/.bashrc
+# bashrc_file="$bashrc_dir"/.bashrc
+bashrc_dir="$(dirname "$bashrc_file")"
+# Only exit if we can't create it AND it doesn't already exist
+mkdir -p "$bashrc_dir" || [[ -d "$bashrc_dir" ]]
 
 > "$bashrc_file"
+
+files=(
+    ~/.dotfiles/source/01_prompt.sh
+    ~/.dotfiles/source/40_functions.sh
+    ~/.dotfiles/source/50_editor.sh
+    ~/.dotfiles/source/50_env_vars.sh
+    ~/.dotfiles/source/50_file.sh
+    ~/.dotfiles/source/50_file_alter.sh
+    ~/.dotfiles/source/50_file_info.sh
+    ~/.dotfiles/source/50_find.sh
+    ~/.dotfiles/source/50_misc.sh
+    ~/.dotfiles/source/50_navigation.sh
+    ~/.dotfiles/source/50_net.sh
+    ~/.dotfiles/source/50_prompt.sh
+    ~/.dotfiles/source/50_shopt.sh
+    ~/OneDrive/bin/source/60_LOCAL_Romaric_bash_profile.sh
+    ~/OneDrive/bin/source/70_LOCAL_romaric.sh
+)
 
 dotfiles_bin="$DOTFILES"/bin/dotfiles
 if [[ -r "$dotfiles_bin" ]]; then
     (
-        echo "===== $(basename "$dotfiles_bin") ====="
+        echo "# ===== $(basename "$dotfiles_bin") ====="
         begin_pat='^# GENERAL PURPOSE EXPORTED VARS / FUNCTIONS$'
         end_pat='^\[\[ "\$1" == "source" \]\] && return$'
         cat "$dotfiles_bin" | findbetween "$begin_pat" "$end_pat"
     ) >> "$bashrc_file"
 fi
 
-for file in "$DOTFILES"/source/*.sh; do
-    [[ "$file" = *LOCAL* ]] && continue
-    [[ "$file" = */00_dotfiles.sh ]] && continue
+# for file in "$DOTFILES"/source/*.sh; do
+# [[ "$file" = *LOCAL* ]] && continue
+# [[ "$file" = */00_dotfiles.sh ]] && continue
+for file in "${files[@]}"; do
     (
-        echo "===== $(basename $file) ====="
+        echo "# ===== $(basename $file) ====="
         echo
         cat "$file"
         echo
