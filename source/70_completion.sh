@@ -6,11 +6,11 @@ if ! shopt -oq posix; then
   fi
 fi
 
-# if is_osx; then
-#   # export BASH_COMPLETION_COMPAT_DIR="$(brew --prefix)/etc/bash_completion.d"
-#   [[ -r "$(brew --prefix)/etc/profile.d/bash_completion.sh" ]] &&
-#     . "$(brew --prefix)/etc/profile.d/bash_completion.sh"
-# fi
+if is_osx; then
+  export BASH_COMPLETION_COMPAT_DIR="$(brew --prefix)/etc/bash_completion.d"
+  [[ -r "$(brew --prefix)/etc/profile.d/bash_completion.sh" ]] &&
+    . "$(brew --prefix)/etc/profile.d/bash_completion.sh"
+fi
 
 
 # SSH auto-completion based on entries in known_hosts.
