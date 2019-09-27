@@ -24,6 +24,7 @@ alias gdw='gd --word-diff'
 alias gdc='gd --cached'
 # alias gm='git commit -m'
 # alias gma='git commit -am'
+alias gam='git commit --amend -m'
 # alias gb='git branch'
 # alias gba='git branch -a'
 # function gc() { git checkout "${@:-master}"; } # Checkout master by default
