@@ -1,6 +1,8 @@
-is_available emacs || return 1
+if is_available emacs; then
 
-alias em="emacs"
+    alias em="emacs"
 
-export OPENBIN_COMMAND="emacsclient -a '' -n"
-export EDITBIN_COMMAND="emacsclient -a ''"
+    export OPENBIN_COMMAND="emacsclient -a '' -n"
+    export EDITBIN_COMMAND="emacsclient -a ''"
+
+fi
