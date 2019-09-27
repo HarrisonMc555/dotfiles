@@ -1,3 +1,7 @@
+is_available git || return 1
+
+alias wdiff="git diff --no-index --word-diff"
+alias gdn='git diff --no-index'
 
 # Git shortcuts
 
@@ -7,11 +11,11 @@ alias gcam="git commit -a -m"
 alias g='git'
 function ga() { git add "${@:-.}"; } # Add all files by default
 function gap() { git add -p "${@:-.}"; } # Add all files by default
-# alias gp='git push'
+alias gp='git push'
 # alias gpup='gp --set-upstream origin $(gbs)'
 # alias gpa='gp --all'
-# alias gu='git pull'
-# alias gl='git log'
+alias gu='git pull'
+alias gl='git log'
 # alias gg='gl --decorate --oneline --graph --date-order --all'
 alias gs='git status'
 # alias gst='gs'
@@ -26,8 +30,8 @@ alias gdc='gd --cached'
 # alias gco='gc'
 # alias gcb='gc -b'
 # alias gbc='gc -b' # Dyslexia
-# alias gr='git remote'
-# alias grv='gr -v'
+alias grem='git remote'
+alias grv='grem -v'
 # #alias gra='git remote add'
 # alias grr='git remote rm'
 # alias gcl='git clone'
@@ -204,137 +208,3 @@ function gstat() {
 #   }
 # fi
 
-# SVN shortcuts
-function svndiff()
-{
-    svn diff "$@" | colordiff | less -RX
-}
-
-function svnwdiff()
-{
-    svn diff --diff-cmd="/Users/harrisonmccullough/.dotfiles/bin/svnwdiffhelper" "$@" | less -RX
-}
-
-function svnpraise()
-{
-    svn praise "$@" | cat -n | less
-}
-
-function svncommitupdate()
-{
-    svn commit "$@" && svn update "$(svnroot)"
-}
-
-function svnroot()
-{
-    if [[ $# -gt 1 ]]; then
-        echo "Usage: svnroot [DIR]"
-        return 1
-    fi
-
-    dir="$1"
-    dir="${dir:=.}"
-
-    svn info "$dir" | sed -n 's/^Working Copy Root Path: \(.*\)/\1/p'
-}
-
-function svnhelp()
-{
-    svn help "$@" | less
-}
-
-# Install (one or multiple) selected application(s)
-# using "brew search" as source input
-# mnemonic [B]rew [I]nstall [P]lugin
-bip() {
-    local inst=$(brew search | fzf -m)
-
-    if [[ $inst ]]; then
-        for prog in $(echo $inst); do
-            histeval brew install $prog
-        done
-    fi
-}
-
-# Update (one or multiple) selected application(s)
-# mnemonic [B]rew [U]pdate [P]lugin
-bup() {
-    local upd=$(brew leaves | fzf -m)
-
-    if [[ $upd ]]; then
-        for prog in $(echo $upd); do
-            histeval brew upgrade $prog
-        done
-    fi
-}
-
-alias s='svn'
-alias ss='svn st'
-alias sd='svndiff'
-alias sdw='svnwdiff'
-alias swd='svnwdiff'
-alias sp='svnpraise'
-alias sr='svn revert'
-alias sci='svncommitupdate'
-alias sup='svn update $(svnroot)'
-alias shelp='svnhelp'
-alias svnblame=svnpraise
-
-# GIT heart FZF
-# -------------
-
-is_in_git_repo() {
-  git rev-parse HEAD > /dev/null 2>&1
-}
-
-fzf-down() {
-  fzf --height 50% "$@" --border
-}
-
-gf() {
-  is_in_git_repo || return
-  git -c color.status=always status --short |
-  fzf-down -m --ansi --nth 2..,.. \
-    --preview '(git diff --color=always -- {-1} | sed 1,4d; cat {-1}) | head -500' |
-  cut -c4- | sed 's/.* -> //'
-}
-
-gb() {
-  is_in_git_repo || return
-  git branch -a --color=always | grep -v '/HEAD\s' | sort |
-  fzf-down --ansi --multi --tac --preview-window right:70% \
-    --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1) | head -'$LINES |
-  sed 's/^..//' | cut -d' ' -f1 |
-  sed 's#^remotes/##'
-}
-
-gt() {
-  is_in_git_repo || return
-  git tag --sort -version:refname |
-  fzf-down --multi --preview-window right:70% \
-    --preview 'git show --color=always {} | head -'$LINES
-}
-
-gh() {
-  is_in_git_repo || return
-  git log --date=short --format="%C(green)%C(bold)%cd %C(auto)%h%d %s (%an)" --graph --color=always |
-  fzf-down --ansi --no-sort --reverse --multi --bind 'ctrl-s:toggle-sort' \
-    --header 'Press CTRL-S to toggle sort' \
-    --preview 'grep -o "[a-f0-9]\{7,\}" <<< {} | xargs git show --color=always | head -'$LINES |
-  grep -o "[a-f0-9]\{7,\}"
-}
-
-gr() {
-  is_in_git_repo || return
-  git remote -v | awk '{print $1 "\t" $2}' | uniq |
-  fzf-down --tac \
-    --preview 'git log --oneline --graph --date=short --pretty="format:%C(auto)%cd %h%d %s" {1} | head -200' |
-  cut -d$'\t' -f1
-}
-
-bind '"\er": redraw-current-line'
-bind '"\C-g\C-f": "$(gf)\e\C-e\er"'
-bind '"\C-g\C-b": "$(gb)\e\C-e\er"'
-bind '"\C-g\C-t": "$(gt)\e\C-e\er"'
-bind '"\C-g\C-h": "$(gh)\e\C-e\er"'
-bind '"\C-g\C-r": "$(gr)\e\C-e\er"'

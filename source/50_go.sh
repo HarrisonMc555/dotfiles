@@ -1,3 +1,5 @@
+is_available go || return 1
+
 export GOPATH="${HOME}/.go"
 if is_osx; then
   export GOROOT="$(brew --prefix golang)/libexec"
