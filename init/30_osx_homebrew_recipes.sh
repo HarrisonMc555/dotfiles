@@ -7,6 +7,8 @@ is_osx || return 1
 
 # Homebrew recipes
 recipes=(
+  openssh
+  shellcheck
   ripgrep
   pandoc
   ipython
