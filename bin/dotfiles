@@ -1,11 +1,12 @@
 #!/usr/bin/env bash
 
 if ! [[ "$1" == "source" ]]; then
-    echo "Harrison McCullough's dotfiles"
-    echo "Inspired by \"Cowboy\" Ben Alman - http://benalman.com/"
+  echo "Harrison McCullough's dotfiles"
+  echo "Inspired by \"Cowboy\" Ben Alman - http://benalman.com/"
 fi
 
-if [[ "$1" == "-h" || "$1" == "--help" ]]; then cat <<HELP
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+  cat <<HELP
 
 Usage: $(basename "$0")
 
@@ -16,7 +17,8 @@ Copyright (c) 2014 "Cowboy" Ben Alman
 Licensed under the MIT license.
 http://benalman.com/about/license/
 HELP
-exit; fi
+  exit
+fi
 
 ###########################################
 # GENERAL PURPOSE EXPORTED VARS / FUNCTIONS
@@ -550,7 +552,7 @@ if [[ ! -d "$DOTFILES" ]]; then
   # Dotfiles directory doesn't exist? Clone it!
   e_header "Downloading dotfiles"
   git clone --branch ${DOTFILES_GH_BRANCH:-master} --recursive \
-    git://github.com/${DOTFILES_GH_USER:-HarrisonMc555}/dotfiles.git "$DOTFILES"
+      git://github.com/${DOTFILES_GH_USER:-HarrisonMc555}/dotfiles.git "$DOTFILES"
   cd "$DOTFILES"
 elif [[ "$1" != "restart" ]]; then
   # Make sure we have the latest files.
