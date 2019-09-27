@@ -31,3 +31,6 @@ alias lock="open -a ScreenSaverEngine"
 
 alias cask="brew cask"
 
+export BASH_COMPLETION_COMPAT_DIR="$(brew --prefix)/etc/bash_completion.d"
+[[ -r "$(brew --prefix)/etc/profile.d/bash_completion.sh" ]] &&
+    . "$(brew --prefix)/etc/profile.d/bash_completion.sh"
