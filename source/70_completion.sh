@@ -7,7 +7,10 @@ if ! shopt -oq posix; then
 fi
 
 if is_osx; then
-  export BASH_COMPLETION_COMPAT_DIR="$(brew --prefix)/etc/bash_completion.d"
+  # brew --prefix is kind of slow
+  brew_prefix="$(dirname $(dirname $(type -p brew)))"
+  export BASH_COMPLETION_COMPAT_DIR="${brew_prefix}/etc/bash_completion.d"
+  # export BASH_COMPLETION_COMPAT_DIR="$(brew --prefix)/etc/bash_completion.d"
   [[ -r "$(brew --prefix)/etc/profile.d/bash_completion.sh" ]] &&
     . "$(brew --prefix)/etc/profile.d/bash_completion.sh"
 fi
