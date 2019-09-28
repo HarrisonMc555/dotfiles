@@ -11,7 +11,13 @@ alias l='less'
 
 if is_osx; then
     # Trim new lines and copy to clipboard
-    alias c="tr -d '\n' | pbcopy"
+    function c() {
+        if [[ $# -gt 0 ]]; then
+            echo "$@" | perl -pe 'chomp if eof' | pbcopy
+        else
+            perl -pe 'chomp if eof' | pbcopy
+        fi
+    }
 
     # Start ScreenSaver. This will lock the screen if locking is enabled.
     alias lock="open -a ScreenSaverEngine"
