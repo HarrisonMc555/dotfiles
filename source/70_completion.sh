@@ -15,11 +15,13 @@ if is_osx; then
     . "$(brew --prefix)/etc/profile.d/bash_completion.sh"
 fi
 
+fzf_completion="$(dirname $(dirname $(realpath $(which fzf))))/shell/completion.bash"
+[[ -f "$fzf_completion" ]] && source "$fzf_completion"
 
-# SSH auto-completion based on entries in known_hosts.
-if is_available ssh && [[ -e ~/.ssh/known_hosts ]]; then
-  complete -o default -W "$(cat ~/.ssh/known_hosts | sed 's/[, ].*//' | sort | uniq | grep -v '[0-9]')" ssh scp sftp
-fi
+# # SSH auto-completion based on entries in known_hosts.
+# if is_available ssh && [[ -e ~/.ssh/known_hosts ]]; then
+#   complete -o default -W "$(cat ~/.ssh/known_hosts | sed 's/[, ].*//' | sort | uniq | grep -v '[0-9]')" ssh scp sftp
+# fi
 
 # Use completions for commands to create completions for other commands
 command_to_completion_commands=(
