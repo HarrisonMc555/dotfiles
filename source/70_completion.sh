@@ -15,8 +15,10 @@ if is_osx; then
     . "$(brew --prefix)/etc/profile.d/bash_completion.sh"
 fi
 
-fzf_completion="$(dirname $(dirname $(realpath $(which fzf))))/shell/completion.bash"
-[[ -f "$fzf_completion" ]] && source "$fzf_completion"
+if is_available fzf; then
+    fzf_completion="$(dirname $(dirname $(realpath $(which fzf))))/shell/completion.bash"
+    [[ -f "$fzf_completion" ]] && source "$fzf_completion"
+fi
 
 # # SSH auto-completion based on entries in known_hosts.
 # if is_available ssh && [[ -e ~/.ssh/known_hosts ]]; then
@@ -36,11 +38,11 @@ command_to_completion_commands=(
 for command_to_completion_command in "${command_to_completion_commands[@]}"; do
     IFS=':' read -r -a arr <<< "$command_to_completion_command"
     command="${arr[0]}"
+    [[ "$command" ]] || continue
+    is_available "$command" || continue
     completion_command="${arr[1]}"
-    if ! [[ "$command" ]] || ! [[ "$completion_command" ]]; then
-        continue
-    fi
-    completion="$(complete -p "$completion_command")"
+    [[ "$completion_command" ]] || continue
+    completion="$(complete -p "$completion_command" 2> /dev/null)" || continue
     completion_minus_completion_command="${completion%$completion_command}"
     new_completion="${completion_minus_completion_command}$command"
     eval "$new_completion"
