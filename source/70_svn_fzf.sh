@@ -28,15 +28,14 @@ if is_available svn && is_available fzf; then
     }
 
     # Svn branch
-    # Fuzzy searches for branch(es)
+    # Fuzzy searches for branch
     function sb() {
         is_in_svn_repo || return
-        echo "branch-not-implemented-sorry"
-        # git branch -a --color=always | grep -v '/HEAD\s' | sort |
-        #     fzf-down --ansi --multi --tac --preview-window right:70% \
-        #              --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1) | head -'$LINES |
-        #     sed 's/^..//' | cut -d' ' -f1 |
-        #     sed 's#^remotes/##'
+        local url="$(svn info --show-item repos-root-url)"
+        svn ls "$url"/branches |
+            { while read line; do urlencode "$line"; echo; done } |
+            fzf-down |
+            sed "s_^_${url}/branches/_"
     }
 
     # Svn revision
