@@ -39,13 +39,17 @@ if is_available svn; then
         svn help "$@" | less
     }
 
+    function svn_short_log() {
+        svn log "$@" | _convert_svn_log_to_short_log
+    }
+
     alias s='svn'
     alias ss='svn st'
     alias sd='svndiff'
     alias sdw='svnwdiff'
     alias swd='svnwdiff'
     alias sp='svnpraise'
-    alias sr='svn revert'
+    alias srev='svn revert'
     alias sci='svncommitupdate'
     alias sup='svn update $(svnroot)'
     alias shelp='svnhelp'

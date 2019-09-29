@@ -1,0 +1,35 @@
+#!/usr/bin/awk -f
+
+# Convert svn log output to a one line format.
+
+# Print each revision on one line, with the revision, user, date, and first line
+# of the comment (truncated at 80 characters).
+
+# Count every line after you find a separator line
+found {
+    counter++
+}
+
+# When you find a separator line, start counting
+/------------------------------------------------------------------------/ {
+    found=1
+    counter=0
+}
+
+# The first line after a separator line contains the following info
+counter == 1 {
+    rev=$1
+    user=$3
+    date=$5
+    time=$6
+    lines=$13
+}
+
+# The third line after the separator line is the first comment line. Print
+# the info and reset.
+counter == 3 {
+    printf "%-7.7s | %-15.15s | %-10.10s | %s \n", rev, user, date, substr($0, 1, 80)
+    found = 0
+    counter = 0
+}
+

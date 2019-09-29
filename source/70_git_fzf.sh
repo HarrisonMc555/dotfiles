@@ -8,6 +8,8 @@ if is_available git && is_available fzf; then
         fzf --height 50% "$@" --border
     }
 
+    # Git file
+    # Fuzzy searches for modified or untracked file(s)
     function gf() {
         is_in_git_repo || return
         git -c color.status=always status --short |
@@ -16,6 +18,8 @@ if is_available git && is_available fzf; then
             cut -c4- | sed 's/.* -> //'
     }
 
+    # Git branch
+    # Fuzzy searches for branch(es)
     function gb() {
         is_in_git_repo || return
         git branch -a --color=always | grep -v '/HEAD\s' | sort |
@@ -25,6 +29,8 @@ if is_available git && is_available fzf; then
             sed 's#^remotes/##'
     }
 
+    # Git tag
+    # Fuzzy searches for tag(s)
     function gt() {
         is_in_git_repo || return
         git tag --sort -version:refname |
@@ -32,6 +38,8 @@ if is_available git && is_available fzf; then
                      --preview 'git show --color=always {} | head -'$LINES
     }
 
+    # Git history (SHA)
+    # Fuzzy searches for a commit SHA(s)
     function gh() {
         is_in_git_repo || return
         git log --date=short --format="%C(green)%C(bold)%cd %C(auto)%h%d %s (%an)" --graph --color=always |
@@ -41,6 +49,8 @@ if is_available git && is_available fzf; then
             grep -o "[a-f0-9]\{7,\}"
     }
 
+    # Git remote
+    # Fuzzy searches for a git remote
     function gr() {
         is_in_git_repo || return
         git remote -v | awk '{print $1 "\t" $2}' | uniq |
