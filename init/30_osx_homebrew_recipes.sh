@@ -7,22 +7,35 @@ is_osx || return 1
 
 # Homebrew recipes
 recipes=(
-  openssh
-  shellcheck
-  ripgrep
-  pandoc
-  ipython
+  bash
+  bash-completion@2
+  bat
+  colordiff
+  coreutils
+  dos2unix
   fd
-  node
+  fzf
+  git
   go
-
+  grip
+  ipython
+  ispell
+  lynx
+  node
+  openssh
+  pandoc
+  pygments
+  ripgrep
+  shellcheck
+  ssh-copy-id
+  sshrc
+  trash
+  tree
+  wget
   # ansible
   # awscli
-  bash
   # cmatrix
-  coreutils
   # cowsay
-  git
   # git-extras
   # htop-osx
   # hub
@@ -35,13 +48,10 @@ recipes=(
   # postgresql
   # reattach-to-user-namespace
   # sl
-  ssh-copy-id
   # terminal-notifier
   # the_silver_searcher
   # tmux
   # tmux-xpanes
-  tree
-  wget
 )
 
 brew_install_recipes

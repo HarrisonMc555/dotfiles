@@ -17,14 +17,16 @@ brew cask info this-is-somewhat-annoying 2>/dev/null
 
 # Homebrew casks
 casks=(
-  google-chrome
+  background-music
   emacs
-  # rocket-typist
-  jumpcut
+  fastscripts
+  google-chrome
   hex-fiend
-  daisydisk
+  iterm2
+  jumpcut
+  karabiner-elements
+  spotify
   vanilla
-  # Applications
   # a-better-finder-rename
   # alfred
   # android-platform-tools
@@ -37,12 +39,8 @@ casks=(
   # controllermate
   # docker
   # dropbox
-  # fastscripts
   # firefox
   # gyazo
-  # hex-fiend
-  # iterm2
-  # karabiner-elements
   # macvim
   # messenger-for-desktop
   # midi-monitor
@@ -56,7 +54,6 @@ casks=(
   # skype
   # slack
   # sourcetree
-  spotify
   # steam
   # the-unarchiver
   # totalfinder
@@ -65,27 +62,6 @@ casks=(
   # virtualbox
   # vlc
   # ynab
-  # # Quick Look plugins
-  # betterzipql
-  # qlcolorcode
-  # qlmarkdown
-  # qlprettypatch
-  # qlstephen
-  # quicklook-csv
-  # quicklook-json
-  # quicknfo
-  # suspicious-package
-  # webpquicklook
-  # # Color pickers
-  # colorpicker-developer
-  # colorpicker-skalacolor
-  # # Drivers
-  # sonos
-  # xbox360-controller-driver
-  # # Fonts
-  # font-m-plus
-  # font-mplus-nerd-font
-  # font-mplus-nerd-font-mono
 )
 
 # Install Homebrew casks.
