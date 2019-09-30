@@ -32,10 +32,23 @@ if is_available svn && is_available fzf; then
     function sb() {
         is_in_svn_repo || return
         local url="$(svn info --show-item repos-root-url)"
+        local header='Enter:  Relative path
+Ctrl-H: Full URL'
         svn ls "$url"/branches |
-            { while read line; do urlencode "$line"; echo; done } |
-            fzf-down |
-            sed "s_^_${url}/branches/_"
+            { while read line; do urlencode "${line%/}"; echo; done } |
+            fzf-down --bind "ctrl-h:execute(printf '%s%s\n' '$url' {})+abort" \
+                --header "$header" |
+            {
+                # Could technically replace this with a single call to read, but
+                # this is reusable to commands that *do* allow for multiple returns
+                while read line; do
+                    if [[ "$line" = "$url"* ]]; then
+                        printf '%s' "$line"
+                    else
+                        printf '^/branches/%s' "$line"
+                    fi
+                done
+            }
     }
 
     # Svn revision
