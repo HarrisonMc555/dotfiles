@@ -2,6 +2,16 @@ if is_available fzf; then
 
     [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
+    # Export default options for preview scrolling
+    export FZF_DEFAULT_OPTS="--bind '\
+ctrl-v:page-down\
+,alt-v:page-up\
+,ctrl-f:preview-page-down\
+,ctrl-u:preview-page-up\
+,alt-j:preview-down\
+,alt-k:preview-up\
+'"
+
     # Setting fd as the default source for fzf
     export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git --exclude .svn'
 
