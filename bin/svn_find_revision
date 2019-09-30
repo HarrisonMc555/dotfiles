@@ -1,0 +1,37 @@
+#!/usr/bin/awk -f
+
+# Input variables
+#   rev: revision number, with or without leading r (required)
+
+# Check for required variables.
+BEGIN {
+    if (! rev) {
+        print "Variable rev is required" > "/dev/stderr"
+        exit
+    }
+}
+
+# If we found a separator *last* time, then this is the revision line.
+found_separator {
+    # Clear variable for next time.
+    found_separator = 0
+    # Check if revision matches. Check for match with or without leading r.
+    if ($1 == rev || $1 == "r" rev) {
+        found_revision = 1
+    }
+}
+
+# This is the delimiter between revisions. We assume nobody will include this in
+# their commit message. Please don't ever do that.
+/----------------------------------------------------------------------/ {
+    if (found_revision) {
+        exit
+    } else {
+        found_separator = 1
+    }
+}
+
+# Print all lines of the revision, including the header line.
+found_revision {
+    print
+}
