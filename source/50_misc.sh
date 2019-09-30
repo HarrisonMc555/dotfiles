@@ -53,3 +53,6 @@ function titlebar() {
 }
 
 set -o emacs
+
+z_file="$DOTFILES"/vendor/z/z.sh
+[[ -f "$z_file" ]] && source "$z_file"
