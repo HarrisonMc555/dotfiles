@@ -40,7 +40,7 @@ if is_available svn; then
     }
 
     function svn_short_log() {
-        svn log "$@" | _convert_svn_log_to_short_log
+        svn log "$@" | _svn_short_log
     }
 
     alias s='svn'
