@@ -27,6 +27,7 @@ recipes=(
   pygments
   ripgrep
   shellcheck
+  shpotify
   ssh-copy-id
   sshrc
   trash
