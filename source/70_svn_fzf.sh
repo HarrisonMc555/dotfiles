@@ -18,7 +18,6 @@ if is_available svn && is_available fzf; then
     # Svn file
     # Fuzzy searches for modified or untracked file(s)
     function sf() {
-        pwd
         is_in_svn_repo || return
         svn status |
             filter_out_directories |
