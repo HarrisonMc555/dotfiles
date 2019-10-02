@@ -28,3 +28,9 @@ for p in "${paths[@]}"; do
   [[ -d "$p" ]] && PATH="$p:$(path_remove "$p")"
 done
 unset p paths paths_rev
+
+if is_ubuntu; then
+  linuxbrew=/home/linuxbrew/.linuxbrew/bin
+  [[ -d "$linuxbrew" ]] && PATH="$linuxbrew:$(path_remove "$linuxbrew")"
+  unset linuxbrew
+fi
