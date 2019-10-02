@@ -10,18 +10,24 @@ alias e='echo'
 alias l='less'
 
 if is_osx; then
-    # Trim new lines and copy to clipboard
-    function c() {
-        if [[ $# -gt 0 ]]; then
-            echo "$@" | perl -pe 'chomp if eof' | pbcopy
-        else
-            perl -pe 'chomp if eof' | pbcopy
-        fi
-    }
-
     # Start ScreenSaver. This will lock the screen if locking is enabled.
     alias lock="open -a ScreenSaverEngine"
 fi
+
+if is_ubuntu; then
+    function pbcopy() {
+        xclip -i -selection clipboard "$@"
+    }
+fi
+
+# Trim trailing new line and copy to clipboard
+function c() {
+    if [[ $# -gt 0 ]]; then
+        echo "$@" | perl -pe 'chomp if eof' | pbcopy
+    else
+        perl -pe 'chomp if eof' | pbcopy
+    fi
+}
 
 function sbashrc() {
     source ~/.bashrc
