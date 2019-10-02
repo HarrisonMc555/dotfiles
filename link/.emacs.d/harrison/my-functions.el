@@ -180,8 +180,9 @@ converted to PDF at the same location."
         (org-next-item)
         (org-insert-item t))
     ('error
-     (move-end-of-line nil)
-     (org-insert-todo-heading nil))))
+     (org-end-of-item)
+     (backward-char)
+     (org-insert-item t))))
 
 ;; Debugging printing information about selected region
 (defun region-info ()
