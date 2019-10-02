@@ -23,3 +23,4 @@
 /link/.emacs.d/session.*
 /link/.emacs.d/meghanada
 /link/.emacs.d/cider-history
+*.bak
