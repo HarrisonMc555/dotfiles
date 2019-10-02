@@ -25,7 +25,9 @@ function add_ppa() {
 
 # Misc.
 apt_packages+=(
+  build-essential
   curl
+  file
   git
   htop
   imagemagick
@@ -37,6 +39,10 @@ apt_packages+=(
   python-pip
   ripgrep
   tree
+)
+
+linuxbrew_recipes=(
+  fzf
 )
 
 # https://launchpad.net/~kelleyk/+archive/ubuntu/emacs
@@ -89,9 +95,10 @@ function other_stuff() {
   # fi
 
   # Install fzf
-  install_from_zip fzf 'https://github.com/junegunn/fzf-bin/releases/download/0.18.0/fzf-0.18.0-linux_amd64.tgz'
-  install_golang
+  # install_from_zip fzf 'https://github.com/junegunn/fzf-bin/releases/download/0.18.0/fzf-0.18.0-linux_amd64.tgz'
+  # install_golang
   install_gradle
+  install_linuxbrew && install_linuxbrew_recipes
 }
 
 ####################
@@ -220,6 +227,18 @@ function install_gradle() {
   sudo mkdir /opt/gradle -p
   sudo unzip "$zip" -d "$dir"
   # Add gradle to PATH in ~/.dotfiles/source/01_path.sh
+}
+
+# install linuxbrew
+function install_linuxbrew() {
+  # Skip if already installed
+  command -v brew &> /dev/null && return
+  sh -c "$(curl -fsSL https://raw.githubusercontent.com/Linuxbrew/install/master/install.sh)"
+}
+
+# install linuxbrew recipes
+function install_linuxbrew_recipes() {
+  brew install "${linuxbrew_recipes[@]}"
 }
 
 # Run anything else that may need to be run.
