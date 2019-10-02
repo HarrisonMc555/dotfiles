@@ -44,3 +44,21 @@ if is_available ssh; then
         [[ -s "$tmp_file" ]] && mv "$tmp_file" "$orig_file"
     }
 fi
+
+if is_available curl; then
+    function myip() {
+        if [[ $# -ne 0 ]]; then
+            echo "Usage: myip"
+            return 1
+        fi
+        curl ifconfig.me -s && echo
+    }
+elif is_available dig; then
+    function myip() {
+        if [[ $# -ne 0 ]]; then
+            echo "Usage: myip"
+            return 1
+        fi
+        dig +short myip.opendns.com @resolver1.opendns.com
+    }
+fi
