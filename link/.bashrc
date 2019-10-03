@@ -1,3 +1,6 @@
+# Exit if not interactive
+[[ $- == *i* ]] || return
+
 # Where the magic happens.
 export DOTFILES=~/.dotfiles
 
