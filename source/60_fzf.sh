@@ -10,7 +10,9 @@ ctrl-v:page-down\
 ,ctrl-u:preview-page-up\
 ,alt-j:preview-down\
 ,alt-k:preview-up\
-'"
+' \
+--exact\
+"
 
     # Setting fd as the default source for fzf
     export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git --exclude .svn'
