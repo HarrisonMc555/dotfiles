@@ -82,5 +82,3 @@ function commandbin() {
 
     $command "$bin_location" "$@"
 }
-
-
