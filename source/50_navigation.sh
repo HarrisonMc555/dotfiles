@@ -12,6 +12,11 @@ fi
 alias ll='ls -al'
 alias lsd='CLICOLOR_FORCE=1 ll | grep --color=never "^d"'
 
+__tree_bin="$(which tree)"
+function tree() {
+    "$__tree_bin" -C "$@" | less -FRX
+}
+
 # For typos
 alias sl='ls'
 

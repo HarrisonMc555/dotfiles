@@ -6,7 +6,7 @@ export eachfile
 function _eachfile() {
 
     if [[ "$1" == "-h" || "$1" == "--help" ]]; then
-        cat <<HELP
+        cat << 'HELP'
 eachfile
 
 Usage: eachfile [files --] commands

@@ -20,6 +20,7 @@ casks=(
   background-music
   emacs
   fastscripts
+  firefox
   google-chrome
   hex-fiend
   iterm2
@@ -39,7 +40,6 @@ casks=(
   # controllermate
   # docker
   # dropbox
-  # firefox
   # gyazo
   # macvim
   # messenger-for-desktop
