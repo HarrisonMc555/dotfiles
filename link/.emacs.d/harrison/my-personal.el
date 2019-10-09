@@ -99,6 +99,12 @@
 
 (add-hook 'org-mode-hook 'org-add-electric-pairs)
 (add-hook 'markdown-mode-hook 'markdown-add-electric-pairs)
+(setq org-export-with-section-numbers nil)
+
+(if (string-equal system-type "darwin")
+    (add-to-list 'exec-path "/usr/local/bin/"))
+
+(add-hook 'after-init-hook #'global-emojify-mode)
 
 (provide 'my-personal)
 ;;; my-personal.el ends here
