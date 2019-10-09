@@ -55,6 +55,36 @@ function openbin() {
     commandbin "$opener" "$@"
 }
 
+function editbin() {
+    local editor
+    if [[ "$EDITBIN_COMMAND" ]]; then
+        editor="$EDITBIN_COMMAND"
+    elif [[ "$VISUAL" ]]; then
+        editor="$VISUAL"
+    elif [[ "$EDITOR" ]]; then
+        editor="$EDITOR"
+    else
+        editor=vi
+    fi
+
+    commandbin "$editor" "$@"
+}
+
+function openbin() {
+    local opener
+    if [[ "$OPENBIN_COMMAND" ]]; then
+        opener="$OPENBIN_COMMAND"
+    elif [[ "$VISUAL" ]]; then
+        opener="$VISUAL"
+    elif [[ "$EDITOR" ]]; then
+        opener="$EDITOR"
+    else
+        opener=vi
+    fi
+
+    commandbin "$opener" "$@"
+}
+
 function commandbin() {
     local command="$1"
     shift

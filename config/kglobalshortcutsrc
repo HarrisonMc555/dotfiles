@@ -270,6 +270,7 @@ activate widget 194=,none,Activate Application Launcher Widget
 activate widget 2=Alt+F1,none,Activate Application Launcher Widget
 activate widget 219=,none,Activate Application Launcher Widget
 activate widget 233=,none,Activate Application Launcher Widget
+activate widget 258=Ctrl+Alt+M,none,Activate Audio Volume Widget
 activate widget 40=,none,Activate Application Launcher Widget
 activate widget 98=,none,Activate Application Launcher Widget
 clear-history=none,none,Clear Clipboard History

@@ -1,5 +1,3 @@
-[include]
-  path = .gitconfig.local
 [core]
   editor = "emacsclient"
   autocrlf = input
@@ -68,3 +66,5 @@
   insteadOf = "gist:"
 [url "git@heroku.com:"]
   insteadOf = "heroku:"
+[include]
+  path = .gitconfig.local
