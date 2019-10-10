@@ -14,9 +14,12 @@ recipes=(
   coreutils
   dos2unix
   fd
+  findutils
   fzf
   git
+  gnu-sed
   go
+  gradle
   grip
   ipython
   ispell
