@@ -106,5 +106,7 @@
 
 (add-hook 'after-init-hook #'global-emojify-mode)
 
+(add-to-list 'exec-path (expand-file-name "~/.cargo/bin"))
+
 (provide 'my-personal)
 ;;; my-personal.el ends here
