@@ -63,5 +63,7 @@
 
 (add-hook 'server-switch-hook (lambda () (select-frame-set-input-focus (selected-frame))))
 
+(tool-bar-mode -1)
+
 (provide 'my-gui)
 ;;; my-gui.el ends here
