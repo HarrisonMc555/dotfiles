@@ -245,4 +245,11 @@
 ;;; Tmp ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (add-to-list 'auto-mode-alist '("\\.tmp$" . text-mode))
 
+;;; svn-commit.tmp
+(defun svn-commit-tmp-hook ()
+  (when (string= (file-name-nondirectory (buffer-file-name)) "svn-commit.tmp")
+    (setq-local fill-column 70)))
+
+(add-hook 'find-file-hook 'svn-commit-tmp-hook)
+
 ;;; my-programming.el ends here
