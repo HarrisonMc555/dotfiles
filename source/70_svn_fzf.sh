@@ -15,12 +15,17 @@ if is_available svn && is_available fzf; then
         done
     }
 
+    function filter_out_changelists() {
+        grep -v '^---'
+    }
+
     # Svn file
     # Fuzzy searches for modified or untracked file(s)
     function sf() {
         is_in_svn_repo || return
         svn status |
             filter_out_directories |
+            filter_out_changelists |
             fzf-down -m --nth -1 \
                      --preview '(svn diff -- {-1} | colordiff | sed 1,5d; bat {-1} 2> /dev/null || cat {-1}) | head -500' |
             cut -c9-
