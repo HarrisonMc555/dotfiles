@@ -23,6 +23,7 @@ casks=(
   firefox
   google-chrome
   hex-fiend
+  intelliscape-caffeine
   iterm2
   jumpcut
   karabiner-elements
