@@ -60,7 +60,7 @@ Ctrl-H: Full URL'
     function sr() {
         is_in_svn_repo || return
         log_file="$(mktemp)"
-        svn log --incremental |
+        svn log --incremental "$@" |
             tee "$log_file" |
             _svn_short_log |
             fzf-down --no-sort --reverse --multi --bind 'ctrl-s:toggle-sort' \
