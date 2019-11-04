@@ -27,6 +27,7 @@ recipes=(
   node
   openssh
   pandoc
+  proselint
   pygments
   ripgrep
   shellcheck
