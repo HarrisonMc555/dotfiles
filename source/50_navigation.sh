@@ -12,10 +12,12 @@ fi
 alias ll='ls -al'
 alias lsd='CLICOLOR_FORCE=1 ll | grep --color=never "^d"'
 
-__tree_bin="$(which tree)"
-function tree() {
-    "$__tree_bin" -C "$@" | less -FRX
-}
+if [[ -x "$(command -v tree)" ]] && [[ -x "$(command  -v which)" ]]; then
+    __tree_bin="$(which tree)"
+    function tree() {
+        "$__tree_bin" -C "$@" | less -FRX
+    }
+fi
 
 # For typos
 alias sl='ls'
