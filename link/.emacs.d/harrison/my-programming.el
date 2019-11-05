@@ -195,6 +195,14 @@
   (when (locate-dominating-file dir "Cargo.toml")
     `(transient . ,dir)))
 
+;; Sql ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(defun my-sql-mode-hook ()
+  (sqlind-minor-mode t)
+  )
+
+(add-hook 'sql-mode-hook #'my-sql-mode-hook)
+
 ;; Clojure ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (add-hook 'clojure-mode-hook 'enable-paredit-mode)
 (require 'clojure-mode-extra-font-locking)
