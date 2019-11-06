@@ -18,6 +18,7 @@ brew cask info this-is-somewhat-annoying 2>/dev/null
 # Homebrew casks
 casks=(
   background-music
+  captin
   emacs
   fastscripts
   firefox
