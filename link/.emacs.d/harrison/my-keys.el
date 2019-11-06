@@ -24,6 +24,8 @@
 
 ;;; Code:
 
+(global-set-key (kbd "M-o") 'other-window)
+
 (with-library
  simple
  (global-set-key (kbd "C-j") 'newline)
@@ -36,6 +38,7 @@
 (with-library
  shell
  (global-set-key (kbd "C-c s") 'shell))
+
 (with-library
  align
  (global-set-key (kbd "C-=") 'align-regexp))
@@ -102,10 +105,6 @@
  (global-set-key (kbd "C-<") 'unhighlight-all-in-buffer))
 
 (when (fboundp 'org-mode)
-  (global-set-key (kbd "M-o") 'org-mode)
-  (global-set-key (kbd "C-M-o") 'org-indent-mode)
-  (global-set-key (kbd "M-t") 'text-mode)
-
   (defun my-org-mode-hook ()
     "Custom org-mode hook."
     (local-set-key (kbd "M-[") 'org-metaleft)

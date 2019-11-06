@@ -108,5 +108,11 @@
 
 (add-to-list 'exec-path (expand-file-name "~/.cargo/bin"))
 
+(global-auto-revert-mode)
+(setq revert-without-query t)
+
+(setq ido-enable-flex-matching t)
+(ido-mode 1)
+
 (provide 'my-personal)
 ;;; my-personal.el ends here
