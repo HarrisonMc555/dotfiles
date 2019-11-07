@@ -1137,7 +1137,7 @@ Type=SIMPLE_ACTION_DATA
 ActionsCount=1
 
 [Data_5_1Actions0]
-CommandURL=chrome-personal
+CommandURL=$HOME/.local/bin/chrome-personal
 Type=COMMAND_URL
 
 [Data_5_1Conditions]
@@ -1163,7 +1163,7 @@ Type=SIMPLE_ACTION_DATA
 ActionsCount=1
 
 [Data_5_2Actions0]
-CommandURL=chrome-work
+CommandURL=$HOME/.local/bin/chrome-work
 Type=COMMAND_URL
 
 [Data_5_2Conditions]
