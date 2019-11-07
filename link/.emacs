@@ -26,6 +26,7 @@
  '(delete-selection-mode t)
  '(ediff-split-window-function (quote split-window-horizontally))
  '(ediff-window-setup-function (quote ediff-setup-windows-plain))
+ '(emojify-emoji-styles (quote (github unicode)))
  '(fci-rule-color "#eee8d5")
  '(fill-column 80)
  '(flycheck-python-pycompile-executable "python3")
