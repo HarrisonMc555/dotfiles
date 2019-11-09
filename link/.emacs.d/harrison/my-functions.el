@@ -259,5 +259,18 @@ The same result can also be be achieved by \\[universal-argument] \\[unhighlight
        (let* ((fn-list (dired-get-marked-files nil arg)))
          (mapc 'find-file fn-list)))))
 
+(defun center-rectangle (beg end)
+  (interactive "*r")
+  (kill-rectangle beg end)
+  (with-temp-buffer
+    (yank-rectangle)
+    (setq fill-column (current-column))
+    (center-region (point-min) (point-max))
+    (goto-char (point-max))
+    (move-to-column fill-column t)
+    (kill-rectangle (point-min) (point)))
+  (goto-char beg)
+  (yank-rectangle))
+
 (provide 'my-functions)
 ;;; my-functions.el ends here
