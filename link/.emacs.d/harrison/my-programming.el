@@ -247,9 +247,6 @@
 (add-hook 'cider-repl-mode-hook 'paredit-mode)
 
 
-;; Try rust projects before version-control (vc) projects
-(add-hook 'project-find-functions 'my-project-try-cargo-toml nil nil)
-
 ;;; Tmp ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (add-to-list 'auto-mode-alist '("\\.tmp$" . text-mode))
 
@@ -259,5 +256,17 @@
     (setq-local fill-column 70)))
 
 (add-hook 'find-file-hook 'svn-commit-tmp-hook)
+
+;; XML ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun my-nxml-mode-hook ()
+  ((setq-local nxml-child-indent 4 nxml-attribute-indent 4)))
+
+(add-hook 'nxml-mode-hook 'my-nxml-mode-hook)
+
+
+;; Misc ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+;; Try rust projects before version-control (vc) projects
+(add-hook 'project-find-functions 'my-project-try-cargo-toml nil nil)
 
 ;;; my-programming.el ends here
