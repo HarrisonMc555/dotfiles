@@ -6,4 +6,12 @@ if is_available z; then
     _Z_DATA="$DOTFILES"/caches/z/z
     . "$DOTFILES"/vendor/z/z.sh
 
+    function zp() {
+        pushd . > /dev/null && {
+            z "$@" &&
+                dirs
+        } || {
+            popd > /dev/null
+        }
+    }
 fi
