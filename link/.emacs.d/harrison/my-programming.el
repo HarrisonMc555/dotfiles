@@ -165,6 +165,8 @@
 ;; (add-to-list 'auto-mode-alist '("\\.js\\'" . javascript-mode))
 (add-to-list 'auto-mode-alist '("\\.js\\'" . js2-mode))
 
+(setq web-mode-enable-engine-detection t)
+
 ;; Assembly ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun my-asm-mode-hook ()
   ;; you can use `comment-dwim' (M-;) for this kind of behaviour anyway

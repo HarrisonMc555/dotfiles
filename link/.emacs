@@ -89,6 +89,7 @@
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
  '(python-indent-offset 3)
+ '(safe-local-variable-values (quote ((engine . django))))
  '(show-paren-mode t)
  '(size-indication-mode t)
  '(smartrep-mode-line-active-bg (solarized-color-blend "#859900" "#eee8d5" 0.2))
