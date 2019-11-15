@@ -3,3 +3,4 @@
 *.db
 *.signed
 ido.last
+transient/
