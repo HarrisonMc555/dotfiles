@@ -4,5 +4,6 @@ if is_osx; then
     alias firefox='open -a firefox'
     alias f='open -a Finder'
     alias fh='open -a Finder .'
-    alias lmk="say 'Process complete.'"
+    alias lmk="say '[[volm 0.15]] Process complete.'"
+    alias say="say '[[volm 0.15]]'"
 fi
