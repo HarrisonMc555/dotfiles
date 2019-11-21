@@ -37,7 +37,7 @@
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 ;; Default font size
-(set-face-attribute 'default nil :height 105)
+(set-face-attribute 'default nil :height 125)
 
 ;; Save interprogram clipboard
 (setq save-interprogram-paste-before-kill t)
@@ -58,8 +58,9 @@
  (global-set-key (kbd "s-{") 'tabbar-backward-tab)
  (global-set-key (kbd "s-}") 'tabbar-forward-tab))
 
-(if (string-equal system-type "darwin")
-    (global-unset-key (kbd "C-z")))
+(when (string-equal system-type "darwin")
+  (global-unset-key (kbd "C-z"))
+  (global-unset-key (kbd "s-w")))
 
 (add-hook 'server-switch-hook (lambda () (select-frame-set-input-focus (selected-frame))))
 
