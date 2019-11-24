@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+function is_natural_num() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: is_natural_num STR"
+        return 1
+    fi
+
+    [[ "$1" =~ [1-9][0-9]* ]]
+}
+
+if [[ $# -lt 1 ]] || [[ $# -gt 2 ]]; then
+    echo "Usage: get_lines START [END]";
+    echo "  Example: cat file.txt | get_lines 5 15";
+    return 1;
+fi;
+
+start="$1";
+end="$2";
+
+if ! is_natural_num "$start"; then
+    echo "Error get_lines: START must be a natural number";
+    echo "  (greater than 0)";
+    return 1;
+fi;
+if [[ -n "$end" ]] && ! is_natural_num "$end"; then
+    echo "Error get_lines: END must be a natural number";
+    echo "  (greater than 0)";
+    return 1;
+fi;
+if [[ -n "$end" ]] && [[ "$end" -lt "$start" ]]; then
+    echo "Error: end is less than start";
+    echo "  ${end} < ${start}";
+    return 1;
+fi;
+if [[ -n "$end" ]]; then
+    sed -n "${start},${end} p";
+else
+    tail -n+"$start";
+fi
