@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
 function usage() {
-    echo "Usage: $0 OPENING CLOSING [file*]"
+    echo "Usage: $0 OPENING [CLOSING [file*]]"
 }
 
-if [[ $# -lt 2 ]]; then
+if [[ $# -lt 1 ]]; then
    usage
    exit 1
 fi
@@ -23,7 +23,11 @@ closing="${closing//\//\\\/}"
 o="$opening"
 c="$closing"
 
-command="awk '/${opening}/ { found=1; } found { print } /${closing}/ { found=0; }'"
+if [[ "$closing" ]]; then
+    command="awk '/${opening}/ { found=1; } found { print } /${closing}/ { found=0; }'"
+else
+    command="awk '/${opening}/ { found=1; } found { print }'"
+fi
 
 if [[ "$has_files" ]]; then
     eachfile "$@" -- $command
