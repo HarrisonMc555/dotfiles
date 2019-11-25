@@ -23,6 +23,8 @@ ctrl-v:page-down\
     # Preview file with Ctrl-T
     export FZF_CTRL_T_OPTS="--preview '(bat --style=numbers --color=always 2> /dev/null {} || highlight -O ansi -l {} 2> /dev/null || cat {} || tree -C {}) 2> /dev/null | head -200'"
 
+    export FZF_ALT_C_COMMAND="fd -t d ."
+
     # cdf - cd into the directory of the selected file
     function cdf() {
         local file
