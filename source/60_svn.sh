@@ -3,22 +3,22 @@ if is_available svn; then
     # SVN shortcuts
     function svndiff()
     {
-        svn diff "$@" | colordiff | less -RX
+        (set -o pipefail; svn diff "$@" | colordiff | less -RX)
     }
 
     function svnwdiff()
     {
-        svn diff --diff-cmd="/Users/harrisonmccullough/.dotfiles/bin/svnwdiffhelper" "$@" | less -RX
+        (set -o pipefail; svn diff --diff-cmd="/Users/harrisonmccullough/.dotfiles/bin/svnwdiffhelper" "$@" | less -RX)
     }
 
     function svnpraise()
     {
-        svn praise "$@" | cat -n | less
+        (set -o pipefail; svn praise "$@" | cat -n | less)
     }
 
     function svncommitupdate()
     {
-        svn commit "$@" && svn update "$(svnroot)"
+        (set -o pipefail; svn commit "$@" && svn update "$(svnroot)")
     }
 
     function svnroot()
@@ -31,16 +31,16 @@ if is_available svn; then
         dir="$1"
         dir="${dir:=.}"
 
-        svn info "$dir" | sed -n 's/^Working Copy Root Path: \(.*\)/\1/p'
+        (set -o pipefail; svn info "$dir" | sed -n 's/^Working Copy Root Path: \(.*\)/\1/p')
     }
 
     function svnhelp()
     {
-        svn help "$@" | less
+        (set -o pipefail; svn help "$@" | less)
     }
 
     function svn_short_log() {
-        svn log "$@" | _svn_short_log
+        (set -o pipefail; svn log "$@" | _svn_short_log)
     }
 
     alias s='svn'
