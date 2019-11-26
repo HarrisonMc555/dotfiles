@@ -23,6 +23,7 @@ recipes=(
   grip
   ipython
   ispell
+  lsd
   lynx
   node
   openssh
