@@ -4,7 +4,6 @@ alias ls='lsd'
 alias la='ls -a'
 
 alias ll='ls -al'
-alias lsd='CLICOLOR_FORCE=1 ll | grep --color=never "^d"'
 
 if [[ -x "$(command -v tree)" ]] && [[ -x "$(command  -v which)" ]]; then
     __tree_bin="$(which tree)"
