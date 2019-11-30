@@ -8,8 +8,6 @@ alias time='/usr/bin/time'
 
 alias e='echo'
 alias l='less'
-alias less='bat'
-export BAT_PAGER='less -RX'
 
 if is_osx; then
     # Start ScreenSaver. This will lock the screen if locking is enabled.
