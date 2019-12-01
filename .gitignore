@@ -24,3 +24,8 @@
 /link/.emacs.d/meghanada
 /link/.emacs.d/cider-history
 *.bak
+
+# Config files that are too volatile
+config/okularrc
+config/kdeglobals
+config/konsolerc
