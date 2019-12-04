@@ -152,7 +152,9 @@ converted to PDF at the same location."
   (interactive)
   (move-beginning-of-line nil)
   (search-forward-regexp "[^ ]")
-  (forward-char 1)
+  (search-forward-regexp " ")
+  (search-forward-regexp "[^ ]")
+  (forward-char -1)
   (insert "[ ] "))
 
 (defun org-convert-to-checkbox-goto-next-item ()
