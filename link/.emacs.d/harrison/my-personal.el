@@ -114,5 +114,24 @@
 (setq ido-enable-flex-matching t)
 (ido-mode 1)
 
+(add-to-list 'ibuffer-never-show-predicates "^\\*dired")
+(setq ibuffer-bad-predicates
+      '(
+        "^\\*scratch\\*$"
+        "^\\*Messages\\*$"
+        "^\\*Warnings\\*$"
+        "^\\*Help\\*$"
+        "^\\*Info\\*$"
+        "^\\*Completions\\*$"
+        "^\\*Ediff Registry\\*$"
+        "^\\*dired"
+        "^magit"
+        "^\\*eglot"
+        "^\\*Flymake"
+        "^\\*Custom"
+        "^\\*Disabled Command\\*$"
+        ))
+(dolist (p ibuffer-bad-predicates) (add-to-list 'ibuffer-never-show-predicates p))
+
 (provide 'my-personal)
 ;;; my-personal.el ends here
