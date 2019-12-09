@@ -246,6 +246,7 @@ The same result can also be be achieved by \\[universal-argument] \\[unhighlight
 
 (defun join-line ()
   (interactive)
+  (move-end-of-line nil)
   (delete-horizontal-space)
   (when (not (is-at-end-of-line))
     (user-error "Not at end of line"))
