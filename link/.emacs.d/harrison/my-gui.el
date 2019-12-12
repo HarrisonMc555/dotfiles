@@ -37,7 +37,7 @@
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
 ;; Default font size
-(set-face-attribute 'default nil :height 125)
+(set-face-attribute 'default nil :height 105)
 
 ;; Save interprogram clipboard
 (setq save-interprogram-paste-before-kill t)
