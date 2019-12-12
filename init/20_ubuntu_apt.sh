@@ -25,13 +25,16 @@ function add_ppa() {
 
 # Misc.
 apt_packages+=(
+  bat
   build-essential
   curl
+  dos2unix
   file
   git
   htop
   imagemagick
   ipython
+  lsd
   nodejs
   openssh-client
   openssh-server
