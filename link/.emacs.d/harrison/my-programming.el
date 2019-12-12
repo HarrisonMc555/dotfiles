@@ -260,10 +260,14 @@
 (add-hook 'find-file-hook 'svn-commit-tmp-hook)
 
 ;; XML ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun my-nxml-mode-hook ()
-  ((setq-local nxml-child-indent 4 nxml-attribute-indent 4)))
-
-(add-hook 'nxml-mode-hook 'my-nxml-mode-hook)
+(add-hook 'nxml-mode-hook
+          (lambda ()
+            (progn
+              (setq-local nxml-child-indent 4)
+              (setq-local nxml-attribute-indent 4)
+              ;; optional key bindings, easier than hs defaults
+              (define-key nxml-mode-map (kbd "C-c h") 'hs-toggle-hiding)
+              )))
 
 (add-to-list 'hs-special-modes-alist
              '(nxml-mode
@@ -276,10 +280,6 @@
 
 
 (add-hook 'nxml-mode-hook 'hs-minor-mode)
-
-;; optional key bindings, easier than hs defaults
-(define-key nxml-mode-map (kbd "C-c h") 'hs-toggle-hiding)
-
 
 
 ;; Misc ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

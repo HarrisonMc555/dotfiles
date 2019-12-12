@@ -62,6 +62,9 @@
  '(hl-fg-colors
    (quote
     ("#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3")))
+ '(ibuffer-never-show-predicates
+   (quote
+    ("^\\*scratch\\*$" "^\\*Messages\\*$" "^\\*Warnings\\*$" "^\\*Help\\*$" "^\\*Info\\*$" "^\\*Completions\\*$" "^\\*Ediff Registry\\*$" "^\\*dired" "!^magit: " "^\\*eglot" "^\\*Flymake" "^\\*Custom" "^\\*Disabled Command\\*$" "^\\*Customize")) nil (ibuf-ext))
  '(indent-guide-delay -1)
  '(indent-guide-global-mode nil)
  '(indent-guide-recursive nil)
@@ -174,7 +177,6 @@
     jinja2-mode
     js2-mode
     magit
-    magit-popup
     monokai-theme
     pkg-info
     popup
@@ -219,8 +221,8 @@ Execute contents of BODY if included."
   (let ((load-it (lambda (f)
                    (load-file (concat (file-name-as-directory dir) f)))))
     (mapc load-it (directory-files dir nil "\\.el$"))))
-(load-directory "~/.emacs.d/harrison")
 (load-directory "~/.emacs.d/others")
+(load-directory "~/.emacs.d/harrison")
 (let ((file (expand-file-name "~/.emacs.d/harrison/LOCAL.el")))
   (when (file-exists-p file)
     (load-file file)))
