@@ -152,7 +152,9 @@ converted to PDF at the same location."
   (interactive)
   (move-beginning-of-line nil)
   (search-forward-regexp "[^ ]")
-  (forward-char 1)
+  (search-forward-regexp " ")
+  (search-forward-regexp "[^ ]")
+  (forward-char -1)
   (insert "[ ] "))
 
 (defun org-convert-to-checkbox-goto-next-item ()
@@ -244,6 +246,7 @@ The same result can also be be achieved by \\[universal-argument] \\[unhighlight
 
 (defun join-line ()
   (interactive)
+  (move-end-of-line nil)
   (delete-horizontal-space)
   (when (not (is-at-end-of-line))
     (user-error "Not at end of line"))

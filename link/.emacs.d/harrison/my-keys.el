@@ -122,5 +122,10 @@
  paredit
  (global-set-key (kbd "M-(") 'paredit-wrap-round))
 
+(with-library
+ move-text
+ (move-text-default-bindings)
+ )
+
 (provide 'my-keys)
 ;;; my-keys.el ends here
