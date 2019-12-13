@@ -127,5 +127,8 @@
  (move-text-default-bindings)
  )
 
+;; ibuffer
+(define-key ibuffer-mode-map (kbd "M-o") 'other-window)
+
 (provide 'my-keys)
 ;;; my-keys.el ends here
