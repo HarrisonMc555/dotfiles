@@ -1,3 +1,4 @@
+export PAGER=/usr/bin/less
 alias grep='grep --color=auto'
 
 # Add an "alert" alias for long running commands.  Use like so:
