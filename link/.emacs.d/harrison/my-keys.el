@@ -46,7 +46,7 @@
 
 (with-library
  rect
- (global-set-key (kbd "C-x r q") 'string-insert-rectangle))
+ (global-set-key (kbd "C-x r q") 'string-rectangle))
 
 (with-library
  ibuffer
