@@ -1,0 +1,57 @@
+#!/usr/bin/awk -f
+
+# Convert svn log output to put the message before the changed files.
+
+# Count every line after you find a separator line
+found {
+    counter++
+}
+
+# When you find a separator line, start counting
+/------------------------------------------------------------------------/ {
+    printf "Old paths: <<<%s>>>\n", paths
+    found=1
+    counter=0
+    paths=""
+}
+
+# The first line after a separator line contains the following info
+counter == 1 {
+    printf "Found info line\n"
+    print
+}
+
+counter == 2 && /^Changed paths:$/ {
+    printf "Found changed paths line\n"
+    in_paths=1
+    in_msg=0
+}
+
+counter == 2 && !/^Changed paths:$/ {
+    printf "No changed paths line, line was <<<%s>>>\n", $0
+    in_paths=0
+    in_msg=1
+}
+
+in_paths && /^$/ {
+    printf "End of paths\n"
+    in_paths=0
+    in_msg=1
+}
+
+in_paths && !/^$/ {
+    printf "Found another path\n"
+    printf "Old paths: <<<%s>>>", paths
+    paths += $0
+    printf "New paths: <<<%s>>>", paths
+}
+
+in_msg {
+    printf "Printing message\n"
+    print
+}
+
+END {
+    printf "Printing last paths"
+    printf "%s", paths
+}
