@@ -1,0 +1,19 @@
+#!/bin/sh
+
+# This block of code is an optional nice-to-have:
+# Attempt to fix range character(s) to ':' expected by svn
+# I often forget svn's syntax and use '-' or '..' instead of ':'.
+if [ "$#" -ge 1 ] ; then
+    firstarg=$(echo "$1" | sed 's/^\(-r\|--revision=\)\([0-9]\+\)[.-]\+/\1\2:/')
+    shift 1
+    set -- "$firstarg" "$@"
+fi
+if [ "$#" -ge 2 ] ; then
+    if [ \! -e "$2" ] ; then
+        secondarg=$(echo "$2" | sed 's/^\([0-9]\+\)[.-]\+/\1:/')
+        shift 2
+        set -- "$firstarg" "$secondarg" "$@"
+    fi
+fi
+
+exec svn diff --diff-cmd "cwdiff" "$@" | "$PAGER"

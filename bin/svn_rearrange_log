@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+text="$(cat)"
+
+summary="$(get_lines 2 2 <<< "$text")"
+files="$(findbetween '^Changed paths:$' '^$' <<< "$text")"
+message="$(findbetween '^$' <<< "$text" | get_lines 2)"
+
+echo "------------------------------------------------------------------------"
+echo "$summary"
+echo "$message"
+echo
+echo "$files"
+

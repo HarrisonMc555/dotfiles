@@ -1,0 +1,23 @@
+#!/usr/bin/awk -f
+
+BEGIN {
+    found_header = 0
+}
+
+/^Index: / {
+    found_header = 1
+}
+
+{
+    if (found_header > 2) {
+        found_header = 0
+    }
+
+    if (found_header) {
+        found_header++
+    } else {
+        print
+    }
+
+}
+
