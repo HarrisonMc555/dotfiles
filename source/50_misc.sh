@@ -62,3 +62,6 @@ set -o emacs
 
 z_file="$DOTFILES"/vendor/z/z.sh
 [[ -f "$z_file" ]] && source "$z_file"
+
+br_source='/Users/harrisonmccullough/Library/Preferences/org.dystroy.broot/launcher/bash/br'
+[[ -f "$br_source" ]] && source "$br_source"
