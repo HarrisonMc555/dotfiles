@@ -1,10 +1,17 @@
 if is_available svn; then
 
     # SVN shortcuts
-    function svndiff()
-    {
-        (set -o pipefail; svn diff "$@" | colordiff | less -RX)
-    }
+    if is_available delta; then
+        function svndiff()
+        {
+            (set -o pipefail; svn diff "$@" | svn_strip_diff_header | delta)
+        }
+    else
+        function svndiff()
+        {
+            (set -o pipefail; svn diff "$@" | colordiff | less -RX)
+        }
+    fi
 
     function svnwdiff()
     {
