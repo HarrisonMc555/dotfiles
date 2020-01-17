@@ -4,5 +4,8 @@ if is_available bat; then
     export MANPAGER="sh -c 'col -bx | bat -l man -p'"
     alias l='bat --style=plain'
     alias cat=bat
+    if is_available batgrep; then
+        alias bag='batgrep -p'
+    fi
 fi
 
