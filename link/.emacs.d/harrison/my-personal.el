@@ -114,5 +114,10 @@
 (setq ido-enable-flex-matching t)
 (ido-mode 1)
 
+(add-hook 'ibuffer-mode-hook
+          (lambda ()
+            (define-key ibuffer-mode-map "\C-x\C-f"
+              'ibuffer-ido-find-file)))
+
 (provide 'my-personal)
 ;;; my-personal.el ends here
