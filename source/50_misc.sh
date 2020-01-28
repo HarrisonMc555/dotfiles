@@ -66,3 +66,24 @@ z_file="$DOTFILES"/vendor/z/z.sh
 
 br_source='/Users/harrisonmccullough/Library/Preferences/org.dystroy.broot/launcher/bash/br'
 [[ -f "$br_source" ]] && source "$br_source"
+
+function all_colors() {
+    for x in {0..8}; do 
+        for i in {30..37}; do 
+            # echo -ne "\e[$x;$i""m\\\e[$x;$i    ""\e[0;37;40m "
+            echo -ne "\e[$x;$i""m\\\e[$x;$i    ""\e[0m "
+            for a in {40..47}; do 
+                # echo -ne "\e[$x;$i;$a""m\\\e[$x;$i;$a""m\e[0;37;40m "
+                echo -ne "\e[$x;$i;$a""m\\\e[$x;$i;$a""m\e[0m "
+            done
+            echo
+        done
+    done
+    echo ""    
+}
+
+function foreground_colors() {
+    for x in {30..39} {90..99}; do
+        echo -e "\e[$x""m\\\e[$x""m\e[0m"
+    done
+}
