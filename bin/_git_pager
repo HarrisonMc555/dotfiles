@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+if is_available delta; then
+    delta --dark "$@"
+else
+    $PAGER "$@"
+fi
