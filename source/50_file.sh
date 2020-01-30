@@ -112,3 +112,14 @@ function commandbin() {
 
     $command "$bin_location" "$@"
 }
+
+function cdbin ()
+{
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: cdbin EXECUTABLE_NAME"
+        return 1
+    fi
+    cd "$(dirname "$(which "$1")")"
+}
+
+alias cdb=cdbin
