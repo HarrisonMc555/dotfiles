@@ -70,6 +70,7 @@
  '(indent-guide-recursive nil)
  '(indent-tabs-mode nil)
  '(inhibit-startup-screen t)
+ '(ispell-choices-win-default-height 50)
  '(js2-indent-switch-body t)
  '(js2-strict-trailing-comma-warning nil)
  '(magit-diff-use-overlays nil)
