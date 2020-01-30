@@ -62,5 +62,26 @@
 
 (tool-bar-mode -1)
 
+;; http://blog.vivekhaldar.com/post/4809065853/dotemacs-extract-interactively-change-font-size
+(defun my/zoom-in ()
+  "Increase font size by 10 points"
+  (interactive)
+  (set-face-attribute 'default nil
+                      :height
+                      (+ (face-attribute 'default :height)
+                         10)))
+
+(defun my/zoom-out ()
+  "Decrease font size by 10 points"
+  (interactive)
+  (set-face-attribute 'default nil
+                      :height
+                      (- (face-attribute 'default :height)
+                         10)))
+
+;; change font size, interactively
+(global-set-key (kbd "C-M->") 'my/zoom-in)
+(global-set-key (kbd "C-M-<") 'my/zoom-out)
+
 (provide 'my-gui)
 ;;; my-gui.el ends here
