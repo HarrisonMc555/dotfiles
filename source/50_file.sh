@@ -70,21 +70,6 @@ function editbin() {
     commandbin "$editor" "$@"
 }
 
-function openbin() {
-    local opener
-    if [[ "$OPENBIN_COMMAND" ]]; then
-        opener="$OPENBIN_COMMAND"
-    elif [[ "$VISUAL" ]]; then
-        opener="$VISUAL"
-    elif [[ "$EDITOR" ]]; then
-        opener="$EDITOR"
-    else
-        opener=vi
-    fi
-
-    commandbin "$opener" "$@"
-}
-
 function commandbin() {
     local command="$1"
     shift
@@ -123,3 +108,4 @@ function cdbin ()
 }
 
 alias cdb=cdbin
+alias opb=openbin
