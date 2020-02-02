@@ -70,21 +70,6 @@ function editbin() {
     commandbin "$editor" "$@"
 }
 
-function openbin() {
-    local opener
-    if [[ "$OPENBIN_COMMAND" ]]; then
-        opener="$OPENBIN_COMMAND"
-    elif [[ "$VISUAL" ]]; then
-        opener="$VISUAL"
-    elif [[ "$EDITOR" ]]; then
-        opener="$EDITOR"
-    else
-        opener=vi
-    fi
-
-    commandbin "$opener" "$@"
-}
-
 function commandbin() {
     local command="$1"
     shift
@@ -112,3 +97,15 @@ function commandbin() {
 
     $command "$bin_location" "$@"
 }
+
+function cdbin ()
+{
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: cdbin EXECUTABLE_NAME"
+        return 1
+    fi
+    cd "$(dirname "$(which "$1")")"
+}
+
+alias cdb=cdbin
+alias opb=openbin

@@ -209,4 +209,12 @@ AWK
     #   }
     # fi
 
+    function gcd() {
+        if [[ $# -ne 0 ]]; then
+            echo "Usage: gcd"
+            return 1
+        fi
+        cd "$(git rev-parse --show-toplevel)"
+    }
+
 fi
