@@ -19,5 +19,7 @@ else
 fi
 
 function ps_process_names() {
-    ps aux | tail -n+2 | awk '{print $11}'
+    ps aux | tail -n+2 | awk '{ s = ""; for (i = 11; i <= NF; i++) s = s $i " "; print s }'
 }
+
+export -f ps_process_names
