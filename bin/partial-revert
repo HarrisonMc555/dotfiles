@@ -37,5 +37,5 @@ svn revert "$file" || die "Could not revert file $file"
 cp "$file" "$reverted_file" || die "Could not create temp file $reverted_file"
 cp "$altered_file" "$file" || die "Could not copy changes back into $file"
 $diff_cmd "$reverted_file" "$file"
-    # emacsclient -e "(ediff-files \"$altered_file\" \"$file\")" &&
-    # open -a Emacs
+# emacsclient -e "(ediff-files \"$altered_file\" \"$file\")" &&
+# open -a Emacs
