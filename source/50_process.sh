@@ -1,22 +1,16 @@
 # Processes
 
-if is_available rg; then
-    function psg() {
-        ps aux |
-            grep -v -e "grep $@" -e "grep -v -e \"'grep $@'\"" |
-            grep $@ --color=always |
-            sed -e 'G' |
-            less
-    }
-else
-    function psg() {
-        ps aux |
-            rg -v -e "rg $@" -e "rg -v -e \"'rg $@'\"" |
-            rg $@ --color=always |
-            sed -e 'G' |
-            less
-    }
-fi
+function psg() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: psg PATTERN"
+        return 1
+    fi
+    ps aux |
+        _grep -v -e "$_SEARCH_BINARY $@" -e "$_SEARCH_BINARY -v -e \"'$_SEARCH_BINARY $@'\"" |
+        _grep $@ --color=always |
+        sed -e 'G' |
+        less
+}
 
 function ps_process_names() {
     ps aux | tail -n+2 | awk '{ s = ""; for (i = 11; i <= NF; i++) s = s $i " "; print s }'
