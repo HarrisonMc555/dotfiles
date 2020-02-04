@@ -18,12 +18,4 @@ if is_available rg; then
         rghl "$@"
     }
 
-    function psg() {
-        ps aux |
-            rg -v -e "rg $@" -e "rg -v -e \"'rg $@'\"" |
-            rg $@ --color=always |
-            sed -e 'G' |
-            less
-    }
-
 fi

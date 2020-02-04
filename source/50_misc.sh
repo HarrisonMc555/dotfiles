@@ -46,14 +46,6 @@ function e_underline()   {
     echo -e "\n${__tput_smul}${str}${__tput_rmul}"
 }
 
-function psg() {
-    ps aux |
-        grep -v -e "grep $@" -e "grep -v -e \"'grep $@'\"" |
-        grep $@ --color=always |
-        sed -e 'G' |
-        less
-}
-
 # Set the terminal's title bar.
 function titlebar() {
     echo -n $'\e]0;'"$*"$'\a'
