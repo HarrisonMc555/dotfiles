@@ -35,6 +35,7 @@ if is_available ssh; then
             cp "$orig_file" "$backup_orig_file"
         fi
         for f in ~/.ssh/configs/*; do
+            [[ "$f" = *~ ]] && continue # Skip backups
             (
                 echo "# $(basename "$f")"
                 cat "$f"
