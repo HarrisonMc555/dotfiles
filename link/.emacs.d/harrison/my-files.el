@@ -52,5 +52,9 @@
       (find-file (pop killed-file-list))
     (message "No recently killed file.")))
 
+(require 'recentf)
+
+(recentf-mode 1)
+
 (provide 'my-files)
 ;;; my-files.el ends here

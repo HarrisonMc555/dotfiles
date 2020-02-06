@@ -127,6 +127,11 @@
  (move-text-default-bindings)
  )
 
+;;  recentf
+(with-library
+ recentf
+ (global-set-key (kbd "C-x f") 'recentf-open-files))
+
 ;; ibuffer
 (define-key ibuffer-mode-map (kbd "M-o") 'other-window)
 
