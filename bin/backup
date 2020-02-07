@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+backup_location="$HOME/code/backup/$(date +'%Y-%m-%d_%H-%M-%S')"
+mkdir -p "$backup_location" || [[ -d "$backup_location" ]] || {
+    echo "Could not create backup location $backup_location"
+    exit 1
+}
+
+function all_modified() {
+    svn status "$@" | sed -n 's_^M *\(.*\)_\1_p'
+}
+
+readarray -t modified_files < <(all_modified "$@")
+
+copied_something=false
+for f in "${modified_files[@]}"; do
+    filename="${f##*/}"
+    newfile="${backup_location}/${filename}"
+    # Skip files that are identical
+    if cmp -s "$f" "$newfile"; then
+        continue
+    fi
+    cp -i -v "$f" "$newfile" && copied_something=true
+done
+
+if ! "$copied_something"; then
+    echo "Nothing backed up, removing $backup_location"
+    rmdir "$backup_location"
+fi
