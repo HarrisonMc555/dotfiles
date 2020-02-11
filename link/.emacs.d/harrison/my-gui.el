@@ -83,5 +83,8 @@
 (global-set-key (kbd "C-M->") 'my/zoom-in)
 (global-set-key (kbd "C-M-<") 'my/zoom-out)
 
+;; Quit emacs with delete-frame so you don't accidentally delete last one
+(global-set-key (kbd "C-x C-c") 'delete-frame)
+
 (provide 'my-gui)
 ;;; my-gui.el ends here
