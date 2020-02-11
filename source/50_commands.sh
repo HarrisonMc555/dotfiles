@@ -1,0 +1,1 @@
+alias loop='. loop'
