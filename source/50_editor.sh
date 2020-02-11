@@ -8,13 +8,16 @@ alias emacs="emacsclient -n -a ''"
 alias emacsw="emacsclient -c -n -a ''"
 alias emacst="emacsclient -c -t -a ''"
 
-function is_emacs_deamon_running() {
-    ps_process_names | _grep '^/Applications/Emacs Daemon.app/' -q
-}
+if is_osx; then
+    function is_emacs_deamon_running() {
+        local name='^/Applications/Emacs.app/Contents/MacOS/Emacs-x86_64-10_14 --bg-daemon'
+        ps_process_names | _grep "$name" -q
+    }
 
-function is_emacs_gui_running() {
-    ps_process_names | _grep '^/Applications/Emacs.app/' -q
-}
+    function is_emacs_gui_running() {
+        ps_process_names | _grep '^/Applications/Emacs.app/' -q
+    }
 
-export -f is_emacs_deamon_running
-export -f is_emacs_gui_running
+    export -f is_emacs_deamon_running
+    export -f is_emacs_gui_running
+fi
