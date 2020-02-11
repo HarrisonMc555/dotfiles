@@ -48,6 +48,11 @@ if is_available svn; then
         (set -o pipefail; svn help "$@" | less)
     }
 
+    function svnlog()
+    {
+        (set -o pipefail; svn log "$@" | less)
+    }
+
     function svn_short_log() {
         (set -o pipefail; svn log "$@" | _svn_short_log)
     }
@@ -63,5 +68,7 @@ if is_available svn; then
     alias sup='svn update $(svnroot)'
     alias shelp='svnhelp'
     alias svnblame=svnpraise
+    alias slo='svnlog'
+    alias slog='svnlog'
 
 fi
