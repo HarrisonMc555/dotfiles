@@ -226,7 +226,7 @@ function __prompt_command() {
 }
 
 function is_iterm2() {
-  is_osx && [[ "$TERM_PROGRAM" = iTerm.app ]]
+  is_osx && [[ "$TERM_PROGRAM" = iTerm.app ]] && [[ "$TERM" != dumb ]]
 }
 
 mkdir -p ~/.logs
