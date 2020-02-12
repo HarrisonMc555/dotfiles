@@ -50,7 +50,7 @@ function round() {
     value=$(echo "scale=$((scale + 1)); $1" | bc)
     result=$(echo "scale=${scale}; "\
                   "(((10^${scale})*${value})+0.5)/(10^${scale})" | bc)
-    echo $(printf "%.${scale}f" "$result")
+    printf "%.${scale}f" "$result"
 }
 
 function num_diff_lines() {

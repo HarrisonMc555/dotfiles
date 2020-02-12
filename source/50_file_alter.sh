@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 function space2lines() {
-    if [[ $# > 1 ]]; then
+    if [[ $# -gt 1 ]]; then
         echo "Usage: lines [file]*"
         return 1
     fi
@@ -10,7 +10,7 @@ function space2lines() {
 }
 
 function doublelines() {
-    if [[ $# > 1 ]]; then
+    if [[ $# -gt 1 ]]; then
         echo "Usage: doublelines [file]*"
         return 1
     fi

@@ -45,5 +45,11 @@ function cdl()
 
 # Create a new directory and enter it
 function md() {
-    mkdir -p "$@" && cd "$@"
+    mkdir -p "$@" && {
+        if [[ $# -eq 1 ]]; then
+            cd "$@" || echo "Could not cd to '$*'"
+        else
+            echo "Not trying to cd to '$*'"
+        fi
+    }
 }

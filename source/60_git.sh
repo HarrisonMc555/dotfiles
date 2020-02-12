@@ -85,14 +85,14 @@ if is_available git; then
 
     # open all changed files (that still actually exist) in the editor
     function gedit() {
+        if [[ $# -lt 1 ]] || [[ $# -gt 2 ]]; then
+            echo "Usage: gedit FROM [UNTIL]"
+            return 1
+        fi
         local files
-        local _IFS="$IFS"
-        IFS=$'\n' files=($(git diff --name-status "$@" | grep -v '^D' | cut -f2 | sort | uniq))
-        IFS="$_IFS"
+        while IFS=$'\n' read -r file; do files+="$file"; done < <(git diff --name-status "$@" | grep -v '^D' | cut -f2 | sort | uniq)
         echo "Opening files modified $([[ "$2" ]] && echo "between $1 and $2" || echo "since $1")"
-        gcd
-        q "${files[@]}"
-        cd - > /dev/null
+        $(visual_nowait_editor) "${files[@]}"
     }
 
     # # add a github remote by github username
@@ -119,7 +119,7 @@ if is_available git; then
 
     # git log with per-commit cmd-clickable GitHub URLs (iTerm)
     function gitfiles() {
-        git log $* --name-status --color | awk "$(cat <<AWK
+        git log "$@" --name-status --color | awk "$(cat <<AWK
     /^.*commit [0-9a-f]{40}/ {sha=substr(\$2,1,7)}
     /^[MA]\t/ {printf "%s\t$(gurl)/blob/%s/%s\n", \$1, sha, \$2; next}
     /.*/ {print \$0}
@@ -137,6 +137,7 @@ AWK
     # alias gpu='git web--browse $(gurlp)'
 
     # Just the last few commits, please!
+    # shellcheck disable=SC2139
     for n in {1..5}; do alias gf$n="gf -n $n"; done
 
     # function gj() { git-jump "${@:-next}"; }

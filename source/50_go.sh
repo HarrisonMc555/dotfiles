@@ -5,7 +5,7 @@ if is_available go; then
     export GOPATH="${HOME}/.go"
     if is_osx; then
         # brew --prefix is kind of slow
-        brew_prefix="$(dirname $(dirname $(type -p brew)))"
+        brew_prefix="$(dirname "$(dirname "$(type -p brew)")")"
         export GOROOT="$brew_prefix"/opt/go
         # export GOROOT="$(brew --prefix golang)/libexec"
     else

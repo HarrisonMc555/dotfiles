@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2209 disable=SC2153
 
 # Files will be created with these permissions:
 # files 644 -rw-r--r-- (666 minus 022)
@@ -11,7 +12,7 @@ alias df='df -h'
 
 # Recursively delete `.DS_Store` files
 function dsstore() {
-    dirs="$@"
+    dirs=( "$@" )
     if [[ ! "$1" ]]; then
         dirs=( . )
     fi
@@ -29,6 +30,7 @@ function tilde() {
 
 function editbin() {
     local editor
+    # 
     if [[ "$EDITBIN_COMMAND" ]]; then
         editor="$EDITBIN_COMMAND"
     elif [[ "$VISUAL" ]]; then
@@ -106,7 +108,8 @@ function cdbin ()
         echo "Usage: cdbin EXECUTABLE_NAME"
         return 1
     fi
-    cd "$(dirname "$(which "$1")")"
+    bin_dir="$(dirname "$(which "$1")")"
+    cd "$bin_dir" || >&2 echo "Could not cd to '$bin_dir'"
 }
 
 alias cdb=cdbin

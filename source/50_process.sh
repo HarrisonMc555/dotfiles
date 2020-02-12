@@ -8,8 +8,8 @@ function psg() {
         return 1
     fi
     ps aux |
-        _grep -v -e "$_SEARCH_BINARY $@" -e "$_SEARCH_BINARY -v -e \"'$_SEARCH_BINARY $@'\"" |
-        _grep $@ --color=always |
+        _grep -v -e "$_SEARCH_BINARY $*" -e "$_SEARCH_BINARY -v -e \"'$_SEARCH_BINARY $*'\"" |
+        _grep "$@" --color=always |
         sed -e 'G' |
         less
 }

@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2046 disable=SC2016
 
 if is_available fzf; then
 
@@ -38,13 +39,12 @@ ctrl-v:page-down\
     #   - Bypass fuzzy finder if there's only one match (--select-1)
     #   - Exit if there's no match (--exit-0)
     function fe() {
-        local files e
-        IFS=$'\n' files=($(ff --query="$1" --multi --select-1 --exit-0))
-        if [[ -n "$files" ]]; then
-            # e=${VISUAL:-$EDITOR}
-            # e=${e:-vim}
-            e="emacsclient -a '' -n"
-            histeval $e "${files[@]}"
+        local files
+        files=()
+        while IFS=$'' read -r line; do files+=("$line"); done < <(ff --query="$1" --multi --select-1 --exit-0)
+        echo "files = ${files[*]}"
+        if [[ "${#files[@]}" -ne 0 ]]; then
+            histeval $(visual_nowait_editor) "${files[@]}"
         fi
     }
 
@@ -52,29 +52,30 @@ ctrl-v:page-down\
     #   - CTRL-O to open with `open` command,
     #   - CTRL-E or Enter key to open with the $EDITOR
     function fo() {
-        local out file key e
+        local out file key
         IFS=$'\n' out=("$(ff --query="$1" --exit-0 --expect=ctrl-o,ctrl-e)")
-        key=$(head -1 <<< "$out")
-        file=$(head -2 <<< "$out" | tail -1)
-        if [ -n "$file" ]; then
-            # e=${VISUAL:-$EDITOR}
-            # e=${e:-vim}
-            e="emacsclient -a '' -n"
-            echo $e
-            [ "$key" = ctrl-o ] && open "$file" || histeval $e "$file"
+        key=$(head -1 <<< "${out[@]}")
+        file=$(head -2 <<< "${out[@]}" | tail -1)
+        [[ -z "$file" ]] && return
+        if [[ "$key" = ctrl-o ]]; then
+            open "$file"
+        else
+            histeval $(visual_nowait_editor) "$file"
         fi
     }
 
     function fsr() {
-        local files e
-        IFS=$'\n' files=($(ff --query="$1" --multi --select-1 --exit-0))
-        if [[ -n "$files" ]]; then
+        local files
+        files=()
+        while IFS=$'' read -r line; do files+=("$line"); done < <(ff --query="$1" --multi --select-1 --exit-0)
+        if [[ "${#files[@]}" -ne 0 ]]; then
             histeval source "${files[@]}"
         fi
     }
 
     # Try bat, highlight, coderay, rougify in turn, then fall back to cat
     function ff() {
+        # shellcheck disable=SC2016
         fzf --preview '[[ $(file --mime {}) =~ binary ]] &&
                  echo {} is a binary file ||
                  (bat --style=numbers --color=always {} ||
@@ -95,7 +96,7 @@ ctrl-v:page-down\
 
         if [ "x$pid" != "x" ]
         then
-            echo $pid | xargs kill -${1:-9}
+            echo "$pid" | xargs kill "-${1:-9}"
         fi
     }
 
@@ -104,25 +105,25 @@ ctrl-v:page-down\
         # using "brew search" as source input
         # mnemonic [B]rew [I]nstall [P]lugin
         function bip() {
-            local inst=$(brew search | fzf -m)
-
-            if [[ $inst ]]; then
-                for prog in $(echo $inst); do
-                    histeval brew install $prog
-                done
-            fi
+            local packages
+            packages=()
+            while IFS=$'' read -r line; do packages+=("$line"); done < <(brew search | fzf -m)
+            [[ "${#packages[@]}" -eq 0 ]] && return
+            for package in "${packages[@]}"; do
+                histeval brew install "$package"
+            done
         }
 
         # Update (one or multiple) selected application(s)
         # mnemonic [B]rew [U]pdate [P]lugin
         function bup() {
-            local upd=$(brew leaves | fzf -m)
-
-            if [[ $upd ]]; then
-                for prog in $(echo $upd); do
-                    histeval brew upgrade $prog
-                done
-            fi
+            local packages
+            packages=()
+            while IFS=$'' read -r line; do packages+=("$line"); done < <(brew leaves | fzf -m)
+            [[ "${#packages[@]}" -eq 0 ]] && return
+            for package in "${packages[@]}"; do
+                histeval brew upgrade "$package"
+            done
         }
     fi
 

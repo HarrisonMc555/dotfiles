@@ -18,6 +18,7 @@ if is_osx; then
 fi
 
 if is_ubuntu; then
+    # shellcheck disable=SC2120
     function pbcopy() {
         xclip -i -selection clipboard "$@"
     }
