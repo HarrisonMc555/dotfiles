@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 export PAGER=/usr/bin/less
 alias grep='grep --color=auto'
 

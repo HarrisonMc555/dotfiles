@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 if is_available emacs; then
 
     alias em="emacs"

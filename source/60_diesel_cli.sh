@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 _diesel() {
     local i cur prev opts cmds
     COMPREPLY=()

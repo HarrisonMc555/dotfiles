@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 if is_available svn && is_available fzf; then
 
     function is_in_svn_repo() {

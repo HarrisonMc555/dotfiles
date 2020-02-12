@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Allow prompt to be restored to default.
 if [[ "${#__PROMPT_DEFAULT[@]}" == 0 ]]; then
   __PROMPT_DEFAULT=("$PS1" "$PS2" "$PS3" "$PS4")

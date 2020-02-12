@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 if is_available git && is_available fzf; then
 
     function is_in_git_repo() {

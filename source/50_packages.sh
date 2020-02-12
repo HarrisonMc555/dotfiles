@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 if is_osx; then
     alias cask="brew cask"
 fi

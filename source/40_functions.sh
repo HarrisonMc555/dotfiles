@@ -1,9 +1,11 @@
-function histeval() {
+#!/usr/bin/env bash
+
+histeval() {
     history -s "$@"
     eval "$@"
 }
 
-function is_available() {
+is_available() {
     if [[ $# -ne 1 ]]; then
         echo "Usage: is_available CMD"
         echo "CMD can be a binary, alias, function, or anything that can be "\

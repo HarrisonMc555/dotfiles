@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 function max_line_length() {
     awk '{print length}' "$@" | sort -nr | head -1
 }

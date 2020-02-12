@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 if is_available go; then
 
     export GOPATH="${HOME}/.go"

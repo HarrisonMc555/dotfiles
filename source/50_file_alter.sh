@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 function space2lines() {
     if [[ $# > 1 ]]; then
         echo "Usage: lines [file]*"

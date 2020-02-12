@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 if is_osx; then
     alias safari='open -a safari'
     alias chrome="open -a google\ chrome"

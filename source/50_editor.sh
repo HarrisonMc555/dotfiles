@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # Editing
 
 export EDITOR='emacsclient -t'

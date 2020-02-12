@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 if is_available rg; then
 
     export RIPGREP_CONFIG_PATH=~/.ripgreprc

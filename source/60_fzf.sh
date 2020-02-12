@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 if is_available fzf; then
 
     [ -f ~/.fzf.bash ] && source ~/.fzf.bash

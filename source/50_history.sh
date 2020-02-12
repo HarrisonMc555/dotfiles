@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # History settings
 
 # Allow use to re-edit a failed history substitution.

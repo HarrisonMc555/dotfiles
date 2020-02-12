@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 if is_available svn; then
 
     # SVN shortcuts

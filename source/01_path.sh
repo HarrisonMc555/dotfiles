@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 paths_rev=(
   "$DOTFILES"/bin
   ~/.local/sbin

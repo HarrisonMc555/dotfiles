@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 function find_no_err() {
     find "$@" 2> >(grep -v -E \
                         -e '^find: .*: Permission denied$' \

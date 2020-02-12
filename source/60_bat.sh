@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 if is_available bat; then
     export PAGER='bat --style=plain'
     export BAT_PAGER='less -RX'

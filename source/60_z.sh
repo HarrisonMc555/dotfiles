@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 if is_available z; then
 
     # Fast directory switching

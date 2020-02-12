@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 # OSX-only stuff. Abort if not OSX.
 if is_osx; then
 
