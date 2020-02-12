@@ -282,6 +282,10 @@
 (add-hook 'nxml-mode-hook 'hs-minor-mode)
 
 
+;; sh-mode ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(add-hook 'sh-mode-hook
+          (lambda () (flycheck-mode t)))
+
 ;; Misc ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Try rust projects before version-control (vc) projects
