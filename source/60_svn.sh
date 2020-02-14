@@ -62,8 +62,8 @@ if is_available svn; then
 
     alias s='svn'
     alias ss='svn st'
-    alias sd='svndiff'
-    alias sdw='svnwdiff'
+    alias svd='svndiff'
+    alias svdw='svnwdiff'
     alias swd='svnwdiff'
     alias sp='svnpraise'
     alias srev='svn revert'
