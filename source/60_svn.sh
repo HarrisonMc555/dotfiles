@@ -34,7 +34,7 @@ if is_available svn; then
     {
         # https://stackoverflow.com/a/1242377/7343786
 
-        dir="$(realpath $(pwd))"
+        dir="$(realpath "$(pwd)")"
         while [[ ! -d "${dir}/.svn" ]] && [[ "$dir" != "/" ]]; do
             dir="$(realpath "$dir"/..)"
         done
@@ -42,6 +42,7 @@ if is_available svn; then
             echo "$dir"
         else
             echo "No .svn directory found in $(pwd) or any parents." >&2
+            return 1
         fi
     }
 
