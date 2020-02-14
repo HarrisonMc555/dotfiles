@@ -114,6 +114,7 @@
     (local-set-key (kbd "<M-S-return>") 'org-insert-checkbox-respect-contents)
     (local-set-key (kbd "C-S-n") 'org-next-item)
     (local-set-key (kbd "C-S-p") 'org-previous-item)
+    (local-set-key (kbd "M-q") 'org-fill-paragraph)
     )
 
   (add-hook 'org-mode-hook 'my-org-mode-hook))

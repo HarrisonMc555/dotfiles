@@ -147,6 +147,7 @@
  ;; If there is more than one, they won't work right.
  '(ediff-fine-diff-A ((t (:background "firebrick3"))))
  '(ediff-fine-diff-B ((t (:background "green3"))))
+ '(org-code ((t (:foreground "dark gray"))))
  '(region ((t (:inherit highlight :background "dark blue")))))
 
 ;; list the packages you want
