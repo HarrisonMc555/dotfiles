@@ -6,6 +6,8 @@ if is_available z; then
     mkdir -p "$DOTFILES"/caches/z
     _Z_NO_PROMPT_COMMAND=1
     _Z_DATA="$DOTFILES"/caches/z/z
+    export _Z_NO_PROMPT_COMMAND
+    export _Z_DATA
     . "$DOTFILES"/vendor/z/z.sh
 
     function zp() {
@@ -15,4 +17,5 @@ if is_available z; then
             popd > /dev/null || return 1
         fi
     }
+
 fi

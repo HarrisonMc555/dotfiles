@@ -152,7 +152,7 @@ AWK
         echo "Diff name-status & stat for range: $range"
         IFS=$'\n'
 
-        lines=($(git diff --name-status "$range"))
+        mapfile -t lines < <(git diff --name-status "$range")
         code=$?; [[ $code != 0 ]] && return $code
         declare -A modes
         for line in "${lines[@]}"; do
@@ -162,7 +162,7 @@ AWK
         done
 
         file_len=0
-        lines=($(git diff -M --stat --stat-width=999 "$range"))
+        mapfile -t lines < <(git diff -M --stat --stat-width=999 "$range")
         # shellcheck disable=SC2016
         line_regex='s/\s*([^|]+?)\s*\|.*/$1/'
         for line in "${lines[@]}"; do
@@ -172,8 +172,10 @@ AWK
         graph_len=$((COLUMNS-file_len-10))
         (( graph_len <= 0 )) && graph_len=1
 
-        lines=($(git diff -M --stat --stat-width=999 --stat-name-width="$file_len" \
-                     --stat-graph-width=$graph_len --color "$range"))
+        mapfile -t lines < <(
+            git diff -M --stat --stat-width=999 \
+                --stat-name-width="$file_len" \
+                --stat-graph-width=$graph_len --color "$range")
         e=$(echo -e "\033")
         r="$e[0m"
         declare -A c=([M]="1;33" [D]="1;31" [A]="1;32" [R]="1;34")
@@ -188,7 +190,7 @@ AWK
                 color=0; [[ "$mode" ]] && color=${c[$mode]}
                 line="$e[${color}m$line"
             fi
-            echo "$line" | sed "s/\|/$e[0m$mode \|/"
+            echo "${line/|/${e}[0m${mode} |/}"
         done
         unset IFS
     }
