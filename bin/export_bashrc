@@ -57,15 +57,16 @@ if [[ -r "$dotfiles_bin" ]]; then
     (
         echo "# ===== $(basename "$dotfiles_bin") ====="
         begin_pat='^# GENERAL PURPOSE EXPORTED VARS / FUNCTIONS$'
+        # shellcheck disable=SC2016
         end_pat='^\[\[ "\$1" == "source" \]\] && return$'
-        cat "$dotfiles_bin" | findbetween "$begin_pat" "$end_pat"
+        findbetween "$begin_pat" "$end_pat" < "$dotfiles_bin"
     ) >> "$bashrc_file"
 fi
 
 for file in "${files[@]}"; do
     [[ "${ignore_files[$file]+isset}" ]] && continue
     (
-        echo "# ===== $(basename $file) ====="
+        echo "# ===== $(basename "$file") ====="
         echo
         cat "$file"
         echo

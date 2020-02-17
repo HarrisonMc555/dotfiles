@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 function is_osx() {
-  [[ "$OSTYPE" =~ ^darwin ]] || return 1
+    [[ "$OSTYPE" =~ ^darwin ]] || return 1
 }
 
 is_osx || { echo "Not OS X"; exit 1; }
@@ -19,14 +19,14 @@ Copyright (c) 2012 "Cowboy" Ben Alman
 Licensed under the MIT license.
 http://benalman.com/about/license/
 HELP
-exit; fi
+                                                exit; fi
 
 ssid=$(/System/Library/PrivateFrameworks/Apple80211.framework/Versions/A/Resources/airport -I | sed -En 's/^ +SSID: +//p')
 
 if [ "$1" ]; then
-  if [ "$(echo $ssid | grep -w $1)" ]; then
-    echo $1
-  fi
+    if echo "$ssid" | grep -w "$1" -q; then
+        echo "$1"
+    fi
 else
-  echo $ssid
+    echo "$ssid"
 fi

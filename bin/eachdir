@@ -56,8 +56,9 @@ HELP
     fi
 
     # For underlining headers.
-    local h1="$(tput smul)"
-    local h2="$(tput rmul)"
+    local h1 h2
+    h1="$(tput smul)"
+    h2="$(tput rmul)"
 
     # Store any dirs passed before -- in an array.
     local dashes d
@@ -85,7 +86,7 @@ HELP
         if [[ "$no_enter" ]]; then
             output="$( (eval "$@") 2>&1 )"
         else
-            output="$( (cd "$d"; eval "$@") 2>&1 )"
+            output="$( (cd "$d" && eval "$@") 2>&1 )"
         fi
         if [[ "$output" ]]; then
             # If the command had output, display a header and that output.
@@ -97,7 +98,7 @@ HELP
     done
 
     # List any dirs that had no output.
-    if [[ ${#nops[@]} > 0 ]]; then
+    if [[ ${#nops[@]} -gt 0 ]]; then
         echo "${h1}no output from${h2}"
         for d in "${nops[@]}"; do echo "$d"; done
     fi

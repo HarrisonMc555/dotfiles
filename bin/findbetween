@@ -16,21 +16,20 @@ if [[ $# -gt 2 ]]; then
 fi
 shift; shift
 
-delimiter="/"
 opening="${opening//\//\\\/}"
 closing="${closing//\//\\\/}"
-
-o="$opening"
-c="$closing"
 
 if [[ "$closing" ]]; then
     command="awk '/${opening}/ { found=1; } found { print } /${closing}/ { found=0; }'"
 else
+    # shellcheck disable=2089
     command="awk '/${opening}/ { found=1; } found { print }'"
 fi
 
 if [[ "$has_files" ]]; then
+    # shellcheck disable=2090 disable=2086
     eachfile "$@" -- $command
 else
+    # shellcheck disable=2086
     eval $command
 fi

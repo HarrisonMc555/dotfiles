@@ -53,8 +53,9 @@ HELP
     fi
 
     # For underlining headers.
-    local header="$(tput smul)"
-    local endheader="$(tput rmul)"
+    local header endheader
+    header="$(tput smul)"
+    endheader="$(tput rmul)"
 
     # Store any files passed before -- in an array.
     local dashes f
@@ -99,7 +100,7 @@ HELP
     done
 
     # List any files that had no output.
-    if [[ ${#nops[@]} > 0 ]]; then
+    if [[ ${#nops[@]} -gt 0 ]]; then
         echo "${header}no output from${endheader}"
         for f in "${nops[@]}"; do echo "$f"; done
     fi

@@ -55,7 +55,8 @@ main() {
 }
 
 isAmazonMusicPlaying() {
-    local VALUE="$(/usr/bin/osascript 2>/dev/null <<'APPLESCRIPT'
+    local VALUE
+    VALUE="$(/usr/bin/osascript 2>/dev/null <<'APPLESCRIPT'
 set isplaying to false
 tell application "System Events"
     -- set frontmostProcess to first process where it is frontmost

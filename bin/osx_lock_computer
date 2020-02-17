@@ -8,7 +8,7 @@ is_osx || { echo "Not OS X"; exit 1; }
 
 sleep 0.5
 
-if [[ "$(ioreg -c AppleSmartBattery | grep '"ExternalConnected" = Yes')" ]]; then
+if ioreg -c AppleSmartBattery | grep '"ExternalConnected" = Yes' -q; then
   # Plugged in: start screensaver.
   open /System/Library/Frameworks/ScreenSaver.framework/Versions/A/Resources/ScreenSaverEngine.app
 else
