@@ -78,9 +78,9 @@
   (interactive)
   (if (use-region-p)
       (nil)
-    (kill-ring-save (point) (1+ (line-end-position)))
-    (goto-char (line-end-position))
-    (forward-char)))
+    (let ((pos (min (1+ (line-end-position)) (point-max))))
+      (kill-ring-save (point) pos)
+      (goto-char pos))))
 
 (defun indent-dwim ()
   "Indents the current selective if active, else the current line"
