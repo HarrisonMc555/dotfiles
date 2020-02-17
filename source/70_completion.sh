@@ -2,23 +2,23 @@
 
 if ! shopt -oq posix; then
   if [ -f /usr/share/bash-completion/bash_completion ]; then
-    . /usr/share/bash-completion/bash_completion
+    source /usr/share/bash-completion/bash_completion
   elif [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
+    source /etc/bash_completion
   fi
 fi
 
 if is_osx; then
   # brew --prefix is kind of slow
-  brew_prefix="$(dirname $(dirname $(type -p brew)))"
+  brew_prefix="$(dirname "$(dirname "$(type -p brew)")")"
   export BASH_COMPLETION_COMPAT_DIR="${brew_prefix}/etc/bash_completion.d"
   # export BASH_COMPLETION_COMPAT_DIR="$(brew --prefix)/etc/bash_completion.d"
   [[ -r "$(brew --prefix)/etc/profile.d/bash_completion.sh" ]] &&
-    . "$(brew --prefix)/etc/profile.d/bash_completion.sh"
+    source "$(brew --prefix)/etc/profile.d/bash_completion.sh"
 fi
 
 if is_available fzf; then
-    fzf_completion="$(dirname $(dirname $(realpath $(which fzf))))/shell/completion.bash"
+    fzf_completion="$(dirname "$(dirname "$(realpath "$(which fzf)")")")/shell/completion.bash"
     [[ -f "$fzf_completion" ]] && source "$fzf_completion"
 fi
 

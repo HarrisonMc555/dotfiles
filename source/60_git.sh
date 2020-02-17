@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC1087
 
 if is_available git; then
 
@@ -155,22 +156,23 @@ AWK
         code=$?; [[ $code != 0 ]] && return $code
         declare -A modes
         for line in "${lines[@]}"; do
-            file="$(echo $line | cut -f2)"
-            mode=$(echo $line | cut -f1)
+            file="$(echo "$line" | cut -f2)"
+            mode=$(echo "$line" | cut -f1)
             modes["$file"]=$mode
         done
 
         file_len=0
         lines=($(git diff -M --stat --stat-width=999 "$range"))
+        # shellcheck disable=SC2016
         line_regex='s/\s*([^|]+?)\s*\|.*/$1/'
         for line in "${lines[@]}"; do
             file="$(echo "$line" | perl -pe "$line_regex")"
-            (( ${#file} > $file_len )) && file_len=${#file}
+            (( ${#file} > file_len )) && file_len=${#file}
         done
-        graph_len=$(($COLUMNS-$file_len-10))
-        (( $graph_len <= 0 )) && graph_len=1
+        graph_len=$((COLUMNS-file_len-10))
+        (( graph_len <= 0 )) && graph_len=1
 
-        lines=($(git diff -M --stat --stat-width=999 --stat-name-width=$file_len \
+        lines=($(git diff -M --stat --stat-width=999 --stat-name-width="$file_len" \
                      --stat-graph-width=$graph_len --color "$range"))
         e=$(echo -e "\033")
         r="$e[0m"
@@ -217,7 +219,7 @@ AWK
             echo "Usage: gcd"
             return 1
         fi
-        cd "$(git rev-parse --show-toplevel)"
+        cd "$(git rev-parse --show-toplevel)" || return 1
     }
 
 fi

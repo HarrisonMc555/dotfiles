@@ -17,7 +17,7 @@ if is_available ping; then
     function pingtest() {
         local c
         for c in say spd-say; do [[ "$(which $c)" ]] && break; done
-        ping ${1:-8.8.8.8} | perl -pe '/bytes from/ && `'$c' ping`'
+        ping "${1:-8.8.8.8}" | perl -pe '/bytes from/ && `'$c' ping`'
     }
 fi
 

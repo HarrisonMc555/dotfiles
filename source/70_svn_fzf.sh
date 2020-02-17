@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016
 
 if is_available svn && is_available fzf; then
 
@@ -11,7 +12,7 @@ if is_available svn && is_available fzf; then
     }
 
     function filter_out_directories() {
-        while read line; do
+        while read -r line; do
             file="./${line:8}"
             [[ ! -d "$file" ]] && echo "$line"
         done
@@ -37,17 +38,18 @@ if is_available svn && is_available fzf; then
     # Fuzzy searches for branch
     function sb() {
         is_in_svn_repo || return
-        local url="$(svn info --show-item repos-root-url)"
+        local url
+        url="$(svn info --show-item repos-root-url)"
         local header='Enter:  Relative path
 Ctrl-H: Full URL'
         svn ls "$url"/branches |
-            { while read line; do urlencode "${line%/}"; echo; done } |
+            { while read -r line; do urlencode "${line%/}"; echo; done } |
             fzf-down --bind "ctrl-h:execute(printf '%s%s\n' '$url' {})+abort" \
                 --header "$header" |
             {
                 # Could technically replace this with a single call to read, but
                 # this is reusable to commands that *do* allow for multiple returns
-                while read line; do
+                while read -r line; do
                     if [[ "$line" = "$url"* ]]; then
                         printf '%s' "$line"
                     else

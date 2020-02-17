@@ -9,11 +9,10 @@ if is_available z; then
     . "$DOTFILES"/vendor/z/z.sh
 
     function zp() {
-        pushd . > /dev/null && {
-            z "$@" &&
-                dirs
-        } || {
-            popd > /dev/null
-        }
+        if pushd . > /dev/null; then
+            z "$@" && dirs
+        else
+            popd > /dev/null || return 1
+        fi
     }
 fi

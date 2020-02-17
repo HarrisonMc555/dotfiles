@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# shellcheck disable=SC2016
 
 if is_available git && is_available fzf; then
 
@@ -26,7 +27,7 @@ if is_available git && is_available fzf; then
         is_in_git_repo || return
         git branch -a --color=always | grep -v '/HEAD\s' | sort |
             fzf-down --ansi --multi --tac --preview-window right:70% \
-                     --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1) | head -'$LINES |
+                     --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1) | head -'"$LINES" |
             sed 's/^..//' | cut -d' ' -f1 |
             sed 's#^remotes/##'
     }
@@ -37,7 +38,7 @@ if is_available git && is_available fzf; then
         is_in_git_repo || return
         git tag --sort -version:refname |
             fzf-down --multi --preview-window right:70% \
-                     --preview 'git show --color=always {} | head -'$LINES
+                     --preview 'git show --color=always {} | head -'"$LINES"
     }
 
     # Git history (SHA)
@@ -47,7 +48,7 @@ if is_available git && is_available fzf; then
         git log --date=short --format="%C(green)%C(bold)%cd %C(auto)%h%d %s (%an)" --graph --color=always |
             fzf-down --ansi --no-sort --reverse --multi --bind 'ctrl-s:toggle-sort' \
                      --header 'Press CTRL-S to toggle sort' \
-                     --preview 'grep -o "[a-f0-9]\{7,\}" <<< {} | xargs git show --color=always | head -'$LINES |
+                     --preview 'grep -o "[a-f0-9]\{7,\}" <<< {} | xargs git show --color=always | head -'"$LINES" |
             grep -o "[a-f0-9]\{7,\}"
     }
 
