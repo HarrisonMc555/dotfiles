@@ -30,6 +30,7 @@ if is_available git; then
     alias gam='git commit --amend -m'
     # alias gb='git branch'
     # alias gba='git branch -a'
+    alias gc='git commit'
     # function gc() { git checkout "${@:-master}"; } # Checkout master by default
     # alias gco='gc'
     # alias gcb='gc -b'
@@ -39,10 +40,10 @@ if is_available git; then
     # #alias gra='git remote add'
     # alias grr='git remote rm'
     # alias gcl='git clone'
-    # alias gcd='git rev-parse 2>/dev/null && cd "./$(git rev-parse --show-cdup)"'
 
     # Current branch or SHA if detached.
-    # alias gbs='git branch | perl -ne '"'"'/^\* (?:\(detached from (.*)\)|(.*))/ && print "$1$2"'"'"''
+    # shellcheck disable=SC2142
+    alias gbs='git branch | perl -ne '"'"'/^\* (?:\(detached from (.*)\)|(.*))/ && print "$1$2"'"'"''
 
     # # Run commands in each subdirectory.
     # alias gu-all='eachdir git pull'
