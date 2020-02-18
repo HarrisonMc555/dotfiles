@@ -227,10 +227,6 @@ function __prompt_command() {
            ~/.logs/bash-history-$(date "+%Y-%m-%d").log
 }
 
-function is_iterm2() {
-  is_osx && [[ "$TERM_PROGRAM" = iTerm.app ]] && [[ "$TERM" != dumb ]]
-}
-
 mkdir -p ~/.logs
 
 PROMPT_COMMAND="__prompt_command"

@@ -50,3 +50,9 @@ visual_nowait_editor() {
         fi
     done
 }
+
+function is_iterm2() {
+  is_osx && [[ "$TERM_PROGRAM" = iTerm.app ]] && [[ "$TERM" != dumb ]]
+}
+
+export -f is_available urldecode visual_nowait_editor is_iterm2

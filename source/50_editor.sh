@@ -5,7 +5,7 @@
 export EDITOR='emacsclient -t'
 
 export VISUAL='emacsclient -a ""'
-export VISUAL_NOWAIT='emacsclient a "" -n'
+export VISUAL_NOWAIT='emacsclient -a "" -n'
 
 alias emacs="emacsclient -n -a ''"
 alias emacsw="emacsclient -c -n -a ''"
