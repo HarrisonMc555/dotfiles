@@ -5,7 +5,25 @@ alias grep='grep --color=auto'
 
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
-alias alert='notify-send --urgency=low -i "$([ $? = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e '\''s/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//'\'')"'
+if is_osx && is_iterm2; then
+    function alert() {
+        if [[ $# -ne 0 ]]; then
+            >&2 echo "Usage: alert"
+            return 1
+        fi
+        tput bel
+        it2attention start
+    }
+elif is_ubuntu; then
+    function alert() {
+        return_code=$?
+        if [[ $# -ne 0 ]]; then
+            >&2 echo "Usage: alert"
+            return 1
+        fi
+        notify-send --urgency=low -i "$([ $return_code = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e 's/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//')"
+    }
+fi
 
 alias time='/usr/bin/time'
 
