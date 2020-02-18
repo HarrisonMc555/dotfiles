@@ -119,5 +119,9 @@
             (define-key ibuffer-mode-map "\C-x\C-f"
               'ibuffer-ido-find-file)))
 
+(setq tmp-directory "/tmp")
+(when (file-directory-p tmp-directory)
+  (open-dribble-file tmp-directory))
+
 (provide 'my-personal)
 ;;; my-personal.el ends here
