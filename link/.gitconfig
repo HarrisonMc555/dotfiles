@@ -3,7 +3,7 @@
   autocrlf = input
   # whitespace = fix,space-before-tab,tab-in-indent,trailing-space
   excludesfile = ~/.gitignore_global
-  # pager = _git_pager
+  pager = _git_pager
 [apply]
   # whitespace = fix
 [alias]
