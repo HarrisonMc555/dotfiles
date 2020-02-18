@@ -59,8 +59,11 @@ ctrl-v:page-down\
         [[ -z "$file" ]] && return
         if [[ "$key" = ctrl-o ]]; then
             open "$file"
-        else
+        elif [[ "$key" = ctrl-e ]]; then
             histeval $(visual_nowait_editor) "$file"
+        else
+            echo "$file"
+            # histeval $(visual_nowait_editor) "$file"
         fi
     }
 
@@ -127,4 +130,14 @@ ctrl-v:page-down\
         }
     fi
 
+    function fif() {
+        if [ $# -ne 1 ]; then
+            >&2 echo "Need a string to search for!"
+            return 1
+        fi
+        rg_search="rg --ignore-case --pretty --context 10 --colors 'match:bg:magenta' '$1'"
+        file="$(rg --files-with-matches --no-messages "$1" |
+            fzf --preview "(bat --style=numbers --color=always --pager='less -p \"$1\"' 2> /dev/null {} | $rg_search || highlight -O ansi -l {} 2> /dev/null | $rg_search || cat {} | $rg_search || tree -C {})")"
+        histeval $(visual_nowait_editor) "$file"
+    }
 fi
