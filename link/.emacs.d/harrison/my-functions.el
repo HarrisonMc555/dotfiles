@@ -183,7 +183,6 @@ converted to PDF at the same location."
         (org-insert-item t))
     ('error
      (org-end-of-item)
-     (backward-char)
      (org-insert-item t))))
 
 ;; Debugging printing information about selected region
