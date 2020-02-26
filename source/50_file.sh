@@ -112,5 +112,12 @@ function cdbin ()
     cd "$bin_dir" || >&2 echo "Could not cd to '$bin_dir'"
 }
 
+
+if is_available sd; then
+    function sd-sed() {
+        "$(which sd)" "$@"
+    }
+fi
+
 alias cdb=cdbin
 alias opb=openbin
