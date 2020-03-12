@@ -75,4 +75,6 @@ if is_available svn; then
     alias slo='svnlog'
     alias slog='svnlog'
 
+
+    complete -f ss
 fi
