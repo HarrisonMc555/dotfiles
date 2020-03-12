@@ -127,8 +127,6 @@
 (defun exercism-mentor-dir-p (file)
   "Return true if the file is in the exercism mentor directory"
   (let ((mentor-dir (join-dirs exercism-workspace "mentor")))
-    (message mentor-dir)
-    (message file)
     (and file (string-prefix-p mentor-dir file))))
 
 (defun exercism-mentor-find-file-hook ()
