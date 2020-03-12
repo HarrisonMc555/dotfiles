@@ -1,0 +1,54 @@
+#!/usr/bin/env bash
+
+in_place=false
+file=
+
+usage() {
+    echo "Usage: $0 [FILE] [-i]"
+}
+
+print_help() {
+    usage
+    cat << EOF
+
+Strips trailing newline from stdin or file.
+    FILE:   Input file (optional)
+    -i:     Edit file in-place (only valid with FILE)
+EOF
+}
+
+for arg in "$@"; do
+    case "$arg" in
+        -i)
+            in_place=true
+            ;;
+        -h|--help)
+            print_help
+            exit
+            ;;
+        *)
+            if [[ "$file" ]]; then
+                >&2 usage
+                exit 1
+            fi
+            file="$arg"
+            ;;
+    esac
+done
+
+if [[ "$file" ]]; then
+    if [[ "$in_place" = true ]]; then
+        perl -pi -e 'chomp if eof' "$file"
+    else
+        perl -pe 'chomp if eof' "$file"
+    fi
+else
+    if [[ "$in_place" = true ]]; then
+        >&2 echo "Cannot use -i without FILE"
+        >&2 echo
+        >&2 print_help
+        exit 1
+    else
+        perl -pe 'chomp if eof'
+    fi
+fi
