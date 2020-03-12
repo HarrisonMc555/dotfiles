@@ -84,27 +84,21 @@
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 
-(defvar backtick-electric-pairs '((?` . ?`)) "Electric pairs for backticks.")
-(defvar org-electric-pairs backtick-electric-pairs)
-(defvar markdown-electric-pairs backtick-electric-pairs)
+(add-hook 'markdown-mode-hook
+          (lambda ()
+            (modify-syntax-entry ?` "$`" org-mode-syntax-table)))
+(add-hook 'org-mode-hook
+          (lambda ()
+            (modify-syntax-entry ?~ "$~" org-mode-syntax-table)))
 
-(defun org-add-electric-pairs ()
-  (setq-local electric-pair-pairs (append electric-pair-pairs org-electric-pairs))
-  (setq-local electric-pair-text-pairs electric-pair-pairs))
-
-(defun markdown-add-electric-pairs ()
-  (setq-local electric-pair-pairs
-              (append electric-pair-pairs markdown-electric-pairs))
-  (setq-local electric-pair-text-pairs electric-pair-pairs))
-
-(add-hook 'org-mode-hook 'org-add-electric-pairs)
-(add-hook 'markdown-mode-hook 'markdown-add-electric-pairs)
 (setq org-export-with-section-numbers nil)
 
 (if (string-equal system-type "darwin")
     (add-to-list 'exec-path "/usr/local/bin/"))
 
 (add-hook 'after-init-hook #'global-emojify-mode)
+;; (setq emojify-composed-text-p nil)
+;; (emojify-set-emoji-styles '('unicode))
 
 (add-to-list 'exec-path (expand-file-name "~/.cargo/bin"))
 
@@ -118,6 +112,31 @@
           (lambda ()
             (define-key ibuffer-mode-map "\C-x\C-f"
               'ibuffer-ido-find-file)))
+
+(defvar exercism-workspace
+  (trim-whitespace (shell-command-to-string "exercism workspace")))
+
+(defun exercism-mentor-hook ()
+  "Run when in exercism mentor directory"
+  (auto-fill-mode -1)
+  (visual-fill-column-mode)
+  (visual-line-mode)
+  (setq-local require-final-newline nil)
+  )
+
+(defun exercism-mentor-dir-p (file)
+  "Return true if the file is in the exercism mentor directory"
+  (let ((mentor-dir (join-dirs exercism-workspace "mentor")))
+    (message mentor-dir)
+    (message file)
+    (and file (string-prefix-p mentor-dir file))))
+
+(defun exercism-mentor-find-file-hook ()
+  "If in the exercism mentor directory, run exercism-mentor-hook"
+  (when (exercism-mentor-dir-p (buffer-file-name))
+      (exercism-mentor-hook)))
+
+(add-hook 'find-file-hook 'exercism-mentor-find-file-hook)
 
 ;(setq tmp-directory "/tmp")
 ;(when (file-directory-p tmp-directory)

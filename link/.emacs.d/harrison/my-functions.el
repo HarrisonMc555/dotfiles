@@ -286,5 +286,22 @@ The same result can also be be achieved by \\[universal-argument] \\[unhighlight
      (list (ido-read-file-name "Find file: " default-directory) t)))
   (find-file file wildcards))
 
+(defun trim-whitespace (string)
+  "Trim leading and trailing whitespace"
+  (car (split-string string
+                     split-string-default-separators
+                     t
+                     split-string-default-separators)))
+
+(defun join-dirs (root &rest dirs)
+  "Joins a series of directories together, like Python's os.path.join,
+  (join-dirs \"/tmp\" \"a\" \"b\" \"c\") => /tmp/a/b/c"
+
+  (if (not dirs)
+      root
+    (apply 'joindirs
+           (expand-file-name (car dirs) root)
+           (cdr dirs))))
+
 (provide 'my-functions)
 ;;; my-functions.el ends here

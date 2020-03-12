@@ -286,9 +286,13 @@
 (add-hook 'sh-mode-hook
           (lambda () (flycheck-mode t)))
 
-;; Misc ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;; VC (Version Control) ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Try rust projects before version-control (vc) projects
 (add-hook 'project-find-functions 'my-project-try-cargo-toml nil nil)
+
+(global-diff-hl-mode t)
+(diff-hl-flydiff-mode)
+(add-hook 'dired-mode-hook 'diff-hl-dired-mode-unless-remote)
 
 ;;; my-programming.el ends here
