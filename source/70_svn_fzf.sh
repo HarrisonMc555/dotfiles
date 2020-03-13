@@ -22,6 +22,12 @@ if is_available svn && is_available fzf; then
         grep -v '^---'
     }
 
+    function wrap_in_quotes() {
+        while IFS= read -r line; do
+            echo "\"$line\""
+        done
+    }
+
     # Svn file
     # Fuzzy searches for modified or untracked file(s)
     function sf() {
@@ -30,8 +36,9 @@ if is_available svn && is_available fzf; then
             filter_out_directories |
             filter_out_changelists |
             fzf-down -m --nth -1 \
-                     --preview '(svn diff -- {-1} | colordiff | sed 1,5d; bat {-1} 2> /dev/null || cat {-1}) | head -500' |
-            cut -c9-
+                     --preview '(svn diff -- "$(echo {} | cut -c9-)" | colordiff | sed 1,5d; bat "$(echo {} | cut -c9-)" 2> /dev/null || cat "$(echo {} | cut -c9-)") | head -500' |
+            cut -c9- |
+            wrap_in_quotes
     }
 
     # Svn branch
@@ -69,11 +76,15 @@ Ctrl-H: Full URL'
             _svn_short_log |
             fzf-down --no-sort --reverse --multi --bind 'ctrl-s:toggle-sort' \
                      --header 'Press CTRL-S to toggle sort' \
-                     --preview "svn_find_revision -v rev=\$(grep -oE ^r[0-9]+ <<< {}) ${log_file} | head -"$LINES \
+                     --preview "svn_find_revision -v rev=\$(grep -oE ^r[0-9]+ <<< {}) ${log_file} | head -$SVN_PREVIEW_LINES" \
                      --preview-window=down:50% \
                      --height 70% |
             sed -E 's/^r([0-9]+) .*/\1/'
         rm "$log_file"
+    }
+
+    function svn_list_changelists() {
+        svn status | grep "^\-\-\- Changelist"        
     }
 
     bind '"\er": redraw-current-line'
