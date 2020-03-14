@@ -12,10 +12,13 @@ if is_available svn && is_available fzf; then
     }
 
     function filter_out_directories() {
-        while read -r line; do
-            file="./${line:8}"
-            [[ ! -d "$file" ]] && echo "$line"
-        done
+        (
+            IFS=''
+            while read -r line; do
+                file="./${line:8}"
+                [[ ! -d "$file" ]] && printf '%s\n' "$line"
+            done
+        )
     }
 
     function filter_out_changelists() {
@@ -24,8 +27,17 @@ if is_available svn && is_available fzf; then
 
     function wrap_in_quotes() {
         while IFS= read -r line; do
-            echo "\"$line\""
+            printf '"%s"\n' "$line"
         done
+    }
+
+    function escape_spaces() {
+        (
+            IFS=''
+            while read -r line; do
+                printf '%q\n' "$line"
+            done
+        )
     }
 
     # Svn file
@@ -36,9 +48,9 @@ if is_available svn && is_available fzf; then
             filter_out_directories |
             filter_out_changelists |
             fzf-down -m --nth -1 \
-                     --preview '(svn diff -- "$(echo {} | cut -c9-)" | colordiff | sed 1,5d; bat "$(echo {} | cut -c9-)" 2> /dev/null || cat "$(echo {} | cut -c9-)") | head -500' |
+                     --preview '(svn diff -- "$(printf "%s" {} | cut -c9-)" | colordiff | sed 1,5d; bat "$(printf "%s" {} | cut -c9-)" 2> /dev/null || cat "$(printf "%s" {} | cut -c9-)") | head -500' |
             cut -c9- |
-            wrap_in_quotes
+            escape_spaces
     }
 
     # Svn branch
@@ -58,9 +70,9 @@ Ctrl-H: Full URL'
                 # this is reusable to commands that *do* allow for multiple returns
                 while read -r line; do
                     if [[ "$line" = "$url"* ]]; then
-                        printf '%s' "$line"
+                        printf '%s\n' "$line"
                     else
-                        printf '^/branches/%s' "$line"
+                        printf '^/branches/%s\n' "$line"
                     fi
                 done
             }
@@ -81,10 +93,6 @@ Ctrl-H: Full URL'
                      --height 70% |
             sed -E 's/^r([0-9]+) .*/\1/'
         rm "$log_file"
-    }
-
-    function svn_list_changelists() {
-        svn status | grep "^\-\-\- Changelist"        
     }
 
     bind '"\er": redraw-current-line'

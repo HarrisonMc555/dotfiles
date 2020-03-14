@@ -60,6 +60,10 @@ if is_available svn; then
         (set -o pipefail; svn log "$@" | _svn_short_log)
     }
 
+    function svn_list_changelists() {
+        svn status | grep "^\-\-\- Changelist"        
+    }
+
     alias s='svn'
     alias ss='svn st'
     alias sd='svndiff'
