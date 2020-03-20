@@ -197,6 +197,9 @@
   (when (locate-dominating-file dir "Cargo.toml")
     `(transient . ,dir)))
 
+;; Ruby ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(add-hook 'ruby-mode-hook (lambda () (flycheck-mode)))
+
 ;; Sql ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun my-sql-mode-hook ()

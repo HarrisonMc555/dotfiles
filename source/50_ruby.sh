@@ -6,6 +6,8 @@ if [[ -e /etc/profile.d/rvm.sh ]]; then
     source /etc/profile.d/rvm.sh
 fi
 
-if [[ -d "$HOME/.rbenv/" ]]; then
+if is_available rbenv; then
+    eval "$(rbenv init -)"
+elif [[ -d "$HOME/.rbenv/" ]]; then
     export PATH="$HOME/.rbenv/shims:$PATH"
 fi
