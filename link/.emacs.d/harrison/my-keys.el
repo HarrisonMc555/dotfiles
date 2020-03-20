@@ -26,6 +26,7 @@
 
 (global-set-key (kbd "M-o") 'other-window)
 (global-set-key (kbd "C-M-S-s-f") 'execute-extended-command)
+(global-set-key (kbd "M-_") (lambda () (interactive ) (insert-char ?—)))
 
 (with-library
  simple
