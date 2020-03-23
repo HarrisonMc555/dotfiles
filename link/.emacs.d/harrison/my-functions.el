@@ -299,7 +299,7 @@ The same result can also be be achieved by \\[universal-argument] \\[unhighlight
 
   (if (not dirs)
       root
-    (apply 'joindirs
+    (apply 'join-dirs
            (expand-file-name (car dirs) root)
            (cdr dirs))))
 
