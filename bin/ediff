@@ -10,10 +10,6 @@ if [[ ! -r "$1" ]] || [[ ! -r "$2" ]]; then
     exit 1
 fi
 
-function is_osx() {
-  [[ "$OSTYPE" =~ ^darwin ]] || return 1
-}
-
 if is_osx; then
     open_cmd="open -a Emacs"
 else
