@@ -1,21 +1,8 @@
 #!/bin/bash
 # Start emacsclient
-function is_osx() {
-  [[ "$OSTYPE" =~ ^darwin ]] || return 1
-}
-function is_ubuntu() {
-  [[ "$(cat /etc/issue 2> /dev/null)" =~ Ubuntu ]] || return 1
-}
-function is_ubuntu_desktop() {
-  # dpkg -l ubuntu-desktop >/dev/null 2>&1 || return 1
-  # https://unix.stackexchange.com/a/338862/238000
-  xhost >& /dev/null
-}
 
 if is_osx; then
     /Applications/Emacs.app/Contents/MacOS/bin/emacsclient "$@"
-# elif is_ubuntu_desktop; then
-# elif is_ubuntu; then
 else
     /usr/bin/emacsclient -n -a '' "$@"
 fi
