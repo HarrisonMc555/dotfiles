@@ -14,11 +14,13 @@ if is_available git; then
     alias g='git'
     function ga() { git add "${@:-.}"; } # Add all files by default
     function gap() { git add -p "${@:-.}"; } # Add all files by default
+    function gcp() { git checkout -p "${@:-.}"; } # Checkout all files by default
     alias gp='git push'
     # alias gpup='gp --set-upstream origin $(gbs)'
     # alias gpa='gp --all'
     alias gu='git pull'
     alias gl='git log'
+    alias gg='git lg'
     # alias gg='gl --decorate --oneline --graph --date-order --all'
     alias gs='git status'
     # alias gst='gs'
