@@ -10,8 +10,8 @@ else
     alias ls='ls --color=auto'
 fi
 
-alias la='ls -a'
-alias ll='ls -al'
+alias la='ls -A'
+alias ll='ls -alh'
 
 if [[ -x "$(command -v tree)" ]] && [[ -x "$(command  -v which)" ]]; then
     __tree_bin="$(which tree)"
