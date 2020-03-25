@@ -30,6 +30,9 @@
  '(emojify-emoji-styles (quote (github unicode)))
  '(fci-rule-color "#eee8d5")
  '(fill-column 80)
+ '(find-file-hook
+   (quote
+    (exercism-mentor-find-file-hook global-emojify-mode-check-buffers global-diff-hl-mode-check-buffers svn-commit-tmp-hook magit-branch-description-check-buffers global-magit-file-mode-check-buffers git-commit-setup-check-buffer recentf-track-opened-file url-handlers-set-buffer-mode auto-revert-find-file-function global-eldoc-mode-check-buffers global-font-lock-mode-check-buffers epa-file-find-file-hook vc-refresh-state which-func-ff-hook)))
  '(flycheck-python-pycompile-executable "python3")
  '(flycheck-python-pylint-executable "/home/harrison/.local/bin/pylint")
  '(flymake-python-pyflakes-executable "/home/harrison/.local/bin/pyflakes")
@@ -90,7 +93,7 @@
      ("melpa stable" . "https://stable.melpa.org/packages/"))))
  '(package-selected-packages
    (quote
-    (minitest move-text drag-stuff diff-hl git-gutter ac-helm lsp-mode prettier-js string-inflection counsel-etags sql-indent emojify wucuo helm fzf free-keys clang-format flycheck-kotlin kotlin-mode groovy-mode gradle-mode paredit cider clojure-mode clojure-mode-extra-font-locking flycheck-clojure inf-clojure haskell-mode htmlize epl cmake-font-lock cmake-mode eglot tide tss typescript-mode matlab-mode elm-mode flycheck-elm flycheck-gradle csv csv-mode toml toml-mode flycheck flycheck-rust rust-mode meghanada yaml-mode web-mode tabbar solarized-theme smartparens ruby-extra-highlight omnisharp monokai-theme markdown-mode magit json-mode jinja2-mode haskell-tab-indent haskell-emacs-text haskell-emacs-base go-complete go-autocomplete ghci-completion ghc-imported-from ghc flymd flymake-ruby flymake-python-pyflakes flymake-hlint flymake-haskell-multi flycheck-hdevtools flycheck-haskell flycheck-ghcmod exec-path-from-shell django-mode company-inf-ruby ac-js2 ac-inf-ruby ac-haskell-process 2048-game)))
+    (lsp-haskell lsp-ui minitest move-text drag-stuff diff-hl git-gutter ac-helm lsp-mode prettier-js string-inflection counsel-etags sql-indent emojify wucuo helm fzf free-keys clang-format flycheck-kotlin kotlin-mode groovy-mode gradle-mode paredit cider clojure-mode clojure-mode-extra-font-locking flycheck-clojure inf-clojure haskell-mode htmlize epl cmake-font-lock cmake-mode eglot tide tss typescript-mode matlab-mode elm-mode flycheck-elm flycheck-gradle csv csv-mode toml toml-mode flycheck flycheck-rust rust-mode meghanada yaml-mode web-mode tabbar solarized-theme smartparens ruby-extra-highlight omnisharp monokai-theme markdown-mode magit json-mode jinja2-mode haskell-tab-indent haskell-emacs-text haskell-emacs-base go-complete go-autocomplete ghci-completion ghc-imported-from ghc flymd flymake-ruby flymake-python-pyflakes flymake-hlint flymake-haskell-multi flycheck-hdevtools flycheck-haskell flycheck-ghcmod exec-path-from-shell django-mode company-inf-ruby ac-js2 ac-inf-ruby ac-haskell-process 2048-game)))
  '(paradox-github-token t)
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
