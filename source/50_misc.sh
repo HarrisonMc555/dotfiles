@@ -100,3 +100,16 @@ function foreground_colors() {
         echo -e "\e[$x""m\\\e[$x""m\e[0m"
     done
 }
+
+function define() {
+    if [[ $# -ne 1 ]]; then
+        >&2 echo "Usage: define <word>"
+        return 1
+    fi
+
+    word="$1"
+    /usr/bin/curl -s -A 'Mozilla/4.0' \
+                  'http://wordnetweb.princeton.edu/perl/webwn?s='"$word" |
+        html2text -ascii -nobs -style compact -width 500 |
+        _grep --color=never '\*'
+}
