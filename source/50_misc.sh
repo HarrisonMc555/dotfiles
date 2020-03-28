@@ -101,15 +101,17 @@ function foreground_colors() {
     done
 }
 
-function define() {
-    if [[ $# -ne 1 ]]; then
-        >&2 echo "Usage: define <word>"
-        return 1
-    fi
+if is_available html2text && is_available curl; then
+    function define() {
+        if [[ $# -ne 1 ]]; then
+            >&2 echo "Usage: define <word>"
+            return 1
+        fi
 
-    word="$1"
-    /usr/bin/curl -s -A 'Mozilla/4.0' \
-                  'http://wordnetweb.princeton.edu/perl/webwn?s='"$word" |
-        html2text -ascii -nobs -style compact -width 500 |
-        _grep --color=never '\*'
-}
+        word="$1"
+        curl -s -A 'Mozilla/4.0' \
+                      'http://wordnetweb.princeton.edu/perl/webwn?s='"$word" |
+            html2text -ascii -nobs -style compact -width 500 |
+            _grep --color=never '\*'
+    }
+fi
