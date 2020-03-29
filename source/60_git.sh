@@ -227,4 +227,10 @@ AWK
         cd "$(git rev-parse --show-toplevel)" || return 1
     }
 
+    if is_available bat; then
+        function glog() {
+            git log --color=never "$@" | bat -p --pager='less -RFX' -l gitlog
+        }
+    fi
+
 fi
