@@ -147,6 +147,15 @@
 (setq js-indent-level 2)
 (setq js2-basic-offset 2)
 
+;; ;; Typescript
+;; (setq typescript-indent-level 4)
+;; (add-to-list 'auto-mode-alist '("\\.ts\\'" . typescript-mode))
+;; (add-hook 'typescript-mode-hook
+;;           (lambda ()
+;;             (tide-mode t)
+;;             (flycheck-mode t)
+;;             (company-mode t)))
+
 ;; Web Programming ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (add-to-list 'auto-mode-alist '("\\.jsx$" . web-mode))
 (defadvice web-mode-highlight-part (around tweak-jsx activate)

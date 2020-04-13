@@ -93,7 +93,7 @@
      ("melpa stable" . "https://stable.melpa.org/packages/"))))
  '(package-selected-packages
    (quote
-    (swift-mode lsp-haskell lsp-ui minitest move-text drag-stuff diff-hl git-gutter ac-helm lsp-mode prettier-js string-inflection counsel-etags sql-indent emojify wucuo helm fzf free-keys clang-format flycheck-kotlin kotlin-mode groovy-mode gradle-mode paredit cider clojure-mode clojure-mode-extra-font-locking flycheck-clojure inf-clojure haskell-mode htmlize epl cmake-font-lock cmake-mode eglot tide tss typescript-mode matlab-mode elm-mode flycheck-elm flycheck-gradle csv csv-mode toml toml-mode flycheck flycheck-rust rust-mode meghanada yaml-mode web-mode tabbar solarized-theme smartparens ruby-extra-highlight omnisharp monokai-theme markdown-mode magit json-mode jinja2-mode haskell-tab-indent haskell-emacs-text haskell-emacs-base go-complete go-autocomplete ghci-completion ghc-imported-from ghc flymd flymake-ruby flymake-python-pyflakes flymake-hlint flymake-haskell-multi flycheck-hdevtools flycheck-haskell flycheck-ghcmod exec-path-from-shell django-mode company-inf-ruby ac-js2 ac-inf-ruby ac-haskell-process 2048-game)))
+    (swift-mode lsp-haskell lsp-ui minitest move-text drag-stuff diff-hl git-gutter ac-helm lsp-mode prettier-js string-inflection counsel-etags sql-indent wucuo helm clang-format gradle-mode paredit cider flycheck-clojure inf-clojure haskell-mode epl cmake-font-lock eglot matlab-mode elm-mode flycheck-elm csv csv-mode toml toml-mode flycheck rust-mode meghanada yaml-mode web-mode tabbar solarized-theme smartparens ruby-extra-highlight markdown-mode magit jinja2-mode haskell-tab-indent haskell-emacs-text haskell-emacs-base go-autocomplete ghci-completion ghc-imported-from ghc flymd flymake-ruby flymake-python-pyflakes flymake-hlint flymake-haskell-multi flycheck-hdevtools flycheck-haskell flycheck-ghcmod exec-path-from-shell django-mode company-inf-ruby ac-js2 ac-inf-ruby ac-haskell-process 2048-game)))
  '(paradox-github-token t)
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")
@@ -110,6 +110,7 @@
  '(term-default-bg-color "#fdf6e3")
  '(term-default-fg-color "#657b83")
  '(tool-bar-mode nil)
+ '(typescript-indent-level 2)
  '(vc-annotate-background nil)
  '(vc-annotate-background-mode nil)
  '(vc-annotate-color-map
