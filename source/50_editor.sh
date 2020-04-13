@@ -18,13 +18,13 @@ function is_emacs_deamon_running() {
     else
         name='^/usr/bin/emacs --daemon'
     fi
-    ps_process_names | _grep "$name" -q
+    is_running "$name"
 }
 export -f is_emacs_deamon_running
 
 if is_osx; then
     function is_emacs_gui_running() {
-        ps_process_names | _grep '^/Applications/Emacs.app/' -q
+        is_running '^/Applications/Emacs.app/' 
     }
     export -f is_emacs_gui_running
 fi
