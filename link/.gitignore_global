@@ -53,6 +53,8 @@ Thumbs.db
 # Folder config file
 Desktop.ini
 
+# Editors #
+###########
 # Vim
 .swp
 .swo
@@ -63,3 +65,8 @@ Desktop.ini
 *~
 \#*#
 .\#*
+
+# IDEs #
+########
+# IntelliJ IDEA
+.idea/
