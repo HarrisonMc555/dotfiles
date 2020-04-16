@@ -303,5 +303,15 @@ The same result can also be be achieved by \\[universal-argument] \\[unhighlight
            (expand-file-name (car dirs) root)
            (cdr dirs))))
 
+(defun draft-mode ()
+  "Enable/disable appropriate modes for drafting text that will be copy/pasted
+   into another program that doesn't want hard line breaks."
+  (interactive)
+  (auto-fill-mode -1)
+  (visual-fill-column-mode 1)
+  (visual-line-mode 1)
+  (flyspell-mode 1)
+  )
+
 (provide 'my-functions)
 ;;; my-functions.el ends here
