@@ -206,6 +206,12 @@
   (when (locate-dominating-file dir "Cargo.toml")
     `(transient . ,dir)))
 
+(defun my-rust-mode-hook ()
+  (set-fill-column 100)
+  )
+
+(add-hook 'rust-mode-hook #'my-rust-mode-hook)
+
 ;; Ruby ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (add-hook 'ruby-mode-hook (lambda () (flycheck-mode)))
 
