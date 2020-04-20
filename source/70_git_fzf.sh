@@ -25,11 +25,17 @@ if is_available git && is_available fzf; then
     # Fuzzy searches for branch(es)
     function gb() {
         is_in_git_repo || return
-        git branch -a --color=always | grep -v '/HEAD\s' | sort |
+        local out key branch
+        out=("$(git branch -a --color=always | grep -v '/HEAD\s' | sort |
             fzf-down --ansi --multi --tac --preview-window right:70% \
-                     --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1) | head -'"$LINES" |
-            sed 's/^..//' | cut -d' ' -f1 |
-            sed 's#^remotes/##'
+                     --expect=ctrl-o \
+                     --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1) | head -'"$LINES")")
+        key=$(head -1 <<< "${out[@]}")
+        branch=$(head -2 <<< "${out[@]}" | tail -1 | sed 's/^..//' | cut -d' ' -f1 | sed 's#^remotes/##')
+        if [[ "$key" = ctrl-o ]]; then
+            branch="${branch#*/}"
+        fi
+        echo "$branch"
     }
 
     # Git tag
