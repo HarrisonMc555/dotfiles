@@ -6,3 +6,4 @@ ido.last
 transient/
 recentf
 .lsp-session*
+/ac-comphist.dat
