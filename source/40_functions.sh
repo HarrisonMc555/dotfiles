@@ -51,6 +51,19 @@ visual_nowait_editor() {
     done
 }
 
+jirafy() {
+    if [[ $# -lt 1 ]]; then
+        >&2 echo "Usage: jirafy FILE [options, ...]"
+        >&2 echo "    Note that FILE must be the first parameter"
+        return 1
+    fi
+
+    local file="$1"
+    shift
+    local out="${file%%.*}.txt"
+    pandoc "$file" "$@" -o "${out}" -t jira
+}
+
 function is_iterm2() {
   is_osx && [[ "$TERM_PROGRAM" = iTerm.app ]] && [[ "$TERM" != dumb ]]
 }
