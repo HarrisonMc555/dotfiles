@@ -212,6 +212,8 @@
 
 (add-hook 'rust-mode-hook #'my-rust-mode-hook)
 
+(setq lsp-rust-server 'rust-analyzer)
+
 ;; Ruby ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (add-hook 'ruby-mode-hook (lambda () (flycheck-mode)))
 
