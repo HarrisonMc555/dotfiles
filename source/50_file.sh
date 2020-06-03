@@ -115,7 +115,7 @@ function cdbin ()
 
 if is_available sd; then
     function sd-sed() {
-        "$(which sd)" "$@"
+        "$(which sd)" -p "$@"
     }
 fi
 
