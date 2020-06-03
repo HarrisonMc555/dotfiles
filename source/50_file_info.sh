@@ -5,11 +5,29 @@ function max_line_length() {
 }
 
 function lines() {
-    wc -l "$@" | awk '{print $1}'
+    if [[ $# -ne 1 ]]; then
+       >&2 echo "Usage: lines FILES"
+       return 1
+    fi
+    file="$1"
+    if ! [[ -f "$file" ]]; then
+       >&2 echo "File '$file' not found."
+       return 1
+    fi
+    wc -l "$file" | awk '{print $1}'
 }
 
 function words() {
-    wc -w "$@" | awk '{print $1}'
+    if [[ $# -ne 1 ]]; then
+       >&2 echo "Usage: lines FILES"
+       return 1
+    fi
+    file="$1"
+    if ! [[ -f "$file" ]]; then
+       >&2 echo "File '$file' not found."
+       return 1
+    fi
+    wc -w "$file" | awk '{print $1}'
 }
 
 function diff_percentage() {
