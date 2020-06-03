@@ -233,4 +233,50 @@ AWK
         }
     fi
 
+    function gbc() {
+        if [[ $# -ne 1 ]]; then
+            >&2 echo "Usage: gbc BRANCH"
+            return 1
+        fi
+        
+        local branch="$1"
+        if ! branch-exists "$branch"; then
+            >&2 echo "Branch '$branch' does not exist"
+            return 1
+        fi
+
+        git log --graph \
+            --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' \
+            --abbrev-commit --date=relative \
+            "$branch..$(git rev-parse --abbrev-ref HEAD)"
+    }
+
+    function gbbc() {
+        if [[ $# -ne 1 ]]; then
+            >&2 echo "Usage: gbbc BRANCH"
+            return 1
+        fi
+
+        local branch="$1"
+        if ! branch-exists "$branch"; then
+            >&2 echo "Branch '$branch' does not exist"
+            return 1
+        fi
+
+        git log --graph \
+            --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' \
+            --abbrev-commit --date=relative \
+            "$(git rev-parse --abbrev-ref HEAD)..$branch"
+    }
+
+    function branch-exists() {
+        if [[ $# -ne 1 ]]; then
+            >&2 echo "Usage: branch-exists BRANCH"
+            return 1
+        fi
+
+        local branch="$1"
+        [[ "$(git branch --list "$branch")" ]]
+    }
+
 fi
