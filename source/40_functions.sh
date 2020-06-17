@@ -61,7 +61,9 @@ jirafy() {
     local file="$1"
     shift
     local out="${file%%.*}.txt"
-    pandoc "$file" "$@" -o "${out}" -t jira
+    pandoc "$file" "$@" -t jira |
+        sed 's/\\&/\&/g' |
+        perl -pe 'chomp if eof' > "$out"
 }
 
 function is_iterm2() {
