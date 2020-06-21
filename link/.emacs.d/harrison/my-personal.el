@@ -113,14 +113,19 @@
             (define-key ibuffer-mode-map "\C-x\C-f"
               'ibuffer-ido-find-file)))
 
+;; (setenv "PATH" (concat (getenv "PATH") ":" (expand-file-name "~/.local/bin/")))
+;; (setq exec-path (append exec-path (expand-file-name "~/.local/bin/")))
+
 (defvar exercism-workspace
-  (trim-whitespace (shell-command-to-string "exercism workspace")))
+  ;; (trim-whitespace (shell-command-to-string "exercism workspace")))
+  "/Users/harrisonmccullough/exercism")
 
 (defun exercism-mentor-hook ()
   "Run when in exercism mentor directory"
   (auto-fill-mode -1)
   (visual-fill-column-mode)
   (visual-line-mode)
+  (flyspell-mode)
   (setq-local require-final-newline nil)
   )
 
@@ -135,6 +140,14 @@
       (exercism-mentor-hook)))
 
 (add-hook 'find-file-hook 'exercism-mentor-find-file-hook)
+
+;; Magit ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(defun my-git-commit-setup-hook ()
+  (let ((alert-project-dir "/Projects/Alert"))
+    (when (string-prefix-p  file)
+      (draft-mode))))
+
+(add-hook 'git-commit-setup-hook 'my-git-commit-setup-hook)
 
 ;(setq tmp-directory "/tmp")
 ;(when (file-directory-p tmp-directory)
