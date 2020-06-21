@@ -66,8 +66,26 @@ jirafy() {
         perl -pe 'chomp if eof' > "$out"
 }
 
-function is_iterm2() {
+yesno() {
+    if [[ $# -gt 1 ]]; then
+        >&2 echo "Usage: yesno [PROMPT]"
+        return 2
+    fi
+
+    local prompt="${1:-[Y]es/No} >"
+
+    while true; do
+        read -r -p "${prompt} " yn
+        case "$yn" in
+            [Yy] | [Yy][Ee][Ss] ) return 0;;
+            [Nn] | [Nn][Oo] ) return 1;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+}
+
+is_iterm2() {
   is_osx && [[ "$TERM_PROGRAM" = iTerm.app ]] && [[ "$TERM" != dumb ]]
 }
 
-export -f is_available urldecode visual_nowait_editor is_iterm2
+export -f is_available urldecode visual_nowait_editor yesno is_iterm2
