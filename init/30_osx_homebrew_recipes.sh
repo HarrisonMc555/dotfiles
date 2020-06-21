@@ -7,57 +7,77 @@ is_osx || return 1
 
 # Homebrew recipes
 recipes=(
+  asciinema
+  astyle
   bash
   bash-completion@2
   bat
+  bluetoothconnector
+  clang-format
+  cmake
   colordiff
   coreutils
+  diff-so-fancy
   dos2unix
+  elm
+  exa
   fd
   findutils
+  fswatch
   fzf
   git
+  git-delta
+  git-lfs
   gnu-sed
   go
   gradle
   grip
+  hexyl
+  htop
+  http
+  hyperfine
+  imagemagick
   ipython
   ispell
+  isync
   lsd
   lynx
+  msmtp
+  mu
+  mycli
+  mysql
+  ncdu
+  neovim
+  nmap
   node
+  onefetch
   openssh
   pandoc
+  pastel
+  postgresql
+  procs
   proselint
   pygments
+  rbenv-aliases
   ripgrep
+  ripgrep-all
+  sd
+  sendemail
   shellcheck
   shpotify
   ssh-copy-id
   sshrc
+  telnet
+  the_silver_searcher
+  tokei
   trash
   tree
+  w3m
+  wdiff
   wget
-  # ansible
-  # awscli
-  # cmatrix
-  # cowsay
-  # git-extras
-  # htop-osx
-  # hub
-  # id3tool
-  # jq
-  # lesspipe
-  # man2html
-  # mercurial
-  # nmap
-  # postgresql
-  # reattach-to-user-namespace
-  # sl
-  # terminal-notifier
-  # the_silver_searcher
-  # tmux
-  # tmux-xpanes
+  xsv
+  yarn
+  zola
 )
 
 brew_install_recipes

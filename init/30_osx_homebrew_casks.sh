@@ -1,3 +1,5 @@
+# -*- mode: shell-script; sh-shell: bash -*-
+
 # OSX-only stuff. Abort if not OSX.
 is_osx || return 1
 
@@ -17,19 +19,30 @@ brew cask info this-is-somewhat-annoying 2>/dev/null
 
 # Homebrew casks
 casks=(
+  alfred
+  amazon-music
   background-music
   captin
+  choosy
   emacs
   fastscripts
   firefox
+  font-hack-nerd-font
+  gimp
   google-chrome
   hex-fiend
-  intelliscape-caffeine
+  istat-menus
   iterm2
   jumpcut
   karabiner-elements
+  meld
+  mutespotifyads
+  screen
+  sourcetree
   spotify
+  steam
   vanilla
+  visual-studio-code
   # a-better-finder-rename
   # alfred
   # android-platform-tools
