@@ -40,6 +40,7 @@ if is_ubuntu; then
     function pbcopy() {
         xclip -i -selection clipboard "$@"
     }
+    export -f pbcopy
 fi
 
 # Trim trailing new line and copy to clipboard
@@ -115,3 +116,5 @@ if is_available html2text && is_available curl; then
             _grep --color=never '\*'
     }
 fi
+
+export -f c
