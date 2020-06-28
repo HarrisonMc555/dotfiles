@@ -153,5 +153,7 @@
 ;(when (file-directory-p tmp-directory)
 ;  (open-dribble-file tmp-directory))
 
+(edit-server-start)
+
 (provide 'my-personal)
 ;;; my-personal.el ends here
