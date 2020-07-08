@@ -119,5 +119,47 @@ if is_available sd; then
     }
 fi
 
+function list_binaries() {
+    local path_dirs=()
+    while read -r dir; do
+        if [[ -d "$dir" ]]; then
+            path_dirs+=("$dir")
+        fi
+    done < <(path)
+    fd . "${path_dirs[@]}" --max-depth 1 --type x --exec echo '{/}'
+}
+
+alias edb=editbin
 alias cdb=cdbin
 alias opb=openbin
+
+# HSM_FIND_ALL_BINARIES=1
+if [[ "$HSM_FIND_ALL_BINARIES" ]]; then
+    _ALL_BINARIES=()
+    while read -r _BINARY; do
+        _ALL_BINARIES+=("$_BINARY")
+    done < <(list_binaries | sort)
+    unset _BINARY
+    export _ALL_BINARIES
+
+    function _all_binaries_compreply() {
+        COMPREPLY=("${_ALL_BINARIES_COMPREPLY[@]}")
+    }
+
+    function _complete_binaries() {
+        for binary in "${_ALL_BINARIES[@]}"; do
+            if [[ "$binary" == "${COMP_WORDS[1]}"* ]]; then
+                COMPREPLY+=("$binary")
+            fi
+        done
+    }
+
+    complete -F _complete_binaries editbin
+    complete -F _complete_binaries openbin
+    complete -F _complete_binaries cdbin
+
+    complete -F _complete_binaries edb
+    complete -F _complete_binaries opb
+    complete -F _complete_binaries cdb
+
+fi
