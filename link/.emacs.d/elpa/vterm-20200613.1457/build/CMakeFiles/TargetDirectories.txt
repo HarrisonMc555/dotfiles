@@ -1,0 +1,4 @@
+/Users/harrisonmccullough/.emacs.d/elpa/vterm-20200613.1457/build/CMakeFiles/rebuild_cache.dir
+/Users/harrisonmccullough/.emacs.d/elpa/vterm-20200613.1457/build/CMakeFiles/edit_cache.dir
+/Users/harrisonmccullough/.emacs.d/elpa/vterm-20200613.1457/build/CMakeFiles/run.dir
+/Users/harrisonmccullough/.emacs.d/elpa/vterm-20200613.1457/build/CMakeFiles/vterm-module.dir
