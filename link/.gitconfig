@@ -41,6 +41,7 @@
   whatadded = log --diff-filter=A
   sw = switch
   ppr = pull --prune
+  bname = rev-parse --abbrev-ref HEAD
 [branch "master"]
   remote = origin
   merge = refs/heads/master
