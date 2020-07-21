@@ -134,6 +134,12 @@
  recentf
  (global-set-key (kbd "C-x f") 'recentf-open-files))
 
+(with-library
+ goto-chg
+ (global-set-key (kbd "C-.") 'goto-last-change)
+ (global-set-key (kbd "C-,") 'goto-last-change-reverse)
+ )
+
 ;; ibuffer
 (define-key ibuffer-mode-map (kbd "M-o") 'other-window)
 
