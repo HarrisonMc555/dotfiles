@@ -26,6 +26,7 @@
  '(delete-selection-mode t)
  '(ediff-split-window-function (quote split-window-horizontally))
  '(ediff-window-setup-function (quote ediff-setup-windows-plain))
+ '(edit-server-default-major-mode (quote markdown-mode))
  '(edit-server-new-frame nil)
  '(emojify-composed-text-p t)
  '(emojify-emoji-styles (quote (github unicode)))

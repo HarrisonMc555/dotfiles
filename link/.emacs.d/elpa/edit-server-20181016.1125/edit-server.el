@@ -643,7 +643,9 @@ When called interactively, use prefix arg to abort editing."
         ;; don't run abort twice in a row.
         (remove-hook 'kill-buffer-hook 'edit-server-abort*)
 	(kill-buffer buffer)
-	(unless edit-server-new-frame
+	(unless (or edit-server-new-frame
+                    (not (window-parent (window-normalize-window nil))))
+  ;; (unless edit-server-new-frame
 	  (delete-window)))
       (edit-server-kill-client proc))))
 
