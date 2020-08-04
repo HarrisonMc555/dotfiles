@@ -155,5 +155,7 @@
 
 (edit-server-start)
 
+(editorconfig-mode 1)
+
 (provide 'my-personal)
 ;;; my-personal.el ends here
