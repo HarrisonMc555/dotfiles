@@ -57,7 +57,9 @@
 (when (string-equal system-type "darwin")
   (global-unset-key (kbd "C-z"))
   (global-unset-key (kbd "s-w"))
-  (global-unset-key (kbd "s-t")))
+  (global-unset-key (kbd "s-t"))
+  (global-unset-key (kbd "C-x C-z"))
+  )
 
 (add-hook 'server-switch-hook (lambda () (select-frame-set-input-focus (selected-frame))))
 
