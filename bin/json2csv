@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+function die() {
+    if [[ $# -gt 0 ]]; then
+        >&2 echo "$@"
+    fi
+    exit 1
+}
+
+is_available jq || die "No jq executable found"
+
+[[ $# -eq 1 ]] || die "Usage: $0 FILE"
+
+file="$1"
+
+[[ -f "$file" ]] || die "Could not find file '$file'"
+[[ -r "$file" ]] || die "Could not read file '$file'"
+
+jq_script_rows='map(to_entries | map(select(.value | type != "object") | .value)) | .[] | @csv'
+jq_script_header='.[0] | to_entries | map(select(.value | type != "object") | .key) | @csv'
+
+cat <(jq -r "$jq_script_header" < "$file") \
+    <(jq -r "$jq_script_rows" < "$file")
