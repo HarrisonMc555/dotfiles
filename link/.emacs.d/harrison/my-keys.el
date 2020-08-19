@@ -70,6 +70,7 @@
  (global-set-key (kbd "<f5>") 'revert-buffer-no-confirmation)
  (global-set-key (kbd "C-<f1>") 'show-file-name)
  (global-set-key (kbd "C-;") 'comment-and-copy)
+ (global-set-key (kbd "C-M-;") 'comment-and-copy)
  (global-set-key (kbd "M-;") 'comment-dwim-custom)
  (global-set-key (kbd "M-k") 'copy-line)
  (global-set-key (kbd "C-/") 'indent-dwim)
