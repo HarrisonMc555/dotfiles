@@ -133,7 +133,7 @@
 ;;  recentf
 (with-library
  recentf
- (global-set-key (kbd "C-x f") 'recentf-open-files))
+ (global-set-key (kbd "C-x M-f") 'recentf-open-files))
 
 (with-library
  goto-chg
