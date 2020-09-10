@@ -238,7 +238,7 @@ AWK
             >&2 echo "Usage: gbc BRANCH"
             return 1
         fi
-        
+
         local branch="$1"
         if ! branch-exists "$branch"; then
             >&2 echo "Branch '$branch' does not exist"
@@ -277,6 +277,18 @@ AWK
 
         local branch="$1"
         [[ "$(git branch --list "$branch")" ]]
+    }
+
+    function git-commits() {
+        if [[ $# -eq 0 ]]; then
+            >&2 echo "Usage: git-commits FILE [FILE]*"
+            return 1
+        fi
+
+        # shellcheck disable=SC2209
+        git log --pretty='%H' "$@" |
+            GIT_PAGER=cat xargs -I % git show % -- "$@" |
+            eval "$(git config core.pager)"
     }
 
 fi
