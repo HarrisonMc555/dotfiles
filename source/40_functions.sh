@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+pip() {
+    pip3 "$@"
+}
+
 histeval() {
     history -s "$@"
     eval "$@"

@@ -6,7 +6,7 @@ apt_source_files=()
 apt_source_texts=()
 apt_packages=()
 deb_installed=()
-deb_sources=()
+deb_sources=("ppa:linuxuprising/shutter")
 
 installers_path="$DOTFILES/caches/installers"
 
@@ -29,17 +29,18 @@ apt_packages+=(
   build-essential
   curl
   dos2unix
+  emacs
   file
   git
   htop
   imagemagick
-  ipython
+  # ipython
   lsd
   nodejs
   openssh-client
   openssh-server
   pandoc
-  python-pip
+  python3-pip
   ripgrep
   tree
 )
@@ -49,8 +50,8 @@ linuxbrew_recipes=(
 )
 
 # https://launchpad.net/~kelleyk/+archive/ubuntu/emacs
-add_ppa ppa:kelleyk/emacs/ubuntu
-apt_packages+=(emacs26)
+# add_ppa ppa:kelleyk/emacs/ubuntu
+# apt_packages+=(emacs26)
 
 # https://github.com/sharkdp/fd#on-ubuntu
 deb_installed+=(/usr/bin/fd)
