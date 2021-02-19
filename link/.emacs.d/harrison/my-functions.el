@@ -313,5 +313,16 @@ The same result can also be be achieved by \\[universal-argument] \\[unhighlight
   (flyspell-mode 1)
   )
 
+;; Used to paste into isearch-regexp without escaping slashes, etc.
+;; https://www.reddit.com/r/emacs/comments/8aepnk/yank_text_in_isearch_without_escape_character/dwzib7n?utm_source=share&utm_medium=web2x&context=3
+(defun isearch-yank-kill-literally ()
+  "Pull string from kill ring into search string literally."
+  (interactive)
+  (setq isearch-yank-flag t)
+  (let ((string (current-kill 0)))
+    (isearch-process-search-string
+     string
+     (mapconcat 'isearch-text-char-description string ""))))
+
 (provide 'my-functions)
 ;;; my-functions.el ends here

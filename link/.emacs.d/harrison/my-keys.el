@@ -144,5 +144,7 @@
 ;; ibuffer
 (define-key ibuffer-mode-map (kbd "M-o") 'other-window)
 
+(define-key isearch-mode-map (kbd "C-S-y") #'isearch-yank-kill-literally)
+
 (provide 'my-keys)
 ;;; my-keys.el ends here
