@@ -20,7 +20,7 @@ opening="${opening//\//\\\/}"
 closing="${closing//\//\\\/}"
 
 if [[ "$closing" ]]; then
-    command="awk '/${opening}/ { found=1; } found { print } /${closing}/ { found=0; }'"
+    command="awk '/${closing}/ { found=0; } /${opening}/ { found=1; } found { print }'"
 else
     # shellcheck disable=2089
     command="awk '/${opening}/ { found=1; } found { print }'"
@@ -28,7 +28,9 @@ fi
 
 if [[ "$has_files" ]]; then
     # shellcheck disable=2090 disable=2086
-    eachfile "$@" -- $command
+    for file in "$@"; do
+        eval $command "$file"
+    done
 else
     # shellcheck disable=2086
     eval $command
