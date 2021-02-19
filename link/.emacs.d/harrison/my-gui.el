@@ -86,8 +86,10 @@
 (global-set-key (kbd "C-M->") 'my/zoom-in)
 (global-set-key (kbd "C-M-<") 'my/zoom-out)
 
-;; Quit emacs with delete-frame so you don't accidentally delete last one
-(global-set-key (kbd "C-x C-c") 'delete-frame)
+;; Don't accidentally close the window or quit Emacs. Use delete-frame or
+;; kill-emacs if you really need to.
+(global-unset-key (kbd "C-x C-c"))
+(global-unset-key (kbd "s-q"))
 
 (provide 'my-gui)
 ;;; my-gui.el ends here
