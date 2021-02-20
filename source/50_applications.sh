@@ -8,4 +8,8 @@ if is_osx; then
     alias fh='open -a Finder .'
     alias lmk="say '[[volm 0.15]] Process complete.'"
     alias say="say '[[volm 0.15]]'"
+
+    if [[ -d /Applications/Phiewer.app/ ]]; then
+        alias phiewer='open -a /Applications/Phiewer.app/'
+    fi
 fi
