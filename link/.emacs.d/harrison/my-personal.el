@@ -157,5 +157,9 @@
 
 (editorconfig-mode 1)
 
+(add-hook 'visual-line-mode-hook
+          (lambda ()
+            (adaptive-wrap-prefix-mode)))
+
 (provide 'my-personal)
 ;;; my-personal.el ends here

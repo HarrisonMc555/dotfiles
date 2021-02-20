@@ -221,6 +221,7 @@
 
 (defun my-sql-mode-hook ()
   (sqlind-minor-mode t)
+  (setq-local sql-dialect 'mysql)
   )
 
 (add-hook 'sql-mode-hook #'my-sql-mode-hook)
