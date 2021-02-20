@@ -1,9 +1,5 @@
 #!/usr/bin/env bash
 
-if is_osx; then
-    alias cask="brew cask"
-fi
-
 if is_ubuntu; then
     # Package management
     alias update="sudo apt-get -qq update && sudo apt-get upgrade"
