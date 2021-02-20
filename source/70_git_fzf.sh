@@ -43,7 +43,7 @@ if is_available git && is_available fzf; then
     function gb() {
         __check_git_repo || return 1
         if [[ $# -ne 0 ]]; then
-            >&2 echo "gt does not accept any parameters"
+            >&2 echo "gb does not accept any parameters"
             return 1
         fi
         local out key branch
