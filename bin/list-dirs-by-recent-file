@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+
+dir="${1:-.}"
+if [[ ! -d "$dir" ]]; then
+    >&2 echo "Argument must be a directory"
+    exit 1
+fi
+
+for d in "$dir"/*/; do
+    output=$(most-recent-file "$d")
+    date="${output%% *}"
+    echo "${date} ${d}"
+done |
+    sort -nr |
+    while read -r line; do
+        date="${line%% *}"
+        d="${line#* }"
+        echo "$(date --date="@$date" '+%y-%m-%d %T') $d"
+done

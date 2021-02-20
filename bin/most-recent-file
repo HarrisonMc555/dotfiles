@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+if [[ $# -ne 1 ]]; then
+    >&2 echo "Usage: $0 DIR"
+    exit 1
+fi
+
+dir="$1"
+if [[ ! -d "$dir" ]]; then
+    >&2 echo "Argument must be a directory"
+    exit 1
+fi
+
+find "$dir" -type f -print0 |
+    xargs -0 stat -c '%X %N' |
+    awk '
+{
+  # printf "max=%s\n", max;
+  # printf "line=<<%s>>\n", $0;
+  if ($1 > max) {
+     max = $1;
+     mostrecent = $0;
+  }
+}
+END {
+  # printf "result=%s\n", mostrecent
+  print mostrecent
+}
+'
