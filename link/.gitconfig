@@ -42,6 +42,10 @@
   sw = switch
   ppr = pull --prune
   bname = rev-parse --abbrev-ref HEAD
+  rename-branch = branch -m
+  changed-files = diff-tree --no-commit-id --name-only -r
+  ol = log --pretty=format:"%hf%x09%an%x09%as%x09%s"
+  wip = for-each-ref --sort='authordate:iso8601' --format=' %(color:green)%(authordate:relative)%09%(color:white)%(refname:short)' refs/heads
 [branch "master"]
   remote = origin
   merge = refs/heads/master
