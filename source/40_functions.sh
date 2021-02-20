@@ -66,12 +66,31 @@ yesno() {
     while true; do
         read -r -p "${prompt} " yn
         case "$yn" in
-            [Yy] | [Yy][Ee][Ss] ) return 0;;
+            "" | [Yy] | [Yy][Ee][Ss] ) return 0;;
             [Nn] | [Nn][Oo] ) return 1;;
             * ) echo "Please answer yes or no.";;
         esac
     done
 }
+
+noyes() {
+    if [[ $# -gt 1 ]]; then
+        >&2 echo "Usage: noyes [PROMPT]"
+        return 2
+    fi
+
+    local prompt="${1:-[N]o/Yes} >"
+
+    while true; do
+        read -r -p "${prompt} " yn
+        case "$yn" in
+            "" | [Nn] | [Nn][Oo] ) return 1;;
+            [Yy] | [Yy][Ee][Ss] ) return 0;;
+            * ) echo "Please answer yes or no.";;
+        esac
+    done
+}
+
 
 is_iterm2() {
   is_osx && [[ "$TERM_PROGRAM" = iTerm.app ]] && [[ "$TERM" != dumb ]]
