@@ -103,3 +103,5 @@
 	trustExitCode = true
 [pull]
 	ff = only
+[user]
+	name = Harrison McCullough
