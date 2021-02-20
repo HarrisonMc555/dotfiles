@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+pandoc -t jira "$@" |
+    sed 's/\\&/\&/g' |
+    sed -E 's/{code(:java)?}/{noformat}/g' |
+    "$(which sd)" -fm '\n\n\{noformat\}' '\n{noformat}' |
+    perl -pe 'chomp if eof'

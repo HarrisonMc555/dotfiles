@@ -55,21 +55,6 @@ visual_nowait_editor() {
     done
 }
 
-jirafy() {
-    if [[ $# -lt 1 ]]; then
-        >&2 echo "Usage: jirafy FILE [options, ...]"
-        >&2 echo "    Note that FILE must be the first parameter"
-        return 1
-    fi
-
-    local file="$1"
-    shift
-    local out="${file%%.*}.txt"
-    pandoc "$file" "$@" -t jira |
-        sed 's/\\&/\&/g' |
-        perl -pe 'chomp if eof' > "$out"
-}
-
 yesno() {
     if [[ $# -gt 1 ]]; then
         >&2 echo "Usage: yesno [PROMPT]"
