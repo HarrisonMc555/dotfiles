@@ -148,6 +148,16 @@
       (draft-mode))))
 
 (add-hook 'git-commit-setup-hook 'my-git-commit-setup-hook)
+(setq git-commit-major-mode 'markdown-mode)
+(add-hook 'git-commit-setup-hook
+          (lambda ()
+            (setq-local comment-start "!")
+            (set-fill-column 70)
+            (auto-fill-mode 1)
+            (visual-line-mode -1)
+            (visual-fill-column-mode -1)
+            (flyspell-mode 1)
+            ))
 
 ;(setq tmp-directory "/tmp")
 ;(when (file-directory-p tmp-directory)

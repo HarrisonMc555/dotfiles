@@ -4,6 +4,7 @@
   # whitespace = fix,space-before-tab,tab-in-indent,trailing-space
   excludesfile = ~/.gitignore_global
   pager = pager = less -RFXS
+  commentChar = !
 [pager]
   diff = _git_pager
 [apply]
