@@ -226,6 +226,7 @@ AWK
         fi
         cd "$(git rev-parse --show-toplevel)" || return 1
     }
+    alias gitroot=gcd
 
     if is_available bat; then
         function glog() {
