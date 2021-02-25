@@ -61,7 +61,12 @@ yesno() {
         return 2
     fi
 
-    local prompt="${1:-[Y]es/No} >"
+    local suffix="[Y]es/No >"
+    if [[ "$1" ]]; then
+        local prompt="${1} ${suffix}"
+    else
+        local prompt="$suffix"
+    fi
 
     while true; do
         read -r -p "${prompt} " yn
@@ -79,7 +84,12 @@ noyes() {
         return 2
     fi
 
-    local prompt="${1:-[N]o/Yes} >"
+    local suffix="[N]o/Yes >"
+    if [[ "$1" ]]; then
+        local prompt="${1} ${suffix}"
+    else
+        local prompt="$suffix"
+    fi
 
     while true; do
         read -r -p "${prompt} " yn
