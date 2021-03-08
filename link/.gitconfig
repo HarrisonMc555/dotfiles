@@ -3,7 +3,7 @@
   autocrlf = input
   # whitespace = fix,space-before-tab,tab-in-indent,trailing-space
   excludesfile = ~/.gitignore_global
-  pager = pager = less -RFXS
+  pager = less -RFXS
   commentChar = !
 [pager]
   diff = _git_pager
@@ -18,14 +18,21 @@
   d = diff
   g = grep -I
   dc = diff --cached
+  rs = restore
+  rss = restore --staged
+  rsa = restore --staged --worktree
+  rb = rebase
+  rbd = rebase develop
+  rbi = rebase -i
   pp = !"echo 'Pull'; git pull; echo 'Push'; git push"
   amend = "commit --amend"
   forgot = "commit --amend -C HEAD"
   lp = log -p
+  # See graph of commits. Bigger numbers correspond to more detail.
   lg = lg1
   lg1 = lg1-specific --all
   lg2 = lg2-specific --all
-  lg3 = git lg3-specific --all
+  lg3 = lg3-specific --all
   lg1-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'
   lg2-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)'
   lg3-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) %C(bold cyan)(committed: %cD)%C(reset) %C(auto)%d%C(reset)%n''          %C(white)%s%C(reset)%n''          %C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)'
@@ -48,9 +55,17 @@
   changed-files = diff-tree --no-commit-id --name-only -r
   ol = log --pretty=format:"%hf%x09%an%x09%as%x09%s"
   wip = for-each-ref --sort='authordate:iso8601' --format=' %(color:green)%(authordate:relative)%09%(color:white)%(refname:short)' refs/heads
+  wipc = for-each-ref --sort='committerdate:iso8601' --format=' %(color:green)%(committerdate:relative)%09%(color:white)%(refname:short)' refs/heads
   branch-status = !git-branch-status
   local-branches = !git branch -vv | cut -c 3- | awk '$3 !~/\\[/ { print $1 }'
   root = rev-parse --show-toplevel
+  subject = !git --no-pager show --quiet --pretty='%s'
+  body = !git --no-pager show --quiet --pretty='%b'
+  message = !git --no-pager show --quiet --pretty='%B'
+  tracking = rev-parse --abbrev-ref --symbolic-full-name @{u}
+  is-tracking = !git tracking &>/dev/null || false
+  rebase-continue-no-edit = !GIT_EDITOR=true git rebase --continue
+  merge-continue-no-edit = !GIT_EDITOR=true git merge --continue
 [branch "master"]
   remote = origin
   merge = refs/heads/master
@@ -75,6 +90,11 @@
   default = current
 [merge]
   log = true
+	conflictStyle = diff3
+[difftool "ediffclient"]
+  cmd = emacsclient --eval \"(ediff-files \\\"$LOCAL\\\" \\\"$REMOTE\\\")\"
+[mergetool "ediffclient"]
+  cmd = emacsclient --eval \"(ediff-merge-files-with-ancestor \\\"$LOCAL\\\" \\\"$REMOTE\\\" \\\"$BASE\\\" \\\"$MERGED\\\")\"
 # [difftool "Kaleidoscope"]
 #   cmd = ksdiff-wrapper git \"$LOCAL\" \"$REMOTE\"
 [rerere]
@@ -110,3 +130,10 @@
   ff = only
 [user]
   name = Harrison McCullough
+[merge "ours"]
+  driver = true
+[difftool "Kaleidoscope"]
+    cmd = ksdiff --partial-changeset --relative-path \"$MERGED\" -- \"$LOCAL\" \"$REMOTE\"
+[mergetool "Kaleidoscope"]
+    cmd = ksdiff --merge --output \"$MERGED\" --base \"$BASE\" -- \"$LOCAL\" --snapshot \"$REMOTE\" --snapshot
+    trustExitCode = true
