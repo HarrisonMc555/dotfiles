@@ -12,9 +12,8 @@ if is_osx; then
   # brew --prefix is kind of slow
   brew_prefix="$(dirname "$(dirname "$(type -p brew)")")"
   export BASH_COMPLETION_COMPAT_DIR="${brew_prefix}/etc/bash_completion.d"
-  # export BASH_COMPLETION_COMPAT_DIR="$(brew --prefix)/etc/bash_completion.d"
-  [[ -r "$(brew --prefix)/etc/profile.d/bash_completion.sh" ]] &&
-    source "$(brew --prefix)/etc/profile.d/bash_completion.sh"
+  [[ -r "${brew_prefix}/etc/profile.d/bash_completion.sh" ]] &&
+    source "${brew_prefix}/etc/profile.d/bash_completion.sh"
 fi
 
 if is_available fzf; then
