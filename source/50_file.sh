@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # shellcheck disable=SC2209 disable=SC2153
 
+# Avoid errors
+alias cp='cp -i'
+alias mv='mv -i'
+
 # Files will be created with these permissions:
 # files 644 -rw-r--r-- (666 minus 022)
 # dirs  755 drwxr-xr-x (777 minus 022)
