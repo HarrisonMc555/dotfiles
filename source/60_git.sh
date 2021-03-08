@@ -13,44 +13,57 @@ if is_available git; then
 
     alias g='git'
     function ga() { git add "${@:-.}"; } # Add all files by default
+    __git_complete ga _git_add
     function gap() { git add -p "${@:-.}"; } # Add all files by default
-    function gcp() { git checkout -p "${@:-.}"; } # Checkout all files by default
+    __git_complete gap _git_add
+    function grp() { git restore --patch "${@:-.}"; } # Restore all files by default
+    __git_complete grp _git_restore
+    function grps() { git restore --patch --staged "${@:-.}"; } # Restore all files by default
+    __git_complete grps _git_restore
     alias gp='git push -u'
+    __git_complete gp _git_push
     # alias gpup='gp --set-upstream origin $(gbs)'
     # alias gpa='gp --all'
-    alias gu='git pull'
+    alias gu='git pull --prune'
+    __git_complete gu _git_pull
     alias gl='git log'
+    __git_complete gl _git_log
     alias gg='git lg'
+    __git_complete gg _git_log
     # alias gg='gl --decorate --oneline --graph --date-order --all'
     alias gs='git status'
+    __git_complete gs _git_status
     # alias gst='gs'
     alias gd='git diff'
+    __git_complete gd _git_diff
     alias gdw='gd --word-diff'
+    __git_complete gdw _git_diff
     alias gdc='gd --cached'
+    __git_complete gdc _git_diff
     # alias gm='git commit -m'
     # alias gma='git commit -am'
     alias gam='git commit --amend -m'
     # alias gb='git branch'
     # alias gba='git branch -a'
     alias gc='git commit'
+    __git_complete gc _git_commit
     # function gc() { git checkout "${@:-master}"; } # Checkout master by default
     # alias gco='gc'
     # alias gcb='gc -b'
     # alias gbc='gc -b' # Dyslexia
     alias grem='git remote'
+    __git_complete grem _git_remote
     alias grv='grem -v'
+    __git_complete grv _git_remote
     # #alias gra='git remote add'
     # alias grr='git remote rm'
     # alias gcl='git clone'
 
     # Current branch or SHA if detached.
-    # shellcheck disable=SC2142
-    alias gbs='git branch | perl -ne '"'"'/^\* (?:\(detached from (.*)\)|(.*))/ && print "$1$2"'"'"''
-
-    # # Run commands in each subdirectory.
-    # alias gu-all='eachdir git pull'
-    # alias gp-all='eachdir git push'
-    # alias gs-all='eachdir git status'
+    function gbs() {
+        git branch |
+            perl -ne '/^\* (?:\(detached from (.*)\)|(.*))/ && print "$1$2"'
+    }
 
     # Rebase topic branch onto origin parent branch and update local parent branch
     # to match origin parent branch
@@ -88,16 +101,16 @@ if is_available git; then
     # }
 
     # open all changed files (that still actually exist) in the editor
-    function gedit() {
-        if [[ $# -lt 1 ]] || [[ $# -gt 2 ]]; then
-            echo "Usage: gedit FROM [UNTIL]"
-            return 1
-        fi
-        local files
-        while IFS=$'\n' read -r file; do files+="$file"; done < <(git diff --name-status "$@" | grep -v '^D' | cut -f2 | sort | uniq)
-        echo "Opening files modified $([[ "$2" ]] && echo "between $1 and $2" || echo "since $1")"
-        $(visual_nowait_editor) "${files[@]}"
-    }
+    # function gedit() {
+    #     if [[ $# -lt 1 ]] || [[ $# -gt 2 ]]; then
+    #         echo "Usage: gedit FROM [UNTIL]"
+    #         return 1
+    #     fi
+    #     local files
+    #     while IFS=$'\n' read -r file; do files+="$file"; done < <(git diff --name-status "$@" | grep -v '^D' | cut -f2 | sort | uniq)
+    #     echo "Opening files modified $([[ "$2" ]] && echo "between $1 and $2" || echo "since $1")"
+    #     $(visual_nowait_editor) "${files[@]}"
+    # }
 
     # # add a github remote by github username
     # function gra() {
@@ -122,14 +135,14 @@ if is_available git; then
     # alias gurlp='echo $(gurl)/tree/$(gbs)/$(git rev-parse --show-prefix)'
 
     # git log with per-commit cmd-clickable GitHub URLs (iTerm)
-    function gitfiles() {
-        git log "$@" --name-status --color | awk "$(cat <<AWK
-    /^.*commit [0-9a-f]{40}/ {sha=substr(\$2,1,7)}
-    /^[MA]\t/ {printf "%s\t$(gurl)/blob/%s/%s\n", \$1, sha, \$2; next}
-    /.*/ {print \$0}
-AWK
-  )" | less -F
-    }
+#     function gitfiles() {
+#         git log "$@" --name-status --color | awk "$(cat <<AWK
+#     /^.*commit [0-9a-f]{40}/ {sha=substr(\$2,1,7)}
+#     /^[MA]\t/ {printf "%s\t$(gurl)/blob/%s/%s\n", \$1, sha, \$2; next}
+#     /.*/ {print \$0}
+# AWK
+#   )" | less -F
+#     }
 
     # # open last commit in GitHub, in the browser.
     # function gfu() {
@@ -142,7 +155,7 @@ AWK
 
     # Just the last few commits, please!
     # shellcheck disable=SC2139
-    for n in {1..5}; do alias gf$n="gf -n $n"; done
+    # for n in {1..5}; do alias gf$n="gf -n $n"; done
 
     # function gj() { git-jump "${@:-next}"; }
     # alias gj-='gj prev'
@@ -234,6 +247,7 @@ AWK
         }
     fi
 
+    # Commits present on current branch and NOT on specified other branch
     function gbc() {
         if [[ $# -ne 1 ]]; then
             >&2 echo "Usage: gbc BRANCH"
@@ -251,7 +265,9 @@ AWK
             --abbrev-commit --date=relative \
             "$branch..$(git rev-parse --abbrev-ref HEAD)"
     }
+    __git_complete gbc __git_complete_refs
 
+    # Commits present on specified other branch and NOT on current branch
     function gbbc() {
         if [[ $# -ne 1 ]]; then
             >&2 echo "Usage: gbbc BRANCH"
@@ -269,6 +285,7 @@ AWK
             --abbrev-commit --date=relative \
             "$(git rev-parse --abbrev-ref HEAD)..$branch"
     }
+    __git_complete gbbc __git_complete_refs
 
     function branch-exists() {
         if [[ $# -ne 1 ]]; then

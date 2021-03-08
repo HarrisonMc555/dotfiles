@@ -52,9 +52,10 @@ if is_available git && is_available fzf; then
                      --expect=ctrl-o \
                      --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1) | head -'"$LINES")")
         key=$(head -1 <<< "${out[@]}")
-        branch=$(head -2 <<< "${out[@]}" | tail -1 | sed 's/^..//' | cut -d' ' -f1 | sed 's#^remotes/##')
-        if [[ "$key" = ctrl-o ]]; then
-            branch="${branch#*/}"
+        # branch=$(head -2 <<< "${out[@]}" | tail -1 | sed 's/^..//' | cut -d' ' -f1 | sed 's#^remotes/##')
+        branch=$(head -2 <<< "${out[@]}" | tail -1 | sed 's/^..//' | cut -d' ' -f1)
+        if [[ "$key" != ctrl-o ]]; then
+            branch="${branch#remotes/*/}"
         fi
         echo "$branch"
     }
@@ -78,10 +79,25 @@ if is_available git && is_available fzf; then
         __check_git_repo || return 1
         files_str=""
         for file in "$@"; do
-            files_str+=" '$file'"
+            [[ -f "$file" ]] && files_str+=" '$file'"
         done
         git log --date=short --format="%C(green)%C(bold)%cd %C(auto)%h%d %s (%an)" --graph --color=always "$@" |
             fzf-down --ansi --no-sort --reverse --multi --bind 'ctrl-s:toggle-sort' \
+                     --header 'Press CTRL-S to toggle sort' \
+                     --preview "grep -o '[a-f0-9]\{7,\}' <<< {} | xargs -I % git show --oneline --color=always % -- $files_str | head -200" |
+            grep -o "[a-f0-9]\{7,\}"
+    }
+
+    # Git history (SHA)
+    # Fuzzy searches for a commit SHA(s) in reverse
+    function ghr() {
+        __check_git_repo || return 1
+        files_str=""
+        for file in "$@"; do
+            [[ -f "$file" ]] && files_str+=" '$file'"
+        done
+        git log --date=short --format="%C(green)%C(bold)%cd %C(auto)%h%d %s (%an)" --graph --color=always "$@" |
+            fzf-down --ansi --no-sort --reverse --tac --multi --bind 'ctrl-s:toggle-sort' \
                      --header 'Press CTRL-S to toggle sort' \
                      --preview "grep -o '[a-f0-9]\{7,\}' <<< {} | xargs -I % git show --oneline --color=always % -- $files_str | head -200" |
             grep -o "[a-f0-9]\{7,\}"
