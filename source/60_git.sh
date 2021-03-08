@@ -297,16 +297,20 @@ if is_available git; then
         [[ "$(git branch --list "$branch")" ]]
     }
 
-    function git-commits() {
-        if [[ $# -eq 0 ]]; then
-            >&2 echo "Usage: git-commits FILE [FILE]*"
-            return 1
-        fi
-
-        # shellcheck disable=SC2209
-        git log --pretty='%H' "$@" |
-            GIT_PAGER=cat xargs -I % git show % -- "$@" |
-            eval "$(git config core.pager)"
+    function git-delete-gone-branches() {
+        # shellcheck disable=SC2016
+        local awk_cmd='$2 == "[gone]" {sub("refs/heads/", "", $1); print $1}'
+        git fetch -p &&
+            for branch in $(git for-each-ref --format \
+                            '%(refname) %(upstream:track)' refs/heads |
+                                awk "$awk_cmd"); do
+                git branch -d "$branch";
+            done
     }
 
+    function magit() {
+        emacsclient -n -a "" -e "(call-interactively #'magit-status)" \
+                    >/dev/null
+        ~/Library/Scripts/Launch/emacs.sh
+    }
 fi
