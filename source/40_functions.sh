@@ -101,9 +101,9 @@ noyes() {
     done
 }
 
-
 is_iterm2() {
   is_osx && [[ "$TERM_PROGRAM" = iTerm.app ]] && [[ "$TERM" != dumb ]]
 }
 
-export -f is_available urldecode visual_nowait_editor yesno is_iterm2
+export -f is_available urlencode urldecode visual_nowait_editor yesno noyes \
+       is_iterm2
