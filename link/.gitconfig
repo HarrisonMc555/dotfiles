@@ -95,8 +95,6 @@
   cmd = emacsclient --eval \"(ediff-files \\\"$LOCAL\\\" \\\"$REMOTE\\\")\"
 [mergetool "ediffclient"]
   cmd = emacsclient --eval \"(ediff-merge-files-with-ancestor \\\"$LOCAL\\\" \\\"$REMOTE\\\" \\\"$BASE\\\" \\\"$MERGED\\\")\"
-# [difftool "Kaleidoscope"]
-#   cmd = ksdiff-wrapper git \"$LOCAL\" \"$REMOTE\"
 [rerere]
   enabled = 1
 [url "git@github.com:"]
@@ -120,9 +118,6 @@
   oldHighlight = red bold 52
   newNormal = green bold
   newHighlight = green bold 22
-[difftool "sourcetree"]
-  cmd = opendiff \"$LOCAL\" \"$REMOTE\"
-  path = 
 [mergetool "sourcetree"]
   cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
   trustExitCode = true
