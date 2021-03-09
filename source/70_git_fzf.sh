@@ -60,6 +60,26 @@ if is_available git && is_available fzf; then
         echo "$branch"
     }
 
+    # Git branch from master
+    # Fuzzy searches for branch(es) whil previewing the differences from master
+    # (or specified branch)
+    function gbm() {
+        __check_git_repo || return 1
+        if [[ $# -gt 1 ]]; then
+            >&2 echo "Usage: gbm [BRANCH]"
+            return 1
+        fi
+        base="${1:-master}"
+        local out key branch
+        git branch -a --color=always | grep -v '/HEAD\s' | sort |
+            fzf-down --ansi --multi --tac --preview-window right:70% \
+                     --expect=ctrl-o \
+                     --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" '"$base"'..$(sed s/^..// <<< {} | cut -d" " -f1) | head -'"$LINES" |
+            tail -n+2 | # ignore key
+            sed 's/^..//' |
+            sed 's#^remotes/##'
+    }
+
     # Git tag
     # Fuzzy searches for tag(s)
     function gt() {
