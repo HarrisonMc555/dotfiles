@@ -20,5 +20,5 @@ for file in "$@"; do
         die "Could not locate file '$file'"
     fi
 
-    "$jirafyfile_bin" "$file" > "${file%.*}.txt"
+    "$jirafyfile_bin" "$file" > "${file%.*}.jira"
 done
