@@ -45,12 +45,25 @@ if is_ubuntu; then
 fi
 
 # Trim trailing new line and copy to clipboard
+# shellcheck disable=SC2120
 function c() {
     if [[ $# -gt 0 ]]; then
         echo "$@" | perl -pe 'chomp if eof' | pbcopy
     else
         perl -pe 'chomp if eof' | pbcopy
     fi
+}
+
+# Transform HTML to rich text.
+function html2richtext() {
+    sed 's/…/.../g' | textutil -stdin -format html -convert rtf -stdout
+}
+
+# Transform HTML to rich text and send to clipboard.
+# Example:
+# $ pandoc README.md | htmlcopy
+function htmlcopy() {
+    html2richtext | c
 }
 
 function sbashrc() {
