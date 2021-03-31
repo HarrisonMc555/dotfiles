@@ -180,5 +180,9 @@
           (lambda ()
             (adaptive-wrap-prefix-mode)))
 
+;; I no longer like adding newlines all the time. Especially in Git
+;; repositories.
+(setq require-final-newline nil)
+
 (provide 'my-personal)
 ;;; my-personal.el ends here
