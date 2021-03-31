@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-if is_available svn; then
+export __USE_SVN=false
+if is_available svn && [[ "$__USE_SVN" = "true" ]]; then
 
     # SVN shortcuts
     if is_available delta; then
