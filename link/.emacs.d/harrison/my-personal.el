@@ -91,6 +91,15 @@
           (lambda ()
             (modify-syntax-entry ?~ "$~" org-mode-syntax-table)))
 
+(defun org-ispell-hook ()
+  "Configure `ispell-skip-region-alist' for `org-mode'."
+  (make-local-variable 'ispell-skip-region-alist)
+  (add-to-list 'ispell-skip-region-alist '(org-property-drawer-re))
+  (add-to-list 'ispell-skip-region-alist '("~" "~"))
+  (add-to-list 'ispell-skip-region-alist '("=" "="))
+  (add-to-list 'ispell-skip-region-alist '("^#\\+BEGIN_SRC" . "^#\\+END_SRC")))
+(add-hook 'org-mode-hook #'org-ispell-hook)
+
 (setq org-export-with-section-numbers nil)
 
 (if (string-equal system-type "darwin")
