@@ -34,7 +34,12 @@ function ps_process_names() {
         >&2 echo "Usage: ps_process_names"
         return 1
     fi
-    ps aux | tail -n+2 | awk '{ s = ""; for (i = 11; i <= NF; i++) s = s $i " "; print s }'
+    ps aux |
+        tail -n+2 |
+        awk '{ s = ""; for (i = 11; i <= NF; i++) s = s $i " "; print s }' |
+        # Ignore the processes that we started, i.e. ps, tail, awk, and the
+        # search binary
+        _grep -v "^(ps aux |$_SEARCH_BINARY |tail -n\+2 |awk \{ s = \"\")"
 }
 
 function is_running() {
