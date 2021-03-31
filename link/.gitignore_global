@@ -74,6 +74,7 @@ Desktop.ini
 # Caches #
 ##########
 node_modules/
+.ant-targets-build.xml
 
 # Miscellaneous #
 #################
