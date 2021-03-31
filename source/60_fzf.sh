@@ -130,14 +130,46 @@ ctrl-v:page-down\
         }
     fi
 
+    # Fuzzy match file names that contain matches for a given pattern
+    # mnemonic [F]ind [I]n [F]ile
     function fif() {
-        if [ $# -ne 1 ]; then
-            >&2 echo "Need a string to search for!"
+        if [[ $# -lt 1 ]] || [[ $# -gt 2 ]]; then
+            >&2 echo "Usage: fif PATTERN [DIRECTORY]"
             return 1
         fi
-        rg_search="rg --ignore-case --pretty --context 10 --colors 'match:bg:magenta' '$1'"
-        file="$(rg --files-with-matches --no-messages "$1" |
-            fzf --preview "(bat --style=numbers --color=always --pager='less -p \"$1\"' 2> /dev/null {} | $rg_search || highlight -O ansi -l {} 2> /dev/null | $rg_search || cat {} | $rg_search || tree -C {})")"
+        pattern="$1"
+        directory="${2:-.}"
+        rg_search="rg --ignore-case --pretty --context 10 --colors 'match:bg:magenta' '$pattern'"
+        IFS=$'\n' out=("$(rg --files-with-matches --no-messages "$pattern" "$directory" |
+            fzf --exit-0 --expect=ctrl-o,ctrl-e --preview "(bat --style=numbers --color=always --pager='less -p \"$pattern\"' 2> /dev/null {} | $rg_search || highlight -O ansi -l {} 2> /dev/null | $rg_search || cat {} | $rg_search || tree -C {})")")
+        key=$(head -1 <<< "${out[@]}")
+        file=$(head -2 <<< "${out[@]}" | tail -1)
+        [[ -z "$file" ]] && return
+        if [[ "$key" = ctrl-o ]]; then
+            open "$file"
+        elif [[ "$key" = ctrl-e ]]; then
+            histeval $(visual_nowait_editor) "$file"
+        else
+            echo "$file"
+        fi
+    }
+
+    # Fuzzy match file names that contain matches for a given pattern and open for editing
+    # mnemonic [F]ind [E]dit [F]ile
+    function fef() {
+        if [[ $# -lt 1 ]] || [[ $# -gt 2 ]]; then
+            >&2 echo "Usage: fif PATTERN [DIRECTORY]"
+            return 1
+        fi
+        pattern="$1"
+        directory="${2:-.}"
+        rg_search="rg --ignore-case --pretty --context 10 --colors 'match:bg:magenta' '$pattern'"
+        file="$(rg --files-with-matches --no-messages "$pattern" "$directory" |
+            fzf --preview "(bat --style=numbers --color=always --pager='less -p \"$pattern\"' 2> /dev/null {} | $rg_search || highlight -O ansi -l {} 2> /dev/null | $rg_search || cat {} | $rg_search || tree -C {})")" || {
+            >&2 echo "Aborted."
+            return 1
+        }
+        history -a
         histeval $(visual_nowait_editor) "$file"
     }
 fi
