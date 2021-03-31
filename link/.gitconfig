@@ -22,8 +22,9 @@
   rss = restore --staged
   rsa = restore --staged --worktree
   rb = rebase
-  rbd = rebase develop
-  rbi = rebase -i
+  rbd = rebase develop --autostash
+  rbi = rebase --interactive --autostash
+  rbc = rebase --continue
   pp = !"echo 'Pull'; git pull; echo 'Push'; git push"
   amend = "commit --amend"
   forgot = "commit --amend -C HEAD"
@@ -37,7 +38,8 @@
   lg2-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)'
   lg3-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) %C(bold cyan)(committed: %cD)%C(reset) %C(auto)%d%C(reset)%n''          %C(white)%s%C(reset)%n''          %C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)'
   change-commits = "!f() { VAR=$1; OLD=$2; NEW=$3; shift 3; git filter-branch --env-filter \"if [[ \\\"$`echo $VAR`\\\" = '$OLD' ]]; then export $VAR='$NEW'; fi\" $@; }; f "
-  alias = !"git config --get-regexp ^alias\\. | sed -e s/^alias\\.// -e s/\\ /\\ =\\ /"
+  alias = !"f() { if [[ \"$#\" != 1 ]]; then >&2 echo \"Usage: git alias COMMAND\"; return 1; fi; git config alias.\"$1\"; }; f"
+  aliases = !"git config --get-regexp ^alias\\. | sed -e s/^alias\\.// -e s/\\ /\\ =\\ /"
   praise = blame
   history = log -p -M --follow --stat
   branches-raw = for-each-ref --sort=-committerdate --format='%(color:blue)%(authordate:relative)\t%(color:red)%(authorname)\t%(color:white)%(color:bold)%(refname:short)' refs/remotes
@@ -53,7 +55,8 @@
   branchname = bname
   rename-branch = branch -m
   changed-files = diff-tree --no-commit-id --name-only -r
-  ol = log --pretty=format:"%hf%x09%an%x09%as%x09%s"
+  # ol = log --pretty=format:"%hf%x09%an%x09%as%x09%s"
+  ol = log --oneline
   wip = for-each-ref --sort='authordate:iso8601' --format=' %(color:green)%(authordate:relative)%09%(color:white)%(refname:short)' refs/heads
   wipc = for-each-ref --sort='committerdate:iso8601' --format=' %(color:green)%(committerdate:relative)%09%(color:white)%(refname:short)' refs/heads
   branch-status = !git-branch-status
@@ -66,6 +69,10 @@
   is-tracking = !git tracking &>/dev/null || false
   rebase-continue-no-edit = !GIT_EDITOR=true git rebase --continue
   merge-continue-no-edit = !GIT_EDITOR=true git merge --continue
+  diverge = "!f() { if [[ $# -lt 1 ]] || [[ $# -gt 2 ]]; then >&2 echo \"Usage: git diverge BRANCH1 [BRANCH2]\"; return 1; fi; branch1=\"$1\"; branch2=\"${2:-HEAD}\"; base=\"$(git merge-base \"$branch1\" \"$branch2\")\" && git lg1-specific \"$branch1\" \"$branch2\" \"$base\"^!; }; f"
+	showtrackedignored = ls-files -i --exclude-standard
+  commit-with-message = "!f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git commit-with-message COMMITISH\"; return 1; fi; hash=\"$1\"; git --no-pager show --quiet --pretty='%B' \"$hash\" | git commit -F -; }; f"
+  ignored = check-ignore
 [branch "master"]
   remote = origin
   merge = refs/heads/master

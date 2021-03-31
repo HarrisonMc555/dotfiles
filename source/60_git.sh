@@ -3,6 +3,15 @@
 
 if is_available git; then
 
+    # Completions for git aliases
+    function _git_diverge() { __git_complete_refs; }
+    function _git_subject() { _git_show; }
+    function _git_body() { _git_show; }
+    function _git_message() { _git_show; }
+    function _git_rebase-continue-no-edit() { _git_rebase; }
+    function _git_merge-continue-no-edit() { _git_merge; }
+    # function _git_alias() { __git_main; }
+
     alias wdiff="git diff --no-index --word-diff"
     alias gdn='git diff --no-index'
 
