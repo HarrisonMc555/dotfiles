@@ -32,10 +32,60 @@ if is_available git && is_available fzf; then
         fi
         git -c color.status=always status --short "$@" |
             fzf-down -m --ansi --nth 2..,.. \
-                     --preview '(git diff --color=always -- {-1} | sed 1,4d; cat {-1}) | head -500' |
+                     --preview 'file=$(echo {} | cut -c4-); { git diff --color=always -- "$file" | sed 1,4d; cat "$file"; } | head -500' |
+            # Replace the renamed message with just the new file name. This must
+            # be done before removing the status character so we know it's being
+            # renamed. Only really relevant if a file has a ' -> ' in the file
+            # name which is unlikely but possible. I'm using Perl here because
+            # it has "lazy" regular expression matching.
+
+            # Convert double-quoted strings.
+            perl -pe 's|R(.) ".*?[^\\]" -> |R\1 |' |
+            # Convert non-double-quoted strings.
+            perl -pe 's|R(.) [^"].*? -> |R\1 |' |
+
+            # Remove the characters that signify the status, i.e. untracked,
+            # modified, added, renamed, etc.
             cut -c4- |
-            sed 's/.* -> //' |
-            cat
+            # Git status --short is inconsistent with how it prints out
+            # characters that need escaping. If a file is untracked, it will
+            # _not_ escape spaces. If the file is already tracked, it _will_
+            # escape spaces. To make it consistent, we'll unquote everything
+            # that's quoted and re-quote it afterwards.
+
+            # Unquote files quoted by double-quotes.
+            sed 's/^"\(.*\)"$/\1/' |
+            # Unescape any "inner" double quotes.
+            sed 's/\\"/"/g' |
+
+            # Check against printf %q to see if anything changed. If it has
+            # changed, surruond in single quotes (and escape single quotes, the
+            # only special character inside single quotes). If not, leave it
+            # as-is.
+
+            # The printf %q format specifier escapes any special characters for
+            # the shell. If it matches what we have, then we don't need to do
+            # any escaping. It's kind of annoying to have every file wrapped in
+            # quotes when it doesn't need it.
+            while read -r file; do
+                if [[ $(printf '%q' "$file") = "$file" ]]; then
+                    echo "$file"
+                else
+                    # Surround in single quotes, escape single quotes
+                    # // means replace all
+                    # \' matches on a literal single quote
+                    # / means end match, begin replacement
+                    # \' adds a literal single quote
+                    # \\ adds a literal backslash
+                    # \' adds a literal single quote
+                    # \' adds another literal single quote
+                    # This transforms this line:
+                    # Harrison's cool file
+                    # into this line:
+                    # 'Harrison'\''s cool file'
+                    echo "'${file//\'/\'\\\'\'}'"
+                fi
+            done
     }
 
     # Git branch
