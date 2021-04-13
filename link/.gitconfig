@@ -50,7 +50,7 @@
   mru = !git mru-raw --color=always | less -S
   whatadded = log --diff-filter=A
   sw = switch
-  ppr = pull --prune
+  ppr = !"git push && git pr"
   bname = rev-parse --abbrev-ref HEAD
   branchname = bname
   rename-branch = branch -m
