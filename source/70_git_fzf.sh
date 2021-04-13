@@ -92,12 +92,13 @@ if is_available git && is_available fzf; then
     # Fuzzy searches for branch(es)
     function gb() {
         __check_git_repo || return 1
-        if [[ $# -ne 0 ]]; then
-            >&2 echo "gb does not accept any parameters"
-            return 1
-        fi
         local out key branch
-        out=("$(git branch -a --color=always | grep -v '/HEAD\s' | sort |
+        if [[ "$#" -gt 0 ]]; then
+            args=("$@")
+        else
+            args=("-a")
+        fi
+        out=("$(git branch --color=always "${args[@]}" | grep -v '/HEAD\s' | sort |
             fzf-down --ansi --multi --tac --preview-window right:70% \
                      --expect=ctrl-o \
                      --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1) | head -'"$LINES")")
