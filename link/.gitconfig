@@ -73,6 +73,8 @@
 	showtrackedignored = ls-files -i --exclude-standard
   commit-with-message = "!f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git commit-with-message COMMITISH\"; return 1; fi; hash=\"$1\"; git --no-pager show --quiet --pretty='%B' \"$hash\" | git commit -F -; }; f"
   ignored = check-ignore
+  edit-commit = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git edit-commit COMMIT-ISH\"; return 1; fi; if ! git is-commit-ish \"$1\"; then >&2 echo \"$1 is not a valid commit-ish\"; return 1; fi; if ! git is-commit-ish \"$1\"^; then >&2 echo \"Parent of $1 is not a valid commit-ish\"; return 1; fi; GIT_SEQUENCE_EDITOR='sed -i \"\" \"1 s/^pick /edit /\"' git rebase --interactive \"$1\"^; }; f"
+  is-commit-ish = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git is-commit-ish COMMIT-ISH\"; return 1; fi; git cat-file -e \"$1\"^{commit} >/dev/null 2>&1; }; f"
 [branch "master"]
   remote = origin
   merge = refs/heads/master
