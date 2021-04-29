@@ -240,6 +240,11 @@
           (lambda ()
             (adaptive-wrap-prefix-mode)))
 
+; https://stackoverflow.com/a/1230877/7343786
+;; Save history across sessions
+(savehist-mode 1)
+(setq savehist-additional-variables '(kill-ring search-ring regexp-search-ring))
+
 ;; I no longer like adding newlines all the time. Especially in Git
 ;; repositories.
 (setq require-final-newline nil)
