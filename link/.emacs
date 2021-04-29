@@ -29,7 +29,7 @@
  '(edit-server-default-major-mode (quote markdown-mode))
  '(edit-server-new-frame nil)
  '(emojify-composed-text-p t)
- '(emojify-emoji-styles (quote (github unicode)))
+ '(emojify-emoji-styles (quote (unicode)))
  '(fci-rule-color "#eee8d5")
  '(fill-column 80)
  '(find-file-hook
@@ -42,7 +42,7 @@
  '(global-auto-revert-mode t)
  '(global-auto-revert-mode-text "auto-revert")
  '(global-edit-server-edit-mode t)
- '(global-emojify-mode nil)
+ '(global-emojify-mode t)
  '(haskell-process-auto-import-loaded-modules t)
  '(haskell-process-log t)
  '(haskell-process-path-ghci "ghci")
