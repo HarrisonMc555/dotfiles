@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-export __USE_SVN=false
+if [[ ! "$__USE_SVN" ]]; then
+    export __USE_SVN=false
+fi
 if is_available svn && [[ "$__USE_SVN" = "true" ]]; then
 
     # SVN shortcuts
@@ -67,7 +69,7 @@ if is_available svn && [[ "$__USE_SVN" = "true" ]]; then
 
     alias s='svn'
     alias ss='svn st'
-    alias sd='svndiff'
+    # alias sd='svndiff'
     alias svd='svndiff'
     alias svdw='svnwdiff'
     alias swd='svnwdiff'
