@@ -2,11 +2,20 @@
 
 function space2lines() {
     if [[ $# -gt 1 ]]; then
-        echo "Usage: lines [file]*"
+        echo "Usage: space2lines [file]*"
         return 1
     fi
 
     cat "$@" | tr ' ' '\n'
+}
+
+function lines2space() {
+    if [[ $# -gt 1 ]]; then
+        echo "Usage: lines2space [file]*"
+        return 1
+    fi
+
+    cat "$@" | tr '\n' ' '
 }
 
 function doublelines() {
