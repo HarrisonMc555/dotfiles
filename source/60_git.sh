@@ -10,6 +10,8 @@ if is_available git; then
     function _git_message() { _git_show; }
     function _git_rebase-continue-no-edit() { _git_rebase; }
     function _git_merge-continue-no-edit() { _git_merge; }
+    function _git_hash() { _git_log; }
+    function _git_full-hash() { _git_log; }
     # function _git_alias() { __git_main; }
 
     alias wdiff="git diff --no-index --word-diff"

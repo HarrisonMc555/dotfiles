@@ -76,6 +76,10 @@
   edit-commit = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git edit-commit COMMIT-ISH\"; return 1; fi; if ! git is-commit-ish \"$1\"; then >&2 echo \"$1 is not a valid commit-ish\"; return 1; fi; if ! git is-commit-ish \"$1\"^; then >&2 echo \"Parent of $1 is not a valid commit-ish\"; return 1; fi; GIT_SEQUENCE_EDITOR='sed -i \"\" \"1 s/^pick /edit /\"' git rebase --interactive \"$1\"^; }; f"
   is-commit-ish = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git is-commit-ish COMMIT-ISH\"; return 1; fi; git cat-file -e \"$1\"^{commit} >/dev/null 2>&1; }; f"
   staged = "!git -c color.status=always status | sed -n '/^Changes not staged for commit:$/q;p'"
+	lp1 = log -p -n1
+	lost = fsck --lost-found
+	hash = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git hash COMMITISH\"; return 1; fi; h=$(git --no-pager log -n1 --format=%h \"$1\") && echo \"$h\" | perl -pe 'chomp if eof' | pbcopy && echo \"$h\"; }; f"
+	full-hash = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git hash COMMITISH\"; return 1; fi; h=$(git --no-pager log -n1 --format=%H \"$1\") && echo \"$h\" | perl -pe 'chomp if eof' | pbcopy && echo \"$h\"; }; f"
 [branch "master"]
   remote = origin
   merge = refs/heads/master
