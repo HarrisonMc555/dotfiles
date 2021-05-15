@@ -1,0 +1,37 @@
+#!/usr/bin/env bash
+
+# This script is highly untested and probably needs more work. However, I think
+# it has the potential to be useful, so I'm saving it. I started wanting a tool
+# like this when I told Git to ignore my changes to several files but then
+# people started changing them in branches I was using.
+
+die() {
+    if [[ $# -gt 0 ]]; then
+        >&2 echo "$@"
+    fi
+    exit 1
+}
+
+[[ $# -eq 1 ]] || die "Usage: $(basename "$0") BRANCH"
+
+branch="$1"
+
+git_root=$(git rev-parse --show-toplevel) || exit $?
+
+# https://stackoverflow.com/a/11394045/7343786
+IFS=$'\n' read -d '' -r -a files < <(
+    git ls-files -v "$git_root" |
+        sed -n 's/^S \(.*\)$/\1/p' ||
+        die "Could not read list of skipped files")
+# exit code is non-zero on EOF
+
+git update-index --no-skip-worktree "${files[@]}" ||
+    exit $?
+
+git stash push "${files[@]}" ||
+    die "Could not stash files: ${files[*]}"
+
+git switch "$branch" ||
+    die "Could not switch branches. Skipped files are in stash{0}"
+
+git stash pop
