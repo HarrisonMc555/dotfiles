@@ -22,50 +22,71 @@ if is_available git; then
     alias gcm="git commit -m"
     alias gcam="git commit -a -m"
 
+    # On Ubuntu, completions are lazy-loaded. This is normally good, but the
+    # __git_complete function is _also_ lazy loaded, which we would like to use
+    # now. Use the _completion_loader function to force loading of the Git
+    # completion script and provide the __git_complete function.
+    _completion_loader git
+    # If, even after trying that, the __git_complete function is _still_
+    # unavailable, then don't try to define Git completions. Since I would like
+    # to define the completions inline with the definition of each function,
+    # define a helper function that defaults to a no-op if the __git_complete
+    # function is unavailable.
+    if is_available __git_complete; then
+        __my_git_complete() {
+            __git_complete "$@"
+        }
+    else
+        __my_git_complete() {
+            # No op
+            :
+        }
+    fi
+
     alias g='git'
     function ga() { git add "${@:-.}"; } # Add all files by default
-    __git_complete ga _git_add
+    __my_git_complete ga _git_add
     function gap() { git add -p "${@:-.}"; } # Add all files by default
-    __git_complete gap _git_add
+    __my_git_complete gap _git_add
     function grp() { git restore --patch "${@:-.}"; } # Restore all files by default
-    __git_complete grp _git_restore
+    __my_git_complete grp _git_restore
     function grps() { git restore --patch --staged "${@:-.}"; } # Restore all files by default
-    __git_complete grps _git_restore
+    __my_git_complete grps _git_restore
     alias gp='git push -u'
-    __git_complete gp _git_push
+    __my_git_complete gp _git_push
     # alias gpup='gp --set-upstream origin $(gbs)'
     # alias gpa='gp --all'
     alias gu='git pull --prune'
-    __git_complete gu _git_pull
+    __my_git_complete gu _git_pull
     alias gl='git log'
-    __git_complete gl _git_log
+    __my_git_complete gl _git_log
     alias gg='git lg'
-    __git_complete gg _git_log
+    __my_git_complete gg _git_log
     # alias gg='gl --decorate --oneline --graph --date-order --all'
     alias gs='git status'
-    __git_complete gs _git_status
+    __my_git_complete gs _git_status
     # alias gst='gs'
     alias gd='git diff'
-    __git_complete gd _git_diff
+    __my_git_complete gd _git_diff
     alias gdw='gd --word-diff'
-    __git_complete gdw _git_diff
+    __my_git_complete gdw _git_diff
     alias gdc='gd --cached'
-    __git_complete gdc _git_diff
+    __my_git_complete gdc _git_diff
     # alias gm='git commit -m'
     # alias gma='git commit -am'
     alias gam='git commit --amend -m'
     # alias gb='git branch'
     # alias gba='git branch -a'
     alias gc='git commit'
-    __git_complete gc _git_commit
+    __my_git_complete gc _git_commit
     # function gc() { git checkout "${@:-master}"; } # Checkout master by default
     # alias gco='gc'
     # alias gcb='gc -b'
     # alias gbc='gc -b' # Dyslexia
     alias grem='git remote'
-    __git_complete grem _git_remote
+    __my_git_complete grem _git_remote
     alias grv='grem -v'
-    __git_complete grv _git_remote
+    __my_git_complete grv _git_remote
     # #alias gra='git remote add'
     # alias grr='git remote rm'
     # alias gcl='git clone'
