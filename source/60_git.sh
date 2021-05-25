@@ -347,4 +347,8 @@ if is_available git; then
                     >/dev/null
         ~/Library/Scripts/Launch/emacs.sh
     }
+
+    if is_available delta; then
+        export DELTA_PAGER='less -rX'
+    fi
 fi
