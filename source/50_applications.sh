@@ -2,7 +2,7 @@
 
 if is_osx; then
     alias safari='open -a safari'
-    alias chrome="open -a google\ chrome"
+    alias chrome="/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome"
     alias firefox='open -a firefox'
     alias f='open -a Finder'
     alias fh='open -a Finder .'
