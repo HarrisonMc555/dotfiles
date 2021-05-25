@@ -132,3 +132,6 @@ if is_available html2text && is_available curl; then
 fi
 
 export -f c
+
+complete -F _command eachdir
+complete -F _command eachfile
