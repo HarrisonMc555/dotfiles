@@ -84,6 +84,7 @@
  '(js2-strict-trailing-comma-warning nil)
  '(magit-diff-use-overlays nil)
  '(meghanada-cache-in-project nil)
+ '(minibuffer-electric-default-mode t)
  '(nrepl-message-colors
    (quote
     ("#dc322f" "#cb4b16" "#b58900" "#546E00" "#B4C342" "#00629D" "#2aa198" "#d33682" "#6c71c4")))
