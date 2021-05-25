@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+error() {
+    if [[ $# -gt 0 ]]; then
+        >&2 echo "$@"
+    fi
+}
+
+die() {
+    error "$@"
+    exit 1
+}
+
+if ! is_available ffmpeg; then
+    die "Required tool ffmpeg is unavailable"
+fi
+
+if [[ $# -eq 0 ]] || [[ $# -gt 2 ]]; then
+    die "Usage: $0 MOV [MP4]"
+fi
+
+mov_file="$1"
+
+if [[ ! -f "$mov_file" ]]; then
+    die "Could not locate file: $mov_file"
+fi
+
+if [[ $# -lt 2 ]]; then
+    mp4_file="${mov_file%.mov}.mp4"
+else
+    mp4_file="$2"
+fi
+
+if [[ -f "$mp4_file" ]]; then
+    error "MP4 file already exists: $mp4_file"
+    die "Exiting"
+fi
+
+ffmpeg -i "$mov_file" -vcodec h264 -acodec aac -vf format=yuv420p -movflags +faststart "$mp4_file"
