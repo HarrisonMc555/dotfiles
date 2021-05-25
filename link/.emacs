@@ -73,7 +73,7 @@
     ("#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3")))
  '(ibuffer-never-show-predicates
    (quote
-    ("^\\*scratch\\*$" "^\\*Messages\\*$" "^\\*Warnings\\*$" "^\\*Help\\*$" "^\\*Info\\*$" "^\\*Completions\\*$" "^\\*Ediff Registry\\*$" "^\\*dired" "^\\*eglot" "^\\*Flymake" "^\\*Custom" "^\\*Disabled Command\\*$" "^\\*Customize" "^magit[a-zA-Z0-9-]*:")) nil (ibuf-ext))
+    ("^\\*scratch\\*$" "^\\*Messages\\*$" "^\\*Warnings\\*$" "^\\*Help\\*$" "^\\*Info\\*$" "^\\*Completions\\*$" "^\\*Disabled Command\\*$")) nil (ibuf-ext))
  '(indent-guide-delay -1)
  '(indent-guide-global-mode nil)
  '(indent-guide-recursive nil)
