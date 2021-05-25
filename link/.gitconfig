@@ -12,7 +12,7 @@
 [alias]
   s = status
   a = add
-  b = branch
+  b = !"git --no-pager branch"
   c = commit
   ch = checkout
   d = diff
