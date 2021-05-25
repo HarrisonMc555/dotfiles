@@ -26,7 +26,9 @@ if is_available git; then
     # __git_complete function is _also_ lazy loaded, which we would like to use
     # now. Use the _completion_loader function to force loading of the Git
     # completion script and provide the __git_complete function.
-    _completion_loader git
+    if is_ubuntu; then
+        _completion_loader git
+    fi
     # If, even after trying that, the __git_complete function is _still_
     # unavailable, then don't try to define Git completions. Since I would like
     # to define the completions inline with the definition of each function,
