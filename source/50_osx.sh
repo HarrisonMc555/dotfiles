@@ -4,18 +4,18 @@
 if is_osx; then
 
     # Add paths to beginning
-    paths_rev=(
+    paths=(
         /usr/local/bin
         /usr/local/opt/coreutils/libexec/gnubin
     )
 
-    paths=()
-
-    for p in "${paths_rev[@]}"; do
-        paths=("$p" "${paths[@]}")
-    done
+    paths_rev=()
 
     for p in "${paths[@]}"; do
+        paths_rev=("$p" "${paths[@]}")
+    done
+
+    for p in "${paths_rev[@]}"; do
         [[ -d "$p" ]] && PATH="$p:$(path_remove "$p")"
     done
     unset p paths paths_rev

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-paths_rev=(
+paths=(
   "$DOTFILES"/bin
   ~/.local/sbin
   ~/.local/bin
@@ -19,14 +19,14 @@ paths_rev=(
   /opt/gradle/gradle-5.5.1/bin
 )
 
-paths=()
+paths_rev=()
 
-for p in "${paths_rev[@]}"; do
-  paths=("$p" "${paths[@]}")
+for p in "${paths[@]}"; do
+  paths_rev=("$p" "${paths_rev[@]}")
 done
 
 export PATH
-for p in "${paths[@]}"; do
+for p in "${paths_rev[@]}"; do
   [[ -d "$p" ]] && PATH="$p:$(path_remove "$p")"
 done
 unset p paths paths_rev
