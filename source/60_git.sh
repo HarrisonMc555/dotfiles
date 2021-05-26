@@ -348,4 +348,41 @@ if is_available git; then
         ~/Library/Scripts/Launch/emacs.sh
     }
 
+    # This is complex because we want to delegate to the completion for Git
+    # itself without ending up with an infinite loop (which happens if you try
+    # to just delegate to _git).
+    _git_alias() {
+        if [[ "$COMP_CWORD" -lt 2 ]]; then
+            return
+        fi
+        local old_comp_line_length new_comp_line_length
+        COMP_WORDS=(git "${COMP_WORDS[@]:2}")
+        ((COMP_CWORD -= 1))
+        old_comp_line_length=${#COMP_LINE}
+        if [[ "$COMP_LINE" =~ ^[^[:blank:]]+[[:blank:]]+[^[:blank:]]+[[:blank:]]+(.*)$ ]]; then
+            COMP_LINE="git ${BASH_REMATCH[1]}"
+        fi
+        new_comp_line_length=${#COMP_LINE}
+        (( COMP_POINT += new_comp_line_length - old_comp_line_length ))
+
+        _git "$@"
+
+        # git alias blah
+        #            ^
+        # 01234567890123
+        # 0         1
+        # point:  11
+        # length: 13
+        #
+        # git blah
+        #      ^
+        # 01234567
+        # point:  5
+        # length: 7
+        #
+        # point = point - (old length) + (new length)
+        # point = 11 - 13 + 7
+        # point = -2 + 7
+        # point = 5
+    }
 fi
