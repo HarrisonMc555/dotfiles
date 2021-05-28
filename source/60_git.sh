@@ -365,7 +365,7 @@ if is_available git; then
         new_comp_line_length=${#COMP_LINE}
         (( COMP_POINT += new_comp_line_length - old_comp_line_length ))
 
-        _git "$@"
+        __git_wrap__git_main "$@"
 
         # git alias blah
         #            ^
