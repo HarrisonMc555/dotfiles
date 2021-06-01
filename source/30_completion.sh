@@ -48,3 +48,7 @@ for command_to_completion_command in "${command_to_completion_commands[@]}"; do
     new_completion="${completion_minus_completion_command}$command"
     eval "$new_completion"
 done
+
+if is_available tldr; then
+    complete -F _command tldr
+fi
