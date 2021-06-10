@@ -166,7 +166,7 @@
 (if (string-equal system-type "darwin")
     (add-to-list 'exec-path "/usr/local/bin/"))
 
-;; (add-hook 'after-init-hook #'global-emojify-mode)
+(add-hook 'after-init-hook #'global-emojify-mode)
 ;; (setq emojify-composed-text-p nil)
 ;; (emojify-set-emoji-styles '('unicode))
 
