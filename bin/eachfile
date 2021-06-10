@@ -88,7 +88,7 @@ HELP
         if [[ "$dashf" ]]; then
             output="$( eval "$@" 2>&1 )"
         else
-            output="$( eval "$@" "$f" 2>&1 )"
+            output="$( eval "$@" '"$f"' 2>&1 )"
         fi
         if [[ "$output" ]]; then
             # If the command had output, display a header and that output.
