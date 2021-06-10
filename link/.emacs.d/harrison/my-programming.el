@@ -85,7 +85,7 @@
 
 ;; 4-space indentation for python-mode
 (setq python-indent 4)
-(add-to-list 'load-path "~/.emacs.d") ;; check path
+;; (add-to-list 'load-path "~/.emacs.d") ;; check path
 (add-hook 'python-mode-hook
           (function (lambda ()
                       (setq python-indent 4))))
@@ -228,7 +228,7 @@
 
 ;; Clojure ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (add-hook 'clojure-mode-hook 'enable-paredit-mode)
-(require 'clojure-mode-extra-font-locking)
+;; (require 'clojure-mode-extra-font-locking)
 (add-hook 'clojure-mode-hook
           (lambda ()
             (setq inferior-lisp-program "lein repl")

@@ -102,6 +102,7 @@
   (add-to-list 'ispell-skip-region-alist '("=" "="))
   (add-to-list 'ispell-skip-region-alist '("^#\\+BEGIN_SRC" . "^#\\+END_SRC")))
 (add-hook 'org-mode-hook #'org-ispell-hook)
+(add-hook 'org-mode-hook (lambda () (flyspell-mode nil)))
 
 (setq org-export-with-section-numbers nil)
 
@@ -165,7 +166,7 @@
 (if (string-equal system-type "darwin")
     (add-to-list 'exec-path "/usr/local/bin/"))
 
-(add-hook 'after-init-hook #'global-emojify-mode)
+;; (add-hook 'after-init-hook #'global-emojify-mode)
 ;; (setq emojify-composed-text-p nil)
 ;; (emojify-set-emoji-styles '('unicode))
 
@@ -208,7 +209,7 @@
   (when (exercism-mentor-dir-p (buffer-file-name))
       (exercism-mentor-hook)))
 
-(add-hook 'find-file-hook 'exercism-mentor-find-file-hook)
+; (add-hook 'find-file-hook 'exercism-mentor-find-file-hook)
 
 ;; Magit ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun my-git-commit-setup-hook ()
