@@ -1,0 +1,2 @@
+;;; Generated package description from haskell-tab-indent.el  -*- no-byte-compile: t -*-
+(define-package "haskell-tab-indent" "20200513.1950" "tab-based indentation for haskell-mode" 'nil :commit "3239e814d6999f31ad845cc58df53395ad299059" :authors '(("Sean Whitton" . "spwhitton@spwhitton.name")) :maintainer '("Sean Whitton" . "spwhitton@spwhitton.name") :keywords '("indentation" "haskell") :url "https://spwhitton.name/tech/code/haskell-tab-indent/")

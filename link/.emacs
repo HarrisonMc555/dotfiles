@@ -32,7 +32,7 @@
  '(fci-rule-color "#eee8d5")
  '(fill-column 80)
  '(find-file-hook
-   '(exercism-mentor-find-file-hook global-diff-hl-mode-check-buffers svn-commit-tmp-hook magit-branch-description-check-buffers global-magit-file-mode-check-buffers git-commit-setup-check-buffer recentf-track-opened-file url-handlers-set-buffer-mode auto-revert-find-file-function global-eldoc-mode-check-buffers global-font-lock-mode-check-buffers epa-file-find-file-hook vc-refresh-state which-func-ff-hook))
+   '(exercism-mentor-find-file-hook global-diff-hl-mode-check-buffers svn-commit-tmp-hook magit-branch-description-check-buffers git-commit-setup-check-buffer recentf-track-opened-file url-handlers-set-buffer-mode auto-revert-find-file-function global-eldoc-mode-check-buffers global-font-lock-mode-check-buffers epa-file-find-file-hook vc-refresh-state which-func-ff-hook))
  '(flycheck-python-pycompile-executable "python3")
  '(flycheck-python-pylint-executable "/home/harrison/.local/bin/pylint")
  '(flymake-python-pyflakes-executable "/home/harrison/.local/bin/pyflakes")
@@ -89,7 +89,7 @@
      ("melpa" . "http://melpa.org/packages/")
      ("melpa stable" . "https://stable.melpa.org/packages/")))
  '(package-selected-packages
-   '(emojify monokai-theme lsp-mode gitattributes-mode gitconfig-mode gitignore-mode org deadgrep protobuf-mode adaptive-wrap jq-mode editorconfig goto-chg vterm edit-server notmuch swift-mode minitest move-text drag-stuff diff-hl git-gutter ac-helm prettier-js string-inflection counsel-etags sql-indent wucuo helm clang-format gradle-mode paredit cider flycheck-clojure inf-clojure haskell-mode epl cmake-font-lock eglot matlab-mode elm-mode flycheck-elm csv csv-mode toml toml-mode meghanada yaml-mode web-mode tabbar solarized-theme smartparens ruby-extra-highlight markdown-mode magit jinja2-mode haskell-tab-indent haskell-emacs-text haskell-emacs-base go-autocomplete ghci-completion ghc-imported-from ghc flymd flymake-ruby flymake-python-pyflakes flymake-hlint flymake-haskell-multi flycheck-hdevtools flycheck-haskell flycheck-ghcmod exec-path-from-shell django-mode company-inf-ruby ac-js2 ac-inf-ruby ac-haskell-process 2048-game))
+   '(lsp-ui use-package rustic emojify monokai-theme lsp-mode gitattributes-mode gitconfig-mode gitignore-mode org deadgrep protobuf-mode adaptive-wrap jq-mode editorconfig goto-chg vterm edit-server notmuch swift-mode minitest move-text drag-stuff diff-hl git-gutter ac-helm prettier-js string-inflection counsel-etags sql-indent wucuo helm clang-format gradle-mode paredit cider flycheck-clojure inf-clojure haskell-mode epl cmake-font-lock eglot matlab-mode elm-mode flycheck-elm csv csv-mode toml toml-mode meghanada yaml-mode web-mode tabbar solarized-theme smartparens ruby-extra-highlight markdown-mode magit jinja2-mode haskell-tab-indent haskell-emacs-text haskell-emacs-base go-autocomplete ghci-completion ghc-imported-from ghc flymd flymake-ruby flymake-python-pyflakes flymake-hlint flymake-haskell-multi flycheck-hdevtools flycheck-haskell flycheck-ghcmod exec-path-from-shell django-mode company-inf-ruby ac-js2 ac-inf-ruby ac-haskell-process 2048-game))
  '(paradox-github-token t)
  '(pos-tip-background-color "#eee8d5")
  '(pos-tip-foreground-color "#586e75")

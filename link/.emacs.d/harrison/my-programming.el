@@ -198,21 +198,64 @@
 
 (add-hook 'markdown-mode-hook #'my-markdown-mode-hook)
 
-(provide 'my-programming)
-
 ;; Rust ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-(defun my-project-try-cargo-toml (dir)
-  "Try to locate a Rust project."
-  (when (locate-dominating-file dir "Cargo.toml")
-    `(transient . ,dir)))
+(use-package rustic
+  :ensure
+  :bind (:map rustic-mode-map
+              ("M-j" . lsp-ui-imenu)
+              ("M-?" . lsp-find-references)
+              ("C-c C-c l" . flycheck-list-errors)
+              ("C-c C-c a" . lsp-execute-code-action)
+              ("C-c C-c r" . lsp-rename)
+              ("C-c C-c q" . lsp-workspace-restart)
+              ("C-c C-c Q" . lsp-workspace-shutdown)
+              ("C-c C-c s" . lsp-rust-analyzer-status))
+  :config
+  ;; uncomment for less flashiness
+  ;; (setq lsp-eldoc-hook nil)
+  ;; (setq lsp-enable-symbol-highlighting nil)
+  ;; (setq lsp-signature-auto-activate nil)
 
-(defun my-rust-mode-hook ()
-  (set-fill-column 100)
-  )
+  ;; comment to disable rustfmt on save
+  (setq rustic-format-on-save t)
+  (add-hook 'rustic-mode-hook 'rk/rustic-mode-hook))
 
-(add-hook 'rust-mode-hook #'my-rust-mode-hook)
+(defun rk/rustic-mode-hook ()
+  ;; so that run C-c C-c C-r works without having to confirm
+  (setq-local buffer-save-without-query t))
 
-(setq lsp-rust-server 'rust-analyzer)
+(use-package lsp-mode
+  :ensure
+  :commands lsp
+  :custom
+  ;; what to use when checking on-save. "check" is default, I prefer clippy
+  (lsp-rust-analyzer-cargo-watch-command "clippy")
+  (lsp-eldoc-render-all t)
+  (lsp-idle-delay 0.6)
+  (lsp-rust-analyzer-server-display-inlay-hints t)
+  :config
+  (add-hook 'lsp-mode-hook 'lsp-ui-mode))
+
+(use-package lsp-ui
+  :ensure
+  :commands lsp-ui-mode
+  :custom
+  (lsp-ui-peek-always-show t)
+  (lsp-ui-sideline-show-hover t)
+  (lsp-ui-doc-enable nil))
+
+;; (defun my-project-try-cargo-toml (dir)
+;;   "Try to locate a Rust project."
+;;   (when (locate-dominating-file dir "Cargo.toml")
+;;     `(transient . ,dir)))
+
+;; (defun my-rust-mode-hook ()
+;;   (set-fill-column 100)
+;;   )
+
+;; (add-hook 'rust-mode-hook #'my-rust-mode-hook)
+
+;; (setq lsp-rust-server 'rust-analyzer)
 
 ;; Ruby ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (add-hook 'ruby-mode-hook (lambda () (flycheck-mode)))
@@ -310,10 +353,12 @@
 ;; VC (Version Control) ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; Try rust projects before version-control (vc) projects
-(add-hook 'project-find-functions 'my-project-try-cargo-toml nil nil)
+;; (add-hook 'project-find-functions 'my-project-try-cargo-toml nil nil)
 
 (global-diff-hl-mode t)
 (diff-hl-flydiff-mode)
 (add-hook 'dired-mode-hook 'diff-hl-dired-mode-unless-remote)
 
 ;;; my-programming.el ends here
+(provide 'my-programming)
+
