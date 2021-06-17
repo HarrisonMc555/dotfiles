@@ -47,48 +47,48 @@ if is_available git; then
 
     alias g='git'
     function ga() { git add "${@:-.}"; } # Add all files by default
-    __my_git_complete ga _git_add
+    __my_git_complete ga git_add
     function gap() { git add -p "${@:-.}"; } # Add all files by default
-    __my_git_complete gap _git_add
+    __my_git_complete gap git_add
     function grp() { git restore --patch "${@:-.}"; } # Restore all files by default
-    __my_git_complete grp _git_restore
+    __my_git_complete grp git_restore
     function grps() { git restore --patch --staged "${@:-.}"; } # Restore all files by default
-    __my_git_complete grps _git_restore
+    __my_git_complete grps git_restore
     alias gp='git push -u'
-    __my_git_complete gp _git_push
+    __my_git_complete gp git_push
     # alias gpup='gp --set-upstream origin $(gbs)'
     # alias gpa='gp --all'
     alias gu='git pull --prune'
-    __my_git_complete gu _git_pull
+    __my_git_complete gu git_pull
     alias gl='git log'
-    __my_git_complete gl _git_log
+    __my_git_complete gl git_log
     alias gg='git lg'
-    __my_git_complete gg _git_log
+    __my_git_complete gg git_log
     # alias gg='gl --decorate --oneline --graph --date-order --all'
     alias gs='git status'
-    __my_git_complete gs _git_status
+    __my_git_complete gs git_status
     # alias gst='gs'
     alias gd='git diff'
-    __my_git_complete gd _git_diff
+    __my_git_complete gd git_diff
     alias gdw='gd --word-diff'
-    __my_git_complete gdw _git_diff
+    __my_git_complete gdw git_diff
     alias gdc='gd --cached'
-    __my_git_complete gdc _git_diff
+    __my_git_complete gdc git_diff
     # alias gm='git commit -m'
     # alias gma='git commit -am'
     alias gam='git commit --amend -m'
     # alias gb='git branch'
     # alias gba='git branch -a'
     alias gc='git commit'
-    __my_git_complete gc _git_commit
+    __my_git_complete gc git_commit
     # function gc() { git checkout "${@:-master}"; } # Checkout master by default
     # alias gco='gc'
     # alias gcb='gc -b'
     # alias gbc='gc -b' # Dyslexia
     alias grem='git remote'
-    __my_git_complete grem _git_remote
+    __my_git_complete grem git_remote
     alias grv='grem -v'
-    __my_git_complete grv _git_remote
+    __my_git_complete grv git_remote
     # #alias gra='git remote add'
     # alias grr='git remote rm'
     # alias gcl='git clone'
