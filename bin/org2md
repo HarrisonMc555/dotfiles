@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+
+if [[ $# -gt 2 ]]; then
+    >&2 echo "Usage: $0 [ORG_FILE] [MD_FILE]"
+    exit 1
+fi
+
+if [[ $# -ge 1 ]]; then
+    pandoc -f org -t markdown "$1"
+else
+    pandoc -f org -t markdown
+fi |
+    sd -s '\[' '[' |
+    sd -s '\]' ']' |
+    sd -s "\\'" "'" |
+    sd -s '\"' '"' |
+    sd -s '\<' '<' |
+    sd -s '\>' '>' |
+    sd -s '[DONE]{.done .DONE}' '[X]' |
+    sd -s '[DOING]{.doing .DOING}' '[ ]' |
+    sd -s '[TODO]{.todo .TODO}' '[ ]' |
+    sd -s 'DONE' '[X]' |
+    sd -s 'DOING' '[ ]' |
+    sd -s 'TODO' '[ ]' |
+    sd ' \{#[^}]*\}' '' |
+    if [[ $# -ge 2 ]]; then
+        cat > "$2"
+    else
+        cat
+    fi
