@@ -1,7 +1,8 @@
 #!/bin/bash
 # Start emacs daemon.
 if is_osx; then
-    /Applications/Emacs.app/Contents/MacOS/Emacs --daemon
+    emacsclient -c -n -a ''
+    # /Applications/Emacs.app/Contents/MacOS/Emacs --daemon
 else
     /usr/bin/emacs --daemon
 fi
