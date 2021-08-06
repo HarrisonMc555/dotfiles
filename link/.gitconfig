@@ -28,6 +28,7 @@
   pp = !"echo 'Pull'; git pull; echo 'Push'; git push"
   amend = "commit --amend"
   forgot = "commit --amend -C HEAD"
+  ff = merge --ff-only
   lp = log -p
   # See graph of commits. Bigger numbers correspond to more detail.
   lg = lg1
