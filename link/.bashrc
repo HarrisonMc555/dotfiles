@@ -22,3 +22,4 @@ function dotfiles() {
 }
 
 src
+source "$HOME/.cargo/env"

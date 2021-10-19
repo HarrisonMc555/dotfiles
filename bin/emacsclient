@@ -1,8 +1,0 @@
-#!/bin/bash
-# Start emacsclient
-
-if is_osx; then
-    /Applications/Emacs.app/Contents/MacOS/bin/emacsclient "$@"
-else
-    /usr/bin/emacsclient -n -a '' "$@"
-fi

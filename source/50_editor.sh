@@ -7,11 +7,11 @@ export EDITOR='emacsclient -t'
 export VISUAL='emacsclient -a ""'
 export VISUAL_NOWAIT='emacsclient -a "" -n'
 
-alias emacs="emacsclient -n -a ''"
-alias emacsw="emacsclient -c -n -a ''"
-alias emacst="emacsclient -c -t -a ''"
+# alias emacs="emacsclient -n -a ''"
+# alias emacsw="emacsclient -c -n -a ''"
+# alias emacst="emacsclient -c -t -a ''"
 
-function is_emacs_deamon_running() {
+function is_emacs_daemon_running() {
     local name
     if is_osx; then
         name='^/Applications/Emacs.app/Contents/MacOS/Emacs-x86_64-10_14 --bg-daemon'
@@ -20,7 +20,7 @@ function is_emacs_deamon_running() {
     fi
     is_running "$name"
 }
-export -f is_emacs_deamon_running
+export -f is_emacs_daemon_running
 
 if is_osx; then
     function is_emacs_gui_running() {

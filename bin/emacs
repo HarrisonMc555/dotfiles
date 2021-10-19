@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+set -e
+
+if is_osx; then
+    >&2 echo "Not implemented for OSX yet"
+    exit 1
+fi
+
+# 1. If emacs server is not running, start it.
+if ! is_emacs_daemon_running; then
+    echo "Emacs daemon is not running yet. Starting now."
+    /usr/bin/emacs --daemon
+else
+    echo "Emacs daemon is already running."
+fi
+
+# 2. If there is no emacs frame, open one.
+echo "Querying emacs for number of frames."
+num_frames=$(/usr/bin/emacsclient -n -a "/tmp/emacs1000/server" -e \
+                                  '(length (frame-list))')
+echo "Number of frames = ${num_frames}"
+if [[ "$num_frames" -le 1 ]]; then
+    echo "Since number of frames <= 1, creating a new frame."
+    /usr/bin/emacsclient -c -n -a "/tmp/emacs1000/server"
+    new_frame=true
+else
+    echo "Since number of frames > 1, NOT creating a new frame."
+fi
+
+if [[ "$#" -gt 0 ]]; then
+    echo "Since arguments were provided, start emacs client with arguments."
+    # 3a. If any arguments are provided, pass them to emacs.
+    /usr/bin/emacsclient -n -a "/tmp/emacs1000/server" "$@"
+else
+    echo "Since NO arguments were provided, simply bring emacs to the foreground."
+    # 3b. Else, raise and focus emacs window.
+    # This depends on the value of the frame title.
+    wmctrl -a 'Emacs:'
+fi

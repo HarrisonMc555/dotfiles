@@ -30,7 +30,7 @@
 ;; Set frame title as file name
 (setq-default frame-title-format
               '(:eval
-                (format "%s"
+                (format "Emacs: %s"
                         (buffer-name))))
 
 ;; This is intended to maximize emacs on startup.

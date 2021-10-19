@@ -299,7 +299,7 @@ if is_available git; then
             --abbrev-commit --date=relative \
             "$branch..$(git rev-parse --abbrev-ref HEAD)"
     }
-    __git_complete gbc __git_complete_refs
+    __my_git_complete gbc __git_complete_refs
 
     # Commits present on specified other branch and NOT on current branch
     function gbbc() {
@@ -319,7 +319,7 @@ if is_available git; then
             --abbrev-commit --date=relative \
             "$(git rev-parse --abbrev-ref HEAD)..$branch"
     }
-    __git_complete gbbc __git_complete_refs
+    __my_git_complete gbbc __git_complete_refs
 
     function branch-exists() {
         if [[ $# -ne 1 ]]; then

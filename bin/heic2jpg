@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+if [[ -n "$1" ]]; then
+    dir="$1"
+else
+    dir="."
+fi
+
+shopt -s nullglob
+for heic in "$dir"/*.heic "$dir"/*.HEIC; do
+    no_ext="${heic%.*}"
+    jpg="${no_ext}.jpg"
+    if [[ -f "$jpg" ]]; then
+        continue
+    fi
+    heif-convert "$heic" "$jpg"
+done
