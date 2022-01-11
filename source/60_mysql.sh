@@ -13,6 +13,10 @@ if is_available mycli; then
         if [[ "$DB_PASS" ]]; then
             args+=("--password=$DB_PASS")
         fi
+        if [[ "$DB_HOME" ]] && [[ "$SERVER_NAME" ]]; then
+            args+=("--socket=$DB_HOME/$SERVER_NAME-data/mysql.sock")
+        fi
+
         # Add this here instead of ~/.my.cnf because mysqladmin chokes on it
         args+=("--defaults-file=~/.my.cnf.client")
         "$(which mycli)" "${args[@]}" "$@"

@@ -3,6 +3,10 @@
 export PAGER=/usr/bin/less
 alias grep='grep --color=auto'
 
+if is_available delta; then
+    export DELTA_PAGER='less -RXS'
+fi
+
 # Add an "alert" alias for long running commands.  Use like so:
 #   sleep 10; alert
 if is_osx && is_iterm2; then
