@@ -1,0 +1,11 @@
+# Editors #
+###########
+
+# Emacs
+*~
+\#*#
+.\#*
+
+# OS generated files #
+######################
+.DS_Store
