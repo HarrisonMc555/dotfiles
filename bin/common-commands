@@ -1,0 +1,67 @@
+#!/usr/bin/env bash
+
+usage() {
+    cat <<EOF
+Usage: $0 [PATTERN] [-v]
+
+PATTERN
+EOF
+}
+
+print_help() {
+    usage
+    cat <<EOF
+
+PATTERN		A regular expression pattern to match.
+       		Passed to grep to filter output.
+-v     		Only report lines that do NOT match the given pattern.
+       		Requires PATTERN.
+EOF
+}
+
+if [[ $# -gt 1 ]]; then
+    usage
+    exit 1
+fi
+
+negated=false
+
+for arg in "$@"; do
+    case "$arg" in
+        -v)
+            if [[ "$negated" = true ]]; then
+                >&2 usage
+                exit 1
+            fi
+            negated=true
+            ;;
+        
+        *)
+            if [[ ${pattern+x} ]]; then
+                >&2 usage
+                exit 1
+            fi
+            pattern="$arg"
+    esac
+done
+
+if [[ "$negated" = true ]] && ! [[ ${pattern+x} ]]; then
+    >&2 usage
+    exit 1
+fi
+
+tail -n100000 ~/.bash_history |
+    grep -v '^#' |
+    if [[ ${pattern+x} ]]; then
+        if [[ "$negated" = true ]]; then
+            grep -v "$pattern"
+        else
+            grep "$pattern"
+        fi
+    else
+        cat
+    fi |
+    sort |
+    uniq -c |
+    sort -nr |
+    head -n500
