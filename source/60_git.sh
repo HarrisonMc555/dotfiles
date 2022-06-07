@@ -8,10 +8,11 @@ if is_available git; then
     function _git_subject() { _git_show; }
     function _git_body() { _git_show; }
     function _git_message() { _git_show; }
-    function _git_rebase-continue-no-edit() { _git_rebase; }
-    function _git_merge-continue-no-edit() { _git_merge; }
+    function _git_rebase_continue_no_edit() { _git_rebase; }
+    function _git_merge_continue_no_edit() { _git_merge; }
     function _git_hash() { _git_log; }
-    function _git_full-hash() { _git_log; }
+    function _git_full_hash() { _git_log; }
+    function _git_merge_check() { __gitcomp_nl "$(__git_refs)"; }
     # function _git_alias() { __git_main; }
 
     alias wdiff="git diff --no-index --word-diff"
