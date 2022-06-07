@@ -105,5 +105,105 @@ is_iterm2() {
   is_osx && [[ "$TERM_PROGRAM" = iTerm.app ]] && [[ "$TERM" != dumb ]]
 }
 
+bak() {
+    if [[ $# -eq 0 ]]; then
+        >&2 echo "Usage: bak FILE [FILE2,...]";
+        return 1
+    fi
+    backup_dir=backup
+    date_prefix=$(date +%Y-%m-%d_%H-%M-%S_)
+    mkdir -p "$backup_dir" &&
+        for f in "$@"; do
+            filename=$(basename "$f")
+            mv "$f" "${backup_dir}/${date_prefix}${filename}" ||
+                >&2 echo "Could not back up file '$f'"
+        done
+}
+
+prepend() {
+    if [[ $# -ne 1 ]]; then
+        >&2 echo "Usage: prepend PREFIX"
+        return 1
+    fi
+    prefix="$1"
+    awk -v prefix="$prefix" '{ print prefix $0}'
+}
+
+function countdown(){
+    local now end
+    now=$(date +%s) || return 1
+    end=$((now + $1))
+    while (( now < end )); do
+        printf "%s\r" "$(date -u -d @$((end - now)) +%T)"
+        sleep 0.25
+        now=$(date +%s)
+    done
+    echo
+}
+
+timer() {
+    local rest numeric
+    if [[ $# -eq 0 ]] || [[ $# -gt 2 ]]; then
+        >&2 echo "Usage: timer AMOUNT_OF_TIME [SECOND_MINUTE_HOUR_ETC]"
+        return 1
+    fi
+    if [[ $# -eq 1 ]]; then
+        rest="${1##+([0-9])}"
+        numeric="${1%$rest}"
+    elif [[ $# -eq 2 ]]; then
+        numeric="$1"
+        rest="$2"
+    else
+        >&2 echo "Usage: timer AMOUNT_OF_TIME [SECOND_MINUTE_HOUR_ETC]"
+        >&2 echo "Internal error"
+        return 1
+    fi
+
+    if ! [[ "$numeric" =~ ^[0-9]$ ]]; then
+        >&2 echo "First argument must be or start numeric, received: "\
+            "\"$numeric\""
+        return 1
+    fi
+    if ! [[ "$rest" =~ ^[a-zA-Z]$ ]] && [[ "$rest" != "" ]]; then
+        >&2 echo "Second argument or end of first argument must be alphabetic "\
+            "or non-empty, received: \"$rest\""
+        return 1
+    fi
+
+    case "$rest" in
+        d) rest="days";;
+        h) rest="hours";;
+        m) rest="minutes";;
+        s | "") rest="seconds";;
+    esac
+
+    current_date=$(date) || return 1
+    current_seconds=$(date -d "$current_date" +%s) || return 1
+    future_seconds=$(date -d "${current_date} + ${numeric} ${rest}" +%s) ||
+        return 1
+    total_seconds=$((future_seconds - current_seconds))
+
+    countdown "$total_seconds"
+}
+
+if is_osx; then
+    notify() {
+        if [[ $# -lt 1 ]]; then
+            >&2 echo "Usage: notify [TITLE] MESSAGE"
+            return 1
+        fi
+        title="$1"
+        if [[ $# -gt 1 ]]; then
+            shift
+            message="$*"
+        fi
+        osascript -e "display notification \"${message}\" with title \"${title}\""
+    }
+fi
+
 export -f is_available urlencode urldecode visual_nowait_editor yesno noyes \
-       is_iterm2
+       is_iterm2 bak prepend countdown timer
+
+if is_osx; then
+   export -f notify
+fi
