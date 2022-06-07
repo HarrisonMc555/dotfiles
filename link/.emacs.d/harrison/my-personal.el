@@ -164,7 +164,10 @@
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (if (string-equal system-type "darwin")
-    (add-to-list 'exec-path "/usr/local/bin/"))
+    (let ((paths '("/opt/homebrew/bin" "/usr/local/bin")))
+      (dolist (path (reverse paths))
+        (setq exec-path (remove path exec-path))
+        (add-to-list 'exec-path path))))
 
 (add-hook 'after-init-hook #'global-emojify-mode)
 ;; (setq emojify-composed-text-p nil)
