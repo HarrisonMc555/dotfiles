@@ -21,12 +21,15 @@
   rs = restore
   rss = restore --staged
   rsa = restore --staged --worktree
+  rsp = restore --patch
+  rssp = restore --staged --patch
   rb = rebase
   rbd = rebase origin/develop --autostash
   rbi = rebase --interactive --autostash
   rbc = rebase --continue
   pp = !"echo 'Pull'; git pull; echo 'Push'; git push"
   amend = "commit --amend"
+  compare = !"f() { if [[ $# -eq 0 ]] || [[ $# -gt 2 ]]; then >&2 echo \"Usage: git compare FROM_BRANCH [TO_BRANCH]\"; return 1; fi; git rev-list --left-right --count \"$1\"...\"$2\" | awk '{print \"Behind \"$1\" - Ahead \"$2}'; }; f"
   forgot = "commit --amend -C HEAD"
   ff = merge --ff-only
   lp = log -p
@@ -57,7 +60,8 @@
   rename-branch = branch -m
   changed-files = diff-tree --no-commit-id --name-only -r
   # ol = log --pretty=format:"%hf%x09%an%x09%as%x09%s"
-  ol = log --pretty='%C(bold blue)%h%C(reset) %C(bold green)%as%C(reset) %C(bold yellow)%<(12,trunc)%an%C(reset) %C(white)%s%C(reset)'
+  ol = log --first-parent --pretty='%C(bold blue)%h%C(reset) %C(bold green)%as%C(reset) %C(bold yellow)%<(12,trunc)%an%C(reset) %C(white)%s%C(reset)'
+  ol-vanilla = log --pretty='%C(bold blue)%h%C(reset) %C(bold green)%as%C(reset) %C(bold yellow)%<(12,trunc)%an%C(reset) %C(white)%s%C(reset)'
   wip = for-each-ref --sort='authordate:iso8601' --format=' %(color:green)%(authordate:relative)%09%(color:white)%(refname:short)' refs/heads
   wipc = for-each-ref --sort='committerdate:iso8601' --format=' %(color:green)%(committerdate:relative)%09%(color:white)%(refname:short)' refs/heads
   branch-status = !git-branch-status
@@ -80,7 +84,11 @@
 	lp1 = log -p -n1
 	lost = fsck --lost-found
 	hash = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git hash COMMITISH\"; return 1; fi; h=$(git --no-pager log -n1 --format=%h \"$1\") && echo \"$h\" | perl -pe 'chomp if eof' | pbcopy && echo \"$h\"; }; f"
-	full-hash = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git hash COMMITISH\"; return 1; fi; h=$(git --no-pager log -n1 --format=%H \"$1\") && echo \"$h\" | perl -pe 'chomp if eof' | pbcopy && echo \"$h\"; }; f"
+	full-hash = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git full-hash COMMITISH\"; return 1; fi; h=$(git --no-pager log -n1 --format=%H \"$1\") && echo \"$h\" | perl -pe 'chomp if eof' | pbcopy && echo \"$h\"; }; f"
+  # merge-check = !"f() { if [[ $# -ne 2 ]]; then >&2 echo \"Usage: git merge-check branch-from branch-to\"; return 1; fi; git format-patch \"$(git merge-base \"$1\" \"$2\")\"..\"$1\" --stdout | git apply --3way --check -; }; f"
+  merge-check = !"f() { if [[ $# -ne 2 ]]; then >&2 echo \"Usage: git merge-check branch-from branch-to\"; return 1; fi; if git merge-tree \"$(git merge-base \"$1\" \"$2\")\" \"$1\" \"$2\" | grep -E -q \"(<<<<<|>>>>>)\"; then >&2 echo \"Conflict\"; return 1; else echo \"No conflicts \"; fi; }; f"
+	dry-run = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git dry-run BRANCH\"; return 1; fi; git merge \"$1\" --no-commit --no-ff &>/dev/null; result=$?; git merge --abort; if [[ \"$result\" = 0 ]]; then echo \"Success\"; else echo \"Failure\"; fi; return $?; }; f"
+  cherry-grab = "!f() { git rev-list $1^2 ^$1^1 | tac | xargs git cherry-pick; }; f"
 [branch "master"]
   remote = origin
   merge = refs/heads/master
@@ -154,3 +162,5 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+[grep]
+	extendedRegexp = true
