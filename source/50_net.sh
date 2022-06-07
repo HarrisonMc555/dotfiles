@@ -25,26 +25,31 @@ if is_available ssh; then
     # Update ssh config file
     function update_ssh() {
         tmp_file="$(mktemp)"
-        orig_file=~/.ssh/config
-        backup_orig_file="$orig_file.bak"
+        ssh_dir=~/.ssh
+        orig_file="$ssh_dir"/config
+        backup_dir="$ssh_dir"/backup-configs
+        mkdir -p "$backup_dir"
+        backup_orig_file="${backup_dir}/config_$(date +%Y-%m-%d_%H-%M-%S)"
         if [[ -f "$orig_file" ]]; then
-            # if [[ -f "$backup_orig_file" ]]; then
-            #     cat "$backup_orig_file" >> "$tmp_file"
-            # else
-            #     cat "$orig_file" >> "$tmp_file"
-            # fi
             echo cp "$orig_file" "$backup_orig_file"
-            cp "$orig_file" "$backup_orig_file"
+            command cp -i "$orig_file" "$backup_orig_file" || {
+                >&2 echo "Could not back up config file"
+                return 1
+            }
         fi
-        for f in ~/.ssh/configs/*; do
-            [[ "$f" = *~ ]] && continue # Skip backups
+        files=( ~/.ssh/configs/* )
+        num_files="${#files[@]}"
+        max_index=$((num_files - 1))
+        for index in $(seq "$max_index" -1 0); do
+            file="${files[$index]}"
+            [[ "$file" = *~ ]] && continue # Skip backups
             (
-                echo "# $(basename "$f")"
-                cat "$f"
+                echo "# $(basename "$file")"
+                cat "$file"
                 echo
             ) >> "$tmp_file"
         done
-        [[ -s "$tmp_file" ]] && mv "$tmp_file" "$orig_file"
+        [[ -s "$tmp_file" ]] && command mv "$tmp_file" "$orig_file"
     }
 fi
 
