@@ -122,7 +122,8 @@ function foreground_colors() {
     done
 }
 
-export -f c
+export -f c html2richtext htmlcopy sbashrc e_underline titlebar all_colors \
+       foreground_colors
 
 complete -F _command eachdir
 complete -F _command eachfile
