@@ -87,8 +87,11 @@
 	full-hash = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git full-hash COMMITISH\"; return 1; fi; h=$(git --no-pager log -n1 --format=%H \"$1\") && echo \"$h\" | perl -pe 'chomp if eof' | pbcopy && echo \"$h\"; }; f"
   # merge-check = !"f() { if [[ $# -ne 2 ]]; then >&2 echo \"Usage: git merge-check branch-from branch-to\"; return 1; fi; git format-patch \"$(git merge-base \"$1\" \"$2\")\"..\"$1\" --stdout | git apply --3way --check -; }; f"
   merge-check = !"f() { if [[ $# -ne 2 ]]; then >&2 echo \"Usage: git merge-check branch-from branch-to\"; return 1; fi; if git merge-tree \"$(git merge-base \"$1\" \"$2\")\" \"$1\" \"$2\" | grep -E -q \"(<<<<<|>>>>>)\"; then >&2 echo \"Conflict\"; return 1; else echo \"No conflicts \"; fi; }; f"
-	dry-run = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git dry-run BRANCH\"; return 1; fi; git merge \"$1\" --no-commit --no-ff &>/dev/null; result=$?; git merge --abort; if [[ \"$result\" = 0 ]]; then echo \"Success\"; else echo \"Failure\"; fi; return $?; }; f"
+	dry-run = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git dry-run BRANCH\"; return 1; fi; git merge \"$1\" --no-commit --no-ff >/dev/null 2>/dev/null; result=$?; git merge --abort >/dev/null 2>/dev/null; if [[ \"$result\" = 0 ]]; then echo \"Success\"; else echo \"Failure\"; fi; return $?; }; f"
   cherry-grab = "!f() { git rev-list $1^2 ^$1^1 | tac | xargs git cherry-pick; }; f"
+	pull-request = !"f() { if [[ $# -lt 1 ]]; then >&2 echo \"Usage: git pull-request COMMITISH\"; return 1; fi; h=\"$1\"; shift; git log \"$h\"^..\"$h\"^2 \"$@\"; }; f"
+	showpr = pull-request
+	showprp = !"f() { git showpr \"$@\" --patch; }; f"
 [branch "master"]
   remote = origin
   merge = refs/heads/master
