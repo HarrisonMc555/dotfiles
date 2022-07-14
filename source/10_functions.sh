@@ -195,15 +195,40 @@ if is_osx; then
         title="$1"
         if [[ $# -gt 1 ]]; then
             shift
-            message="$*"
         fi
-        osascript -e "display notification \"${message}\" with title \"${title}\""
+        message="$*"
+        script="display notification \"${message}\" with title \"${title}\""
+        osascript -e "$script"
+        say "$message"
     }
+
+    notify_result() {
+        result=$?
+
+
+        if [[ "$result" = 0 ]]; then
+            result_phrase="Success"
+        else
+            result_phrase="Failure"
+        fi
+
+        title="$result_phrase"
+        if [[ $# -gt 0 ]]; then
+            title+=": $1"
+            shift
+        fi
+
+        if [[ $# -eq 0 ]]; then
+            args=()
+        else
+            args=("$result_phrase" "$@")
+        fi
+
+        notify "$title" "${args[@]}"
+    }
+
+    export -f notify notify_result
 fi
 
 export -f is_available urlencode urldecode visual_nowait_editor yesno noyes \
        is_iterm2 bak prepend countdown timer
-
-if is_osx; then
-   export -f notify
-fi
