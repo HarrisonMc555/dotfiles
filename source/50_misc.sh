@@ -18,6 +18,7 @@ if is_osx && is_iterm2; then
         tput bel
         it2attention start
     }
+    export -f alert
 elif is_ubuntu; then
     function alert() {
         return_code=$?
@@ -27,6 +28,7 @@ elif is_ubuntu; then
         fi
         notify-send --urgency=low -i "$([ $return_code = 0 ] && echo terminal || echo error)" "$(history|tail -n1|sed -e 's/^\s*[0-9]\+\s*//;s/[;&|]\s*alert$//')"
     }
+    export -f alert
 fi
 
 alias time='/usr/bin/time'
