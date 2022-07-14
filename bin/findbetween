@@ -22,14 +22,14 @@ closing="${closing//\//\\\/}"
 if [[ "$has_files" ]]; then
     for file in "$@"; do
         if [[ "$closing" ]]; then
-            awk "/${closing}/ { found=0; } /${opening}/ { found=1; } found { print }" "$file"
+            awk "/${opening}/ { found=1; } found { print } /${closing}/ { found=0; }" "$file"
         else
             awk "/${opening}/ { found=1; } found { print }" "$file"
         fi
     done
 else
     if [[ "$closing" ]]; then
-        awk "/${closing}/ { found=0; } /${opening}/ { found=1; } found { print }"
+        awk "/${opening}/ { found=1; } found { print } /${closing}/ { found=0; } "
     else
         awk "/${opening}/ { found=1; } found { print }"
     fi
