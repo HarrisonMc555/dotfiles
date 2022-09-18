@@ -230,5 +230,25 @@ if is_osx; then
     export -f notify notify_result
 fi
 
+random() {
+    case $# in
+         1) min=1; max="$1";;
+         2) min="$1"; max="$2";;
+         *) >&2 echo "Usage: random MAX, random MIN MAX"; return 1;;
+    esac
+    diff=$((max - min + 1))
+    echo $((min + RANDOM % diff))
+}
+
+random_exclusive() {
+    case $# in
+         1) min=0; max="$1";;
+         2) min="$1"; max="$2";;
+         *) >&2 echo "Usage: random MAX, random MIN MAX"; return 1;;
+    esac
+    diff=$((max - min))
+    echo $((min + RANDOM % diff))
+}
+
 export -f is_available urlencode urldecode visual_nowait_editor yesno noyes \
        is_iterm2 bak prepend countdown timer
