@@ -84,6 +84,7 @@
  '(org-cycle-include-plain-lists 'integrate)
  '(org-enforce-todo-dependencies t)
  '(org-indent-mode-turns-off-org-adapt-indentation nil)
+ '(org-table-default-size "2x5")
  '(package-archives
    '(("gnu" . "http://elpa.gnu.org/packages/")
      ("melpa" . "http://melpa.org/packages/")
