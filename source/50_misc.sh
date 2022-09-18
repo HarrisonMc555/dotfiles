@@ -126,6 +126,11 @@ if is_available q; then
     alias qcsv="q -d',' -H -O"
 fi
 
+perlbrew_bashrc=~/perl5/perlbrew/etc/bashrc
+if [[ -f "$perlbrew_bashrc" ]]; then
+    source "$perlbrew_bashrc"
+fi
+
 export -f c html2richtext htmlcopy sbashrc e_underline titlebar all_colors \
        foreground_colors
 
