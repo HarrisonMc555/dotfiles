@@ -1,169 +1,169 @@
 [core]
-  editor = "emacsclient"
-  # autocrlf = input
-  # whitespace = fix,space-before-tab,tab-in-indent,trailing-space
-  excludesfile = ~/.gitignore_global
-  pager = less -RFXS
-  commentChar = !
+	editor = "emacsclient"
+	# autocrlf = input
+	# whitespace = fix,space-before-tab,tab-in-indent,trailing-space
+	excludesfile = ~/.gitignore_global
+	pager = less -RFXS
+	commentChar = !
 [pager]
 	diff = _git_pager
 [apply]
-  # whitespace = fix
+	# whitespace = fix
 [alias]
-  s = status
-  a = add
-  b = !"git --no-pager branch"
-  c = commit
-  ch = checkout
-  d = diff
-  g = grep -I
-  dc = diff --cached
-  rs = restore
-  rss = restore --staged
-  rsa = restore --staged --worktree
-  rsp = restore --patch
-  rssp = restore --staged --patch
-  rb = rebase
-  rbd = rebase origin/develop --autostash
-  rbi = rebase --interactive --autostash
-  rba = rebase --abort
-  rbc = rebase --continue
-  rbcne = cherry-pick-continue-no-edit
-  cp = cherry-pick
-  cpc = cherry-pick --continue
-  cpa = cherry-pick --abort
-  cpcne = cherry-pick-continue-no-edit
-  pp = !"echo 'Pull'; git pull; echo 'Push'; git push"
-  amend = "commit --amend"
-  compare = !"f() { if [[ $# -eq 0 ]] || [[ $# -gt 2 ]]; then >&2 echo \"Usage: git compare FROM_BRANCH [TO_BRANCH]\"; return 1; fi; git rev-list --left-right --count \"$1\"...\"$2\" | awk '{print \"Behind \"$1\" - Ahead \"$2}'; }; f"
-  forgot = "commit --amend -C HEAD"
-  ff = merge --ff-only
-  lp = log -p
-  # See graph of commits. Bigger numbers correspond to more detail.
-  lg = lg1
-  lg1 = lg1-specific --all
-  lg2 = lg2-specific --all
-  lg3 = lg3-specific --all
-  lg1-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'
-  lg2-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)'
-  lg3-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) %C(bold cyan)(committed: %cD)%C(reset) %C(auto)%d%C(reset)%n''          %C(white)%s%C(reset)%n''          %C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)'
-  change-commits = "!f() { VAR=$1; OLD=$2; NEW=$3; shift 3; git filter-branch --env-filter \"if [[ \\\"$`echo $VAR`\\\" = '$OLD' ]]; then export $VAR='$NEW'; fi\" $@; }; f"
-  alias = !"f() { if [[ \"$#\" != 1 ]]; then >&2 echo \"Usage: git alias COMMAND\"; return 1; fi; git config alias.\"$1\"; }; f"
-  aliases = !"git config --get-regexp ^alias\\. | sed -e s/^alias\\.// -e s/\\ /\\ =\\ /"
-  praise = blame
-  history = log -p -M --follow --stat
-  branches-raw = for-each-ref --sort=-committerdate --format='%(color:blue)%(authordate:relative)\t%(color:red)%(authorname)\t%(color:white)%(color:bold)%(refname:short)' refs/remotes
-  branches = !git branches-raw --color=always | column -t -s $'\t' | less -S
-  # mru-raw = for-each-ref --sort=-committerdate --count=10 refs/heads/ --format='%(authorname) (%(color:green)%(committerdate:relative)%(color:reset))\t%(HEAD) %(color:yellow)%(refname:short)%(color:reset)\t%(contents:subject)\t%(color:red)%(objectname:short)%(color:reset)'
-  mru-raw = for-each-ref --sort=-committerdate --count=10 refs/heads/ --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))'
-  # mru = !git mru-raw --color=always | column -t -s $'\t' | less -S
-  mru = !git mru-raw --color=always | less -S
-  whatadded = log --diff-filter=A
-  sw = switch
-  ppr = !"git push && git pr"
-  bname = rev-parse --abbrev-ref HEAD
-  branchname = bname
-  rename-branch = branch -m
-  changed-files = diff-tree --no-commit-id --name-only -r
-  # ol = log --pretty=format:"%hf%x09%an%x09%as%x09%s"
-  ol = log --first-parent --pretty='%C(bold blue)%h%C(reset) %C(bold green)%as%C(reset) %C(bold yellow)%<(12,trunc)%an%C(reset) %C(white)%s%C(reset)'
-  ol-vanilla = log --pretty='%C(bold blue)%h%C(reset) %C(bold green)%as%C(reset) %C(bold yellow)%<(12,trunc)%an%C(reset) %C(white)%s%C(reset)'
-  wip = for-each-ref --sort='authordate:iso8601' --format=' %(color:green)%(authordate:relative)%09%(color:white)%(refname:short)' refs/heads
-  wipc = for-each-ref --sort='committerdate:iso8601' --format=' %(color:green)%(committerdate:relative)%09%(color:white)%(refname:short)' refs/heads
-  branch-status = !git-branch-status
-  local-branches = !git branch -vv | cut -c 3- | awk '$3 !~/\\[/ { print $1 }'
-  root = rev-parse --show-toplevel
-  subject = !git --no-pager show --quiet --pretty='%s'
-  body = !git --no-pager show --quiet --pretty='%b'
-  message = !git --no-pager show --quiet --pretty='%B'
-  tracking = rev-parse --abbrev-ref --symbolic-full-name @{u}
-  is-tracking = !git tracking &>/dev/null || false
-  rebase-continue-no-edit = !GIT_EDITOR=true git rebase --continue
-  merge-continue-no-edit = !GIT_EDITOR=true git merge --continue
-  cherry-pick-continue-no-edit = !GIT_EDITOR=true git cherry-pick --continue
-  diverge = "!f() { if [[ $# -lt 1 ]] || [[ $# -gt 2 ]]; then >&2 echo \"Usage: git diverge BRANCH1 [BRANCH2]\"; return 1; fi; branch1=\"$1\"; branch2=\"${2:-HEAD}\"; base=\"$(git merge-base \"$branch1\" \"$branch2\")\" && git lg1-specific \"$branch1\" \"$branch2\" \"$base\"^!; }; f"
-  showtrackedignored = ls-files -i --exclude-standard
-  commit-with-message = "!f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git commit-with-message COMMITISH\"; return 1; fi; hash=\"$1\"; git --no-pager show --quiet --pretty='%B' \"$hash\" | git commit -F -; }; f"
-  ignored = ls-files --others --ignored --exclude-standard
-  edit-commit = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git edit-commit COMMIT-ISH\"; return 1; fi; if ! git is-commit-ish \"$1\"; then >&2 echo \"$1 is not a valid commit-ish\"; return 1; fi; if ! git is-commit-ish \"$1\"^; then >&2 echo \"Parent of $1 is not a valid commit-ish\"; return 1; fi; GIT_SEQUENCE_EDITOR='sed -i \"\" \"1 s/^pick /edit /\"' git rebase --interactive \"$1\"^; }; f"
-  is-commit-ish = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git is-commit-ish COMMIT-ISH\"; return 1; fi; git cat-file -e \"$1\"^{commit} >/dev/null 2>&1; }; f"
-  staged = "!git -c color.status=always status | sed -n '/^Changes not staged for commit:$/q;p'"
+	s = status
+	a = add
+	b = !"git --no-pager branch"
+	c = commit
+	ch = checkout
+	d = diff
+	g = grep -I
+	dc = diff --cached
+	rs = restore
+	rss = restore --staged
+	rsa = restore --staged --worktree
+	rsp = restore --patch
+	rssp = restore --staged --patch
+	rb = rebase
+	rbd = rebase origin/develop --autostash
+	rbi = rebase --interactive --autostash
+	rba = rebase --abort
+	rbc = rebase --continue
+	rbcne = cherry-pick-continue-no-edit
+	cp = cherry-pick
+	cpc = cherry-pick --continue
+	cpa = cherry-pick --abort
+	cpcne = cherry-pick-continue-no-edit
+	pp = !"echo 'Pull'; git pull; echo 'Push'; git push"
+	amend = "commit --amend"
+	compare = !"f() { if [[ $# -eq 0 ]] || [[ $# -gt 2 ]]; then >&2 echo \"Usage: git compare FROM_BRANCH [TO_BRANCH]\"; return 1; fi; git rev-list --left-right --count \"$1\"...\"$2\" | awk '{print \"Behind \"$1\" - Ahead \"$2}'; }; f"
+	forgot = "commit --amend -C HEAD"
+	ff = merge --ff-only
+	lp = log -p
+	# See graph of commits. Bigger numbers correspond to more detail.
+	lg = lg1
+	lg1 = lg1-specific --all
+	lg2 = lg2-specific --all
+	lg3 = lg3-specific --all
+	lg1-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)'
+	lg2-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset)%C(auto)%d%C(reset)%n''          %C(white)%s%C(reset) %C(dim white)- %an%C(reset)'
+	lg3-specific = log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold cyan)%aD%C(reset) %C(bold green)(%ar)%C(reset) %C(bold cyan)(committed: %cD)%C(reset) %C(auto)%d%C(reset)%n''          %C(white)%s%C(reset)%n''          %C(dim white)- %an <%ae> %C(reset) %C(dim white)(committer: %cn <%ce>)%C(reset)'
+	change-commits = "!f() { VAR=$1; OLD=$2; NEW=$3; shift 3; git filter-branch --env-filter \"if [[ \\\"$`echo $VAR`\\\" = '$OLD' ]]; then export $VAR='$NEW'; fi\" $@; }; f"
+	alias = !"f() { if [[ \"$#\" != 1 ]]; then >&2 echo \"Usage: git alias COMMAND\"; return 1; fi; git config alias.\"$1\"; }; f"
+	aliases = !"git config --get-regexp ^alias\\. | sed -e s/^alias\\.// -e s/\\ /\\ =\\ /"
+	praise = blame
+	history = log -p -M --follow --stat
+	branches-raw = for-each-ref --sort=-committerdate --format='%(color:blue)%(authordate:relative)\t%(color:red)%(authorname)\t%(color:white)%(color:bold)%(refname:short)' refs/remotes
+	branches = !git branches-raw --color=always | column -t -s $'\t' | less -S
+	# mru-raw = for-each-ref --sort=-committerdate --count=10 refs/heads/ --format='%(authorname) (%(color:green)%(committerdate:relative)%(color:reset))\t%(HEAD) %(color:yellow)%(refname:short)%(color:reset)\t%(contents:subject)\t%(color:red)%(objectname:short)%(color:reset)'
+	mru-raw = for-each-ref --sort=-committerdate --count=10 refs/heads/ --format='%(HEAD) %(color:yellow)%(refname:short)%(color:reset) - %(color:red)%(objectname:short)%(color:reset) - %(contents:subject) - %(authorname) (%(color:green)%(committerdate:relative)%(color:reset))'
+	# mru = !git mru-raw --color=always | column -t -s $'\t' | less -S
+	mru = !git mru-raw --color=always | less -S
+	whatadded = log --diff-filter=A
+	sw = switch
+	ppr = !"git push && git pr"
+	bname = rev-parse --abbrev-ref HEAD
+	branchname = bname
+	rename-branch = branch -m
+	changed-files = diff-tree --no-commit-id --name-only -r
+	# ol = log --pretty=format:"%hf%x09%an%x09%as%x09%s"
+	ol = log --first-parent --pretty='%C(bold blue)%h%C(reset) %C(bold green)%as%C(reset) %C(bold yellow)%<(12,trunc)%an%C(reset) %C(white)%s%C(reset)'
+	ol-vanilla = log --pretty='%C(bold blue)%h%C(reset) %C(bold green)%as%C(reset) %C(bold yellow)%<(12,trunc)%an%C(reset) %C(white)%s%C(reset)'
+	wip = for-each-ref --sort='authordate:iso8601' --format=' %(color:green)%(authordate:relative)%09%(color:white)%(refname:short)' refs/heads
+	wipc = for-each-ref --sort='committerdate:iso8601' --format=' %(color:green)%(committerdate:relative)%09%(color:white)%(refname:short)' refs/heads
+	branch-status = !git-branch-status
+	local-branches = !git branch -vv | cut -c 3- | awk '$3 !~/\\[/ { print $1 }'
+	root = rev-parse --show-toplevel
+	subject = !git --no-pager show --quiet --pretty='%s'
+	body = !git --no-pager show --quiet --pretty='%b'
+	message = !git --no-pager show --quiet --pretty='%B'
+	tracking = rev-parse --abbrev-ref --symbolic-full-name @{u}
+	is-tracking = !git tracking &>/dev/null || false
+	rebase-continue-no-edit = !GIT_EDITOR=true git rebase --continue
+	merge-continue-no-edit = !GIT_EDITOR=true git merge --continue
+	cherry-pick-continue-no-edit = !GIT_EDITOR=true git cherry-pick --continue
+	diverge = "!f() { if [[ $# -lt 1 ]] || [[ $# -gt 2 ]]; then >&2 echo \"Usage: git diverge BRANCH1 [BRANCH2]\"; return 1; fi; branch1=\"$1\"; branch2=\"${2:-HEAD}\"; base=\"$(git merge-base \"$branch1\" \"$branch2\")\" && git lg1-specific \"$branch1\" \"$branch2\" \"$base\"^!; }; f"
+	showtrackedignored = ls-files -i --exclude-standard
+	commit-with-message = "!f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git commit-with-message COMMITISH\"; return 1; fi; hash=\"$1\"; git --no-pager show --quiet --pretty='%B' \"$hash\" | git commit -F -; }; f"
+	ignored = ls-files --others --ignored --exclude-standard
+	edit-commit = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git edit-commit COMMIT-ISH\"; return 1; fi; if ! git is-commit-ish \"$1\"; then >&2 echo \"$1 is not a valid commit-ish\"; return 1; fi; if ! git is-commit-ish \"$1\"^; then >&2 echo \"Parent of $1 is not a valid commit-ish\"; return 1; fi; GIT_SEQUENCE_EDITOR='sed -i \"\" \"1 s/^pick /edit /\"' git rebase --interactive \"$1\"^; }; f"
+	is-commit-ish = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git is-commit-ish COMMIT-ISH\"; return 1; fi; git cat-file -e \"$1\"^{commit} >/dev/null 2>&1; }; f"
+	staged = "!git -c color.status=always status | sed -n '/^Changes not staged for commit:$/q;p'"
 	lp1 = log -p -n1
 	lost = fsck --lost-found
 	hash = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git hash COMMITISH\"; return 1; fi; h=$(git --no-pager log -n1 --format=%h \"$1\") && echo \"$h\" | perl -pe 'chomp if eof' | pbcopy && echo \"$h\"; }; f"
 	full-hash = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git full-hash COMMITISH\"; return 1; fi; h=$(git --no-pager log -n1 --format=%H \"$1\") && echo \"$h\" | perl -pe 'chomp if eof' | pbcopy && echo \"$h\"; }; f"
-  # merge-check = !"f() { if [[ $# -ne 2 ]]; then >&2 echo \"Usage: git merge-check branch-from branch-to\"; return 1; fi; git format-patch \"$(git merge-base \"$1\" \"$2\")\"..\"$1\" --stdout | git apply --3way --check -; }; f"
-  merge-check = !"f() { if [[ $# -ne 2 ]]; then >&2 echo \"Usage: git merge-check branch-from branch-to\"; return 1; fi; if git merge-tree \"$(git merge-base \"$1\" \"$2\")\" \"$1\" \"$2\" | grep -E -q \"(<<<<<|>>>>>)\"; then >&2 echo \"Conflict\"; return 1; else echo \"No conflicts \"; fi; }; f"
+	# merge-check = !"f() { if [[ $# -ne 2 ]]; then >&2 echo \"Usage: git merge-check branch-from branch-to\"; return 1; fi; git format-patch \"$(git merge-base \"$1\" \"$2\")\"..\"$1\" --stdout | git apply --3way --check -; }; f"
+	merge-check = !"f() { if [[ $# -ne 2 ]]; then >&2 echo \"Usage: git merge-check branch-from branch-to\"; return 1; fi; if git merge-tree \"$(git merge-base \"$1\" \"$2\")\" \"$1\" \"$2\" | grep -E -q \"(<<<<<|>>>>>)\"; then >&2 echo \"Conflict\"; return 1; else echo \"No conflicts \"; fi; }; f"
 	dry-run = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git dry-run BRANCH\"; return 1; fi; git merge \"$1\" --no-commit --no-ff >/dev/null 2>/dev/null; result=$?; git merge --abort >/dev/null 2>/dev/null; if [[ \"$result\" = 0 ]]; then echo \"Success\"; else echo \"Failure\"; fi; return $?; }; f"
-  cherry-grab = "!f() { git rev-list $1^2 ^$1^1 | tac | xargs git cherry-pick; }; f"
+	cherry-grab = "!f() { git rev-list $1^2 ^$1^1 | tac | xargs git cherry-pick; }; f"
 	pull-request = !"f() { if [[ $# -lt 1 ]]; then >&2 echo \"Usage: git pull-request COMMITISH\"; return 1; fi; h=\"$1\"; shift; git log \"$h\"^..\"$h\"^2 \"$@\"; }; f"
 	showpr = pull-request
 	showprp = !"f() { git showpr \"$@\" --patch; }; f"
-  ls = !"f() { cur_dir=\"${GIT_PREFIX:-./}\"; cd \"$cur_dir\" || { >&2 echo \"Could not cd to $cur_dir\"; return 1; }; git ls-tree --name-only HEAD \"$@\" | sort --version-sort; }; f"
-  my-merges = log --merges --author='Harrison McCullough'
+	ls = !"f() { cur_dir=\"${GIT_PREFIX:-./}\"; cd \"$cur_dir\" || { >&2 echo \"Could not cd to $cur_dir\"; return 1; }; git ls-tree --name-only HEAD \"$@\" | sort --version-sort; }; f"
+	my-merges = log --merges --author='Harrison McCullough'
 [branch "master"]
-  remote = origin
-  merge = refs/heads/master
+	remote = origin
+	merge = refs/heads/master
 [color]
-  ui = true
+	ui = true
 [color "branch"]
-  current = yellow reverse
-  local = yellow
-  remote = green
+	current = yellow reverse
+	local = yellow
+	remote = green
 [color "diff"]
-  meta = 11
-  frag = magenta bold
-  old = red bold
-  new = green bold
-  commit = yellow bold
-  whitespace = red reverse
+	meta = 11
+	frag = magenta bold
+	old = red bold
+	new = green bold
+	commit = yellow bold
+	whitespace = red reverse
 [color "status"]
-  added = yellow
-  changed = green
-  untracked = cyan
+	added = yellow
+	changed = green
+	untracked = cyan
 [push]
-  default = current
+	default = current
 [merge]
-  log = true
-  conflictStyle = diff3
+	log = true
+	conflictStyle = diff3
 [difftool "ediffclient"]
-  cmd = emacsclient --eval \"(ediff-files \\\"$LOCAL\\\" \\\"$REMOTE\\\")\"
+	cmd = emacsclient --eval \"(ediff-files \\\"$LOCAL\\\" \\\"$REMOTE\\\")\"
 [mergetool "ediffclient"]
-  cmd = emacsclient --eval \"(ediff-merge-files-with-ancestor \\\"$LOCAL\\\" \\\"$REMOTE\\\" \\\"$BASE\\\" \\\"$MERGED\\\")\"
+	cmd = emacsclient --eval \"(ediff-merge-files-with-ancestor \\\"$LOCAL\\\" \\\"$REMOTE\\\" \\\"$BASE\\\" \\\"$MERGED\\\")\"
 [rerere]
-  enabled = 1
+	enabled = 1
 [url "git@github.com:"]
-  insteadOf = "gh:"
-  pushInsteadOf = "github:"
-  pushInsteadOf = "git://github.com/"
+	insteadOf = "gh:"
+	pushInsteadOf = "github:"
+	pushInsteadOf = "git://github.com/"
 [url "git://github.com/"]
-  insteadOf = "github:"
+	insteadOf = "github:"
 [url "git@gist.github.com:"]
-  insteadOf = "gst:"
-  pushInsteadOf = "gist:"
-  pushInsteadOf = "git://gist.github.com/"
+	insteadOf = "gst:"
+	pushInsteadOf = "gist:"
+	pushInsteadOf = "git://gist.github.com/"
 [url "git://gist.github.com/"]
-  insteadOf = "gist:"
+	insteadOf = "gist:"
 [url "git@heroku.com:"]
-  insteadOf = "heroku:"
+	insteadOf = "heroku:"
 [include]
-  path = .gitconfig.local
+	path = .gitconfig.local
 [color "diff-highlight"]
-  oldNormal = red bold
-  oldHighlight = red bold 52
-  newNormal = green bold
-  newHighlight = green bold 22
+	oldNormal = red bold
+	oldHighlight = red bold 52
+	newNormal = green bold
+	newHighlight = green bold 22
 [mergetool "sourcetree"]
-  cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
-  trustExitCode = true
+	cmd = /Applications/Sourcetree.app/Contents/Resources/opendiff-w.sh \"$LOCAL\" \"$REMOTE\" -ancestor \"$BASE\" -merge \"$MERGED\"
+	trustExitCode = true
 [pull]
-  ff = only
+	ff = only
 [user]
-  name = Harrison McCullough
+	name = Harrison McCullough
 [merge "ours"]
-  driver = true
+	driver = true
 [init]
-  defaultBranch = main
+	defaultBranch = main
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
