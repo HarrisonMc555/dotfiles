@@ -26,7 +26,13 @@
   rb = rebase
   rbd = rebase origin/develop --autostash
   rbi = rebase --interactive --autostash
+  rba = rebase --abort
   rbc = rebase --continue
+  rbcne = cherry-pick-continue-no-edit
+  cp = cherry-pick
+  cpc = cherry-pick --continue
+  cpa = cherry-pick --abort
+  cpcne = cherry-pick-continue-no-edit
   pp = !"echo 'Pull'; git pull; echo 'Push'; git push"
   amend = "commit --amend"
   compare = !"f() { if [[ $# -eq 0 ]] || [[ $# -gt 2 ]]; then >&2 echo \"Usage: git compare FROM_BRANCH [TO_BRANCH]\"; return 1; fi; git rev-list --left-right --count \"$1\"...\"$2\" | awk '{print \"Behind \"$1\" - Ahead \"$2}'; }; f"
@@ -74,6 +80,7 @@
   is-tracking = !git tracking &>/dev/null || false
   rebase-continue-no-edit = !GIT_EDITOR=true git rebase --continue
   merge-continue-no-edit = !GIT_EDITOR=true git merge --continue
+  cherry-pick-continue-no-edit = !GIT_EDITOR=true git cherry-pick --continue
   diverge = "!f() { if [[ $# -lt 1 ]] || [[ $# -gt 2 ]]; then >&2 echo \"Usage: git diverge BRANCH1 [BRANCH2]\"; return 1; fi; branch1=\"$1\"; branch2=\"${2:-HEAD}\"; base=\"$(git merge-base \"$branch1\" \"$branch2\")\" && git lg1-specific \"$branch1\" \"$branch2\" \"$base\"^!; }; f"
   showtrackedignored = ls-files -i --exclude-standard
   commit-with-message = "!f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git commit-with-message COMMITISH\"; return 1; fi; hash=\"$1\"; git --no-pager show --quiet --pretty='%B' \"$hash\" | git commit -F -; }; f"
@@ -92,6 +99,8 @@
 	pull-request = !"f() { if [[ $# -lt 1 ]]; then >&2 echo \"Usage: git pull-request COMMITISH\"; return 1; fi; h=\"$1\"; shift; git log \"$h\"^..\"$h\"^2 \"$@\"; }; f"
 	showpr = pull-request
 	showprp = !"f() { git showpr \"$@\" --patch; }; f"
+  ls = !"f() { cur_dir=\"${GIT_PREFIX:-./}\"; cd \"$cur_dir\" || { >&2 echo \"Could not cd to $cur_dir\"; return 1; }; git ls-tree --name-only HEAD \"$@\" | sort --version-sort; }; f"
+  my-merges = log --merges --author='Harrison McCullough'
 [branch "master"]
   remote = origin
   merge = refs/heads/master
