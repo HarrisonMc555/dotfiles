@@ -122,6 +122,10 @@ function foreground_colors() {
     done
 }
 
+if is_available q; then
+    alias qcsv="q -d',' -H -O"
+fi
+
 export -f c html2richtext htmlcopy sbashrc e_underline titlebar all_colors \
        foreground_colors
 
