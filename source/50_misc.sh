@@ -131,8 +131,16 @@ if [[ -f "$perlbrew_bashrc" ]]; then
     source "$perlbrew_bashrc"
 fi
 
+function slugify() {
+    if [[ $# -gt 0 ]]; then
+        echo "$@"
+    else
+        cat
+    fi | tr ' _.' '-' | tr -d -c '[:alnum:]_-' | tr '[:upper:]' '[:lower:]'
+}
+
 export -f c html2richtext htmlcopy sbashrc e_underline titlebar all_colors \
-       foreground_colors
+       foreground_colors slugify
 
 complete -F _command eachdir
 complete -F _command eachfile
