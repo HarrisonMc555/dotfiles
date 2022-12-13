@@ -190,11 +190,17 @@ converted to PDF at the same location."
 (defun region-info ()
   "Region info"
   (interactive)
-  (message (format "Beg:   %d\nEnd:   %d\nMark:  %d\nPoint: %d"
+  (message (format (concat
+                    "Mark:  %d\n"
+                    "Point: %d\n"
+                    "Beg:   %d\n"
+                    "End:   %d\n"
+                    "Chars: %d")
+                   (mark)
+                   (point)
                    (region-beginning)
                    (region-end)
-                   (mark)
-                   (point))))
+                   (- (region-end) (region-beginning)))))
 
 ;; ;; Load .el files (recursively)
 ;; (defun load-recursively (directory)
