@@ -23,9 +23,9 @@
 	rsa = restore --staged --worktree
 	rsp = restore --patch
 	rssp = restore --staged --patch
-	rb = rebase
-	rbd = rebase origin/develop --autostash
-	rbi = rebase --interactive --autostash
+	rb = rebase --rebase-merges
+	rbd = rebase origin/develop --autostash --rebase-merges
+	rbi = rebase --interactive --autostash --rebase-merges
 	rba = rebase --abort
 	rbc = rebase --continue
 	rbcne = cherry-pick-continue-no-edit
