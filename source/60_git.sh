@@ -396,4 +396,28 @@ if is_available git; then
         # point = -2 + 7
         # point = 5
     }
+
+    function git-absolute-path () {
+        if [[ $# -ne 1 ]]; then
+            >&2 echo "Usage: git-absolute-path FILE"
+            return 1
+        fi
+        file="$1"
+        if [[ ! -f "$file" ]]; then
+            >&2 echo "File \"$file\" not found"
+            return 1
+        fi
+        abs_path=$(realpath "$file") || return 1
+        git_dir=$(git rev-parse --show-toplevel) || return 1
+        if [[ ! -d "$git_dir" ]]; then
+            >&2 echo "Could not find "
+            return 1
+        fi
+        abs_git_dir=$(realpath "$git_dir") || return 1
+        if [[ ! "$abs_path" = "$abs_git_dir"* ]]; then
+            >&2 echo "File \"$file\" is not in current Git repository \"$git_dir\""
+            return 1
+        fi
+        echo "${abs_path/${abs_git_dir}\//}"
+    }
 fi
