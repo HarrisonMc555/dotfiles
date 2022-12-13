@@ -141,6 +141,12 @@
  (global-set-key (kbd "C-,") 'goto-last-change-reverse)
  )
 
+;; diff-hl
+(with-library
+ diff-hl
+ (global-set-key (kbd "C-M-S-<up>") 'diff-hl-previous-hunk)
+ (global-set-key (kbd "C-M-S-<down>") 'diff-hl-next-hunk))
+
 ;; ibuffer
 (define-key ibuffer-mode-map (kbd "M-o") 'other-window)
 
