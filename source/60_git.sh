@@ -343,6 +343,16 @@ if is_available git; then
             done
     }
 
+    function git-delete-gone-branches-no-fetch() {
+        # shellcheck disable=SC2016
+        local awk_cmd='$2 == "[gone]" {sub("refs/heads/", "", $1); print $1}'
+        for branch in $(git for-each-ref --format \
+                            '%(refname) %(upstream:track)' refs/heads |
+                            awk "$awk_cmd"); do
+            git branch -d "$branch";
+        done
+    }
+
     function magit() {
         emacsclient -n -a "" -e "(call-interactively #'magit-status)" \
                     >/dev/null
