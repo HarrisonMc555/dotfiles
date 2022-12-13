@@ -84,6 +84,12 @@
  '(org-cycle-include-plain-lists 'integrate)
  '(org-enforce-todo-dependencies t)
  '(org-indent-mode-turns-off-org-adapt-indentation nil)
+ '(org-link-frame-setup
+   '((vm . vm-visit-folder-other-frame)
+     (vm-imap . vm-visit-imap-folder-other-frame)
+     (gnus . org-gnus-no-new-news)
+     (file . find-file)
+     (wl . wl-other-frame)))
  '(org-table-default-size "2x5")
  '(package-archives
    '(("gnu" . "http://elpa.gnu.org/packages/")
