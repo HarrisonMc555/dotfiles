@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+
+if [[ $# -ne 1 ]]; then
+    >&2 echo "Usage: git wip-since DATE"
+    exit 1
+fi
+
+date="$1"
+git for-each-ref \
+    refs/heads \
+    --sort=authordate \
+    --format='%(authordate:format:%Y-%m-%d %I:%M %p)  %(align:25,left)%(authorname)%(end) %(refname:strip=2)'  \
+    | awk "{ if (\$1 >= \"${date}\") print \$0 }"
