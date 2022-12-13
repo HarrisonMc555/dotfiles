@@ -1,0 +1,5 @@
+#!/usr/bin/env bash
+
+for f in "$@"; do
+    emacsclient -e "(with-current-buffer (find-file-noselect \"$(readlink -f "$f")\") (org-html-export-to-html nil nil nil nil '(:html-postamble nil)))"
+done
