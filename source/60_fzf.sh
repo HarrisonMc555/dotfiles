@@ -146,8 +146,10 @@ ctrl-v:page-down\
         file=$(head -2 <<< "${out[@]}" | tail -1)
         [[ -z "$file" ]] && return
         if [[ "$key" = ctrl-o ]]; then
-            open "$file"
+            history -s "$@"
+            histeval open "$file"
         elif [[ "$key" = ctrl-e ]]; then
+            history -s "$@"
             histeval $(visual_nowait_editor) "$file"
         else
             echo "$file"
