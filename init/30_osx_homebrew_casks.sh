@@ -22,9 +22,10 @@ casks=(
   alfred
   amazon-music
   background-music
+  caffeine
   captin
-  choosy
   emacs
+  emacsclient
   fastscripts
   firefox
   font-hack-nerd-font
@@ -38,11 +39,26 @@ casks=(
   meld
   mutespotifyads
   screen
-  sourcetree
   spotify
   steam
   vanilla
   visual-studio-code
+
+  ## These were installed by me but I'm not sure if I want them every time
+  sourcetree # Atlassian Git client
+  accessmenubarapps # Shows menu bar applications, helpful when applications have lots of menus
+  caffeine # Keep computer awake
+  grandperspective # Storage space visualizer
+  jetbrains-toolbox # Tool for managing JetBrains tool installations
+  krita # pixel editor
+  microsoft-remote-desktop
+  onedrive
+  spaceradar # Storage space visualizer
+  thonny # Python GUI
+  webex # WebEx video call application
+  
+
+  ## These were installed by "Cowboy" Ben Alman
   # a-better-finder-rename
   # alfred
   # android-platform-tools
