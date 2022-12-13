@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+usage() {
+    echo "Usage: $(dirname "$0") CYCLE_LEN [NTH_LINE]"
+    echo "  CYCLE_LEN  Length of the cycle"
+    echo "  NTH_LINE   Print every NTH_LINE in group of CYCLE_LEN lines"
+    echo "               defaults to CYCLE_LEN"
+}
+
+die() {
+    if [[ $# -gt 0 ]]; then
+        >&2 echo "$@"
+    fi
+    exit 1
+}
+
+die_usage() {
+    if [[ $# -gt 0 ]]; then
+        >&2 echo "$@"
+    fi
+    >&2 usage
+    exit 1
+}
+
+if [[ $# -lt 1 ]]; then
+    die_usage "Missing required parameter CYCLE_LEN"
+fi
+
+cycle_len="$1"
+if [[ $# -ge 1 ]]; then
+    nth_line="$2"
+fi
+
+read -r -d '' awk_command <<'EOF'
+BEGIN {
+    if (! cycle_len) {
+        print "Variable cycle_len is required" > "/dev/stderr";
+        exit;
+    }
+    if (nth_line) {
+        nth_line--;
+    } else {
+        nth_line = cycle_len - 1;
+    }
+}
+
+{
+    if ((NR - 1) % cycle_len == nth_line) {
+        print;
+    }
+}
+EOF
+
+args=(-v "cycle_len=${cycle_len}")
+if [[ -n "$nth_line" ]]; then
+    args+=(-v)
+    args+=("nth_line=${nth_line}")
+fi
+awk "${args[@]}" "$awk_command"
