@@ -162,6 +162,19 @@
                 (org-todo-if-needed "DOING"))))))))
 (add-hook 'org-checkbox-statistics-hook #'ct/org-summary-checkbox-cookie)
 
+;; https://emacs.stackexchange.com/a/33078
+(defface hsm-org-error
+  '((default :inherit font-lock-warning-face)
+    (((class color)) (:foreground "Red" :underline t :box t)))
+  "Face for errors, such as broken links."
+  :group 'org-faces)
+
+(with-library
+ org
+ (org-link-set-parameters
+ "file"
+ :face (lambda (path) (if (file-exists-p path) 'org-link 'hsm-org-error))))
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (if (string-equal system-type "darwin")
