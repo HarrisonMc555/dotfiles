@@ -92,7 +92,8 @@
 
 (add-hook 'org-mode-hook
           (lambda ()
-            (modify-syntax-entry ?~ "$~" org-mode-syntax-table)))
+            (modify-syntax-entry ?~ "$~" org-mode-syntax-table)
+            (local-set-key (kbd "C-c l") 'org-store-link)))
 
 (defun org-ispell-hook ()
   "Configure `ispell-skip-region-alist' for `org-mode'."
