@@ -347,5 +347,19 @@ The same result can also be be achieved by \\[universal-argument] \\[unhighlight
           (set-visited-file-name new-name)
           (set-buffer-modified-p nil))))))
 
+;; https://gist.github.com/hyOzd/23b87e96d43bca0f0b52
+;; based on http://emacsredux.com/blog/2013/04/03/delete-file-and-buffer/
+(defun delete-file-and-buffer ()
+  "Kill the current buffer and deletes the file it is visiting."
+  (interactive)
+  (let ((filename (buffer-file-name)))
+    (if filename
+        (if (y-or-n-p (concat "Do you really want to delete file " filename " ?"))
+            (progn
+              (delete-file filename)
+              (message "Deleted file %s." filename)
+              (kill-buffer)))
+      (message "Not a file visiting buffer!"))))
+
 (provide 'my-functions)
 ;;; my-functions.el ends here
