@@ -102,7 +102,7 @@ noyes() {
 }
 
 is_iterm2() {
-  is_osx && [[ "$TERM_PROGRAM" = iTerm.app ]] && [[ "$TERM" != dumb ]]
+  [[ "$ITERM_SHELL_INTEGRATION_INSTALLED" = Yes ]]
 }
 
 bak() {
