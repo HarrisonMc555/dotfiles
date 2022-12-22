@@ -22,4 +22,7 @@ export HISTSIZE=10000
 export HISTFILESIZE=10000
 
 # Easily re-execute the last history command.
-alias p="fc -s"
+function p() {
+    printf 'Executing last command: '
+    fc -s
+}
