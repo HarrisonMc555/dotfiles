@@ -223,8 +223,8 @@ function __prompt_command() {
   # If not root, store history with more information
   [[ "$(id -u)" != 0 ]] &&
     printf "%s %s %s %s\n" \
-           "$(date "+%H:%M:%S") $(pwd) $(history 1) #${exit_code}" >> \
-           ~/.logs/bash-history-$(date "+%Y-%m-%d").log
+           "$(date "+%H:%M:%S")" "$(pwd)" "$(history 1)" "#${exit_code}" >> \
+           ~/.logs/bash-history-"$(date "+%Y-%m-%d")".log
 }
 
 mkdir -p ~/.logs
