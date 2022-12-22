@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+{
+    declare -A tracking
+    non_tracking=()
+    while read -r branch; do
+        if upstream=$(git rev-parse --abbrev-ref "$branch@{upstream}" 2>/dev/null); then
+            tracking["$branch"]="$upstream"
+        else
+            non_tracking+=("$branch")
+        fi
+    done < <(git for-each-ref --format='%(refname:short)' refs/heads/**)
+
+    if [[ "${#tracking[@]}" -eq 0 ]]; then
+        echo "No tracking branches"
+    else
+        echo "Tracking branches (${#tracking[@]}):"
+        for branch in "${!tracking[@]}"; do
+            printf '%s %s\n' "$branch" "${tracking[$branch]}"
+        done |
+            sort |
+            column -t |
+            awk '{print "\t",$0}'
+    fi
+
+    echo
+
+    if [[ "${#non_tracking[@]}" -eq 0 ]]; then
+        echo "No non-tracking branches"
+    else
+        echo "Non-tracking branches (${#non_tracking[@]}):"
+        for branch in "${non_tracking[@]}"; do
+            printf '\t%s\n' "$branch"
+        done | sort
+    fi
+} | less -S
