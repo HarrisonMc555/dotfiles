@@ -28,7 +28,7 @@
 	rbi = rebase --interactive --autostash --rebase-merges
 	rba = rebase --abort
 	rbc = rebase --continue
-	rbcne = cherry-pick-continue-no-edit
+	rbcne = rebase-continue-no-edit
 	cp = cherry-pick
 	cpc = cherry-pick --continue
 	cpa = cherry-pick --abort
