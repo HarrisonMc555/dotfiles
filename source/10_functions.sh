@@ -129,6 +129,15 @@ prepend() {
     awk -v prefix="$prefix" '{ print prefix $0}'
 }
 
+append() {
+    if [[ $# -ne 1 ]]; then
+        >&2 echo "Usage: append SUFFIX"
+        return 1
+    fi
+    suffix="$1"
+    awk -v suffix="$suffix" '{ print $0 suffix}'
+}
+
 function countdown(){
     local now end
     now=$(date +%s) || return 1
