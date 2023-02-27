@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+if [ $# -ne 2 ]; then
+    >&2 echo "Usage: $0 FILE1 FILE2"
+    exit 1
+fi
+
+test "$(stat -L -c %d:%i "$1")" = "$(stat -L -c %d:%i "$2")"
