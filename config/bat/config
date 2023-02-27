@@ -1,1 +1,3 @@
 --map-syntax='*.mxe:XML'
+--wrap never
+--pager='less -RXS'
