@@ -19,6 +19,12 @@ paths=(
   /opt/gradle/gradle-5.5.1/bin
 )
 
+if is_osx; then
+    paths=("$DOTFILES"/bin/osx "${paths[@]}")
+elif is_ubuntu; then
+    paths=("$DOTFILES"/bin/ubuntu "${paths[@]}")
+fi
+
 paths_rev=()
 
 for p in "${paths[@]}"; do
