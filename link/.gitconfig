@@ -103,6 +103,7 @@
 	my-merges = log --merges --author='Harrison McCullough'
 	find-merge = "!sh -c 'commit=$0 && branch=${1:-HEAD} && (git rev-list $commit..$branch --ancestry-path | cat -n; git rev-list $commit..$branch --first-parent | cat -n) | sort -k2 -s | uniq -f1 -d | sort -n | tail -1 | cut -f2'"
 	show-merge = "!sh -c 'merge=$(git find-merge $0 $1) && [ -n \"$merge\" ] && git show $merge'"
+	most-changed = "!f() { cd \"${GIT_PREFIX:-.}\" && git log --pretty=tformat: --name-only \"$@\" | grep . | sort | uniq -c | sort -rg | head -n20 | sed 's/^ *//' | cut -d' ' -f2- | while read -r line; do echo \"${line#${GIT_PREFIX}}\"; done; }; f"
 [branch "master"]
 	remote = origin
 	merge = refs/heads/master
