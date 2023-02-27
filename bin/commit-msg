@@ -1,0 +1,46 @@
+#!/bin/sh
+
+exec 1>&2
+
+file="$1"
+bar='==============================================================================='
+die() {
+    printf '%s\n' "$bar"
+    if [ $# -gt 0 ]; then
+        printf 'ERROR: %s\n\n' "$*"
+    fi
+    printf 'Please edit the message and commit again.\n'
+    abs_path=$(cd "$(dirname "$file")" && pwd || echo ".")/$(basename "$file")
+    printf 'Your commit message has been saved in:\n'
+    printf '  %s\n' "$abs_path"
+    printf '%s\n' "$bar"
+    exit 1
+}
+
+subject=$(head -n1 "$file")
+num_chars=$(printf '%s' "$subject" | wc -c)
+max_num_chars=80
+
+if [ "$num_chars" -gt "$max_num_chars" ]; then
+    die "The subject line should be ${max_num_chars} characters or less (found ${num_chars} characters)."
+fi
+
+if echo "$subject" | grep "\. *$" >/dev/null 2>&1; then
+    die "The subject line should not end in a period."
+fi
+
+num_lines=$(wc -l < "$file")
+line2=$(sed '2q;d' "$file")
+subject_and_body_separated="The subject and body should be separated by an empty line."
+case "$num_lines" in
+    0|1) ;;
+    2) if [ "$line2" = "" ]; then
+           die "There should only be blank line after the subject if there is further text"
+       else
+           die "$subject_and_body_separated"
+       fi
+       ;;
+    *) if [ "$line2" != "" ]; then
+           die "$subject_and_body_separated"
+       fi
+esac
