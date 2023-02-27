@@ -13,6 +13,8 @@ if is_available git; then
     function _git_hash() { _git_log; }
     function _git_full_hash() { _git_log; }
     function _git_merge_check() { __gitcomp_nl "$(__git_refs)"; }
+    function _git_olns() { _git_log; }
+    function _git_compare() { __git_complete_refs; }
     # function _git_alias() { __git_main; }
 
     alias wdiff="git diff --no-index --word-diff"
