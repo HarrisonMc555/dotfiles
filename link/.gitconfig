@@ -85,7 +85,7 @@
 	showtrackedignored = ls-files -i --exclude-standard
 	commit-with-message = "!f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git commit-with-message COMMITISH\"; return 1; fi; hash=\"$1\"; git --no-pager show --quiet --pretty='%B' \"$hash\" | git commit -F -; }; f"
 	ignored = ls-files --others --ignored --exclude-standard
-	edit-commit = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git edit-commit COMMIT-ISH\"; return 1; fi; if ! git is-commit-ish \"$1\"; then >&2 echo \"$1 is not a valid commit-ish\"; return 1; fi; if ! git is-commit-ish \"$1\"^; then >&2 echo \"Parent of $1 is not a valid commit-ish\"; return 1; fi; GIT_SEQUENCE_EDITOR='gsed -i \"0,/^pick/{s/^pick /edit /}\"' git rebase --interactive --rebase-merges \"$1\"^; }; f"
+	edit-commit = !"f() { if [[ $# -lt 1 ]]; then >&2 echo \"Usage: git edit-commit COMMIT-ISH [args]\"; return 1; fi; if ! git is-commit-ish \"$1\"; then >&2 echo \"$1 is not a valid commit-ish\"; return 1; fi; if ! git is-commit-ish \"$1\"^; then >&2 echo \"Parent of $1 is not a valid commit-ish\"; return 1; fi; commitish=\"$1\"; shift; GIT_SEQUENCE_EDITOR='gsed -i \"0,/^pick/{s/^pick /edit /}\"' git rebase --interactive --rebase-merges \"$commitish\"^ \"$@\"; }; f"
 	is-commit-ish = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git is-commit-ish COMMIT-ISH\"; return 1; fi; git cat-file -e \"$1\"^{commit} >/dev/null 2>&1; }; f"
 	staged = "!git -c color.status=always status | sed -n '/^Changes not staged for commit:$/q;p'"
 	lp1 = log -p -n1
