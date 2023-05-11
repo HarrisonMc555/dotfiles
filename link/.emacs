@@ -6,14 +6,11 @@
  '(after-save-hook '(rmail-after-save-hook))
  '(ansi-color-faces-vector
    [default default default italic underline success warning error])
- '(ansi-color-names-vector
-   ["#eee8d5" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#839496"])
  '(asm-comment-char 35)
  '(auto-revert-remote-files t)
  '(case-fold-search t)
  '(column-number-mode t)
  '(company-dabbrev-code-time-limit 0.1)
- '(compilation-message-face 'default)
  '(cua-global-mark-cursor-color "#2aa198")
  '(cua-normal-cursor-color "#657b83")
  '(cua-overwrite-cursor-color "#b58900")
@@ -29,7 +26,6 @@
  '(edit-server-new-frame nil)
  '(emojify-composed-text-p t)
  '(emojify-emoji-styles '(unicode))
- '(fci-rule-color "#eee8d5")
  '(fill-column 80)
  '(find-file-hook
    '(exercism-mentor-find-file-hook global-diff-hl-mode-check-buffers svn-commit-tmp-hook magit-branch-description-check-buffers git-commit-setup-check-buffer recentf-track-opened-file url-handlers-set-buffer-mode auto-revert-find-file-function global-eldoc-mode-check-buffers global-font-lock-mode-check-buffers epa-file-find-file-hook vc-refresh-state which-func-ff-hook))
@@ -46,21 +42,11 @@
  '(haskell-process-path-ghci "ghci")
  '(haskell-process-suggest-remove-import-lines t)
  '(haskell-process-type 'stack-ghci)
- '(highlight-changes-colors '("#d33682" "#6c71c4"))
  '(highlight-symbol-colors
    (--map
     (solarized-color-blend it "#fdf6e3" 0.25)
     '("#b58900" "#2aa198" "#dc322f" "#6c71c4" "#859900" "#cb4b16" "#268bd2")))
  '(highlight-symbol-foreground-color "#586e75")
- '(highlight-tail-colors
-   '(("#eee8d5" . 0)
-     ("#B4C342" . 20)
-     ("#69CABF" . 30)
-     ("#69B7F0" . 50)
-     ("#DEB542" . 60)
-     ("#F2804F" . 70)
-     ("#F771AC" . 85)
-     ("#eee8d5" . 100)))
  '(hl-bg-colors
    '("#DEB542" "#F2804F" "#FF6E64" "#F771AC" "#9EA0E5" "#69B7F0" "#69CABF" "#B4C342"))
  '(hl-fg-colors
@@ -75,7 +61,6 @@
  '(ispell-choices-win-default-height 50)
  '(js2-indent-switch-body t)
  '(js2-strict-trailing-comma-warning nil)
- '(magit-diff-use-overlays nil)
  '(meghanada-cache-in-project nil)
  '(minibuffer-electric-default-mode t)
  '(nrepl-message-colors
@@ -98,8 +83,6 @@
  '(package-selected-packages
    '(lua-mode rust-mode lsp-ui use-package emojify monokai-theme lsp-mode gitattributes-mode gitconfig-mode gitignore-mode org deadgrep protobuf-mode adaptive-wrap jq-mode editorconfig goto-chg vterm edit-server notmuch swift-mode minitest move-text drag-stuff diff-hl git-gutter ac-helm prettier-js string-inflection counsel-etags sql-indent wucuo helm clang-format gradle-mode paredit cider flycheck-clojure inf-clojure haskell-mode epl cmake-font-lock eglot matlab-mode elm-mode flycheck-elm csv csv-mode toml toml-mode meghanada yaml-mode web-mode tabbar solarized-theme smartparens ruby-extra-highlight markdown-mode magit jinja2-mode haskell-tab-indent haskell-emacs-text haskell-emacs-base go-autocomplete ghci-completion ghc-imported-from ghc flymd flymake-ruby flymake-python-pyflakes flymake-hlint flymake-haskell-multi flycheck-hdevtools flycheck-haskell flycheck-ghcmod exec-path-from-shell django-mode company-inf-ruby ac-js2 ac-inf-ruby ac-haskell-process 2048-game))
  '(paradox-github-token t)
- '(pos-tip-background-color "#eee8d5")
- '(pos-tip-foreground-color "#586e75")
  '(python-indent-offset 3)
  '(safe-local-variable-values '((engine . django)))
  '(send-mail-function 'mailclient-send-it)
@@ -115,35 +98,12 @@
  '(term-default-fg-color "#657b83")
  '(tool-bar-mode nil)
  '(typescript-indent-level 2)
- '(vc-annotate-background nil)
  '(vc-annotate-background-mode nil)
- '(vc-annotate-color-map
-   '((20 . "#dc322f")
-     (40 . "#c85d17")
-     (60 . "#be730b")
-     (80 . "#b58900")
-     (100 . "#a58e00")
-     (120 . "#9d9100")
-     (140 . "#959300")
-     (160 . "#8d9600")
-     (180 . "#859900")
-     (200 . "#669b32")
-     (220 . "#579d4c")
-     (240 . "#489e65")
-     (260 . "#399f7e")
-     (280 . "#2aa198")
-     (300 . "#2898af")
-     (320 . "#2793ba")
-     (340 . "#268fc6")
-     (360 . "#268bd2")))
- '(vc-annotate-very-old-color nil)
  '(vhdl-electric-mode nil)
  '(vhdl-highlight-special-words t)
  '(vhdl-highlight-translate-off t)
  '(vhdl-indent-comment-like-next-code-line t)
  '(vhdl-stutter-mode nil)
- '(weechat-color-list
-   '(unspecified "#fdf6e3" "#eee8d5" "#990A1B" "#dc322f" "#546E00" "#859900" "#7B6000" "#b58900" "#00629D" "#268bd2" "#93115C" "#d33682" "#00736F" "#2aa198" "#657b83" "#839496"))
  '(xterm-color-names
    ["#eee8d5" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#073642"])
  '(xterm-color-names-bright
@@ -153,14 +113,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ediff-current-diff-A ((t (:background "firebrick4"))))
- '(ediff-current-diff-Ancestor ((t (:background "darkblue"))))
- '(ediff-current-diff-B ((t (:background "green4"))))
- '(ediff-fine-diff-A ((t (:background "firebrick3"))))
- '(ediff-fine-diff-B ((t (:background "green3"))))
- '(ediff-fine-diff-C ((t (:background "darkblue"))))
- '(org-code ((t (:foreground "dark gray"))))
- '(region ((t (:inherit highlight :background "dark blue")))))
+ '(ediff-current-diff-Ancestor ((t (:background "darkblue")))))
 
 ;; list the packages you want
 (defvar package-list '())
