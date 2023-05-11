@@ -1,0 +1,22 @@
+#!/usr/bin/env bash
+ol2-vanilla() {
+    args=()
+    for arg in "$@"; do
+        if [[ "$n_flag" = true ]]; then
+            unset n_flag
+            count="$arg"
+        elif [[ "$arg" = "-n" ]]; then
+            n_flag=true
+        elif [[ "$arg" = "-n"* ]]; then
+            count="${arg#-n}"
+        else
+            args+=("$arg")
+        fi
+    done
+    if [[ -n "$count" ]]; then
+        args+=(-n "$count")
+    fi
+    git log --color=always --format='%C(bold blue)%h%C(reset) %C(bold green)%as%C(reset) %C(bold yellow)%<(12,trunc)%an%C(reset) %C(white)%s%C(reset)' "${args[@]}" | 
+        sed '/^$/d ; /\\[37mUpdated dependent libraries\\x1b/d ; /\\[37mNew build ID: /d ; /\\[37mCopy linked files from /d' | 
+        less -SFX
+}
