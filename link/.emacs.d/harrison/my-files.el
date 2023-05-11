@@ -52,9 +52,11 @@
       (find-file (pop killed-file-list))
     (message "No recently killed file.")))
 
+;; recentf
 (require 'recentf)
-
 (recentf-mode 1)
+(setq recentf-max-menu-items 100)
+(setq recentf-max-saved-items 100)
 
 (provide 'my-files)
 ;;; my-files.el ends here
