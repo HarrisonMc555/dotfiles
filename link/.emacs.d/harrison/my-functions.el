@@ -334,7 +334,7 @@ The same result can also be be achieved by \\[universal-argument] \\[unhighlight
 ;; source: http://steve.yegge.googlepages.com/my-dot-emacs-file
 (defun rename-file-and-buffer (new-name)
   "Renames both current buffer and file it's visiting to NEW-NAME."
-  (interactive "sNew name: ")
+  (interactive "BNew name: ")
   (let ((name (buffer-name))
         (filename (buffer-file-name)))
     (if (not filename)
