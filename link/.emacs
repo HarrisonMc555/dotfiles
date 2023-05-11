@@ -28,7 +28,7 @@
  '(emojify-emoji-styles '(unicode))
  '(fill-column 80)
  '(find-file-hook
-   '(exercism-mentor-find-file-hook global-diff-hl-mode-check-buffers svn-commit-tmp-hook magit-branch-description-check-buffers git-commit-setup-check-buffer recentf-track-opened-file url-handlers-set-buffer-mode auto-revert-find-file-function global-eldoc-mode-check-buffers global-font-lock-mode-check-buffers epa-file-find-file-hook vc-refresh-state which-func-ff-hook))
+   '(exercism-mentor-find-file-hook global-diff-hl-mode-check-buffers svn-commit-tmp-hook git-commit-setup-check-buffer recentf-track-opened-file url-handlers-set-buffer-mode auto-revert-find-file-function global-eldoc-mode-check-buffers global-font-lock-mode-check-buffers epa-file-find-file-hook vc-refresh-state which-func-ff-hook))
  '(flycheck-python-pycompile-executable "python3")
  '(flycheck-python-pylint-executable "/home/harrison/.local/bin/pylint")
  '(flymake-python-pyflakes-executable "/home/harrison/.local/bin/pyflakes")
