@@ -1,0 +1,42 @@
+#!/bin/sh
+
+remote="$1"
+url="$2"
+
+z40=0000000000000000000000000000000000000000
+
+IFS=' '
+while read -r local_ref local_sha remote_ref remote_sha
+do
+	  if [ "$local_sha" = $z40 ]
+	  then
+        :
+		    # Handle delete
+	  else
+		    if [ "$remote_sha" = $z40 ]
+		    then
+			      # New branch, examine all commits
+			      range="$local_sha"
+		    else
+			      # Update to existing branch, examine new commits
+			      range="$remote_sha..$local_sha"
+		    fi
+
+		    # Check for WIP commit
+		    commit=$(git rev-list -n 1 --grep '^(wip|temporary commit)' --extended-regexp --regexp-ignore-case --first-parent "$range")
+		    if [ -n "$commit" ]
+		    then
+			      echo "Found WIP commit in $local_ref, not pushing"
+            # echo "Range:   $range"
+            # echo "Hash:    $commit"
+            echo "Message: $(git show --quiet --pretty='%B' "$commit")"
+			      exit 1
+		    fi
+	  fi
+    echo
+done
+
+command -v git-lfs >/dev/null 2>&1 || { printf >&2 "\nThis repository is configured for Git LFS but 'git-lfs' was not found on your path. If you no longer wish to use Git LFS, remove this hook by deleting .git/hooks/pre-push.\n"; exit 2; }
+git lfs pre-push "$@"
+
+exit 0
