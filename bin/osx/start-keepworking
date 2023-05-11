@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+if ! pgrep -f keepworking > /dev/null; then
+    # echo "Starting keep working"
+    ( ~/.dotfiles/bin/osx/keepworking > /dev/null 2> /dev/null & disown )
+else
+    :
+    # echo "keepworking is already running"
+fi

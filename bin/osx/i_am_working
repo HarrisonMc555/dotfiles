@@ -1,0 +1,60 @@
+#!/usr/bin/env bash
+
+date=$(/opt/homebrew/opt/coreutils/libexec/gnubin/date '+%Y-%m-%d %T.%N')
+
+log() {
+    echo "$date: $*" >> ~/tmp/i_am_working.log
+}
+
+working() {
+    log "$@"
+    exit 0
+}
+
+not_working() {
+    log "$@"
+    exit 1
+}
+
+function is_running ()
+{
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: is_running APP_NAME" 1>&2
+        return 1
+    fi
+    ps_process_names | grep_ignore_grep -q "$1"
+}
+
+if is_running steamapps; then
+    not_working "Running Steam game"
+fi
+
+current_app_script='
+tell application "System Events"
+	get name of application processes whose frontmost is true and visible is true
+end tell
+'
+current_app=$(osascript -e "$current_app_script")
+
+case "$current_app" in
+    "steam_osx" | "Discord")
+        not_working "Running non-work application: $current_app";;
+    "Google Chrome") ;;
+    *)
+        working "Running work application: $current_app";;
+esac
+
+chrome_script='
+tell application "System Events"
+	tell process "Google Chrome"
+		value of attribute "AXMenuItemMarkChar" of menu item "Harrison (Harrison McCullough Work)" of menu "Profiles" of menu bar 1 exists
+	end tell
+end tell
+'
+chrome_work_is_active=$(osascript -e "$chrome_script")
+
+if [[ "$chrome_work_is_active" = "true" ]]; then
+    working "Chrome work profile is active window"
+else
+    not_working "Non-work chrome profile is active"
+fi

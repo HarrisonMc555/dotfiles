@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+for pid in $(pgrep -f keepworking); do
+    kill "$pid"
+done
+
+( ~/.dotfiles/bin/osx/keepworking > /dev/null 2> /dev/null & disown )

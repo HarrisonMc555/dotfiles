@@ -1,0 +1,94 @@
+#!/usr/bin/env bash
+
+exit 0
+
+debug=false
+
+default_min_minutes=1
+default_max_minutes=6
+default_volume=0.5
+default_voice=Samantha
+
+debug_min_minutes=0.02
+debug_max_minutes=0.05
+
+########################################
+
+debug() {
+    [[ "$debug" = "true" ]]
+}
+
+debug_echo() {
+    if debug; then
+        echo "$@"
+    fi
+}
+
+random() {
+    case $# in
+        1) min=1; max="$1";;
+        2) min="$1"; max="$2";;
+        *) >&2 echo "Usage: random MAX, random MIN MAX"; return 1;;
+    esac
+    diff=$((max - min + 1))
+    echo $((min + RANDOM % diff))
+}
+
+date() {
+    /opt/homebrew/opt/coreutils/libexec/gnubin/date "$@"
+}
+
+is_during_workday() {
+    weekday=$(date +%A)
+    case "$weekday" in
+        Saturday|Sunday) return 1;;
+    esac
+    hour=$(date +%H)
+    if [[ "$hour" -lt 8 ]] || [[ "$hour" -ge 17 ]]; then
+        return 1
+    fi
+    return 0
+}
+
+
+min_minutes="${KEEP_WORKING_MIN_MINUTES:-$default_min_minutes}"
+max_minutes="${KEEP_WORKING_MAX_MINUTES:-$default_max_minutes}"
+if debug; then
+    min_minutes="$debug_min_minutes"
+    max_minutes="$debug_max_minutes"
+fi
+min_seconds=$(echo "$min_minutes * 60 / 1" | bc)
+max_seconds=$(echo "$max_minutes * 60 / 1" | bc)
+debug_echo "min: $min_seconds, max: $max_seconds"
+num_seconds=$()
+
+message="Do 5 pushups if you're not working"
+volm="${KEEP_WORKING_VOLUME:-$default_volume}"
+voice="${KEEP_WORKING_VOICE:-$default_voice}"
+script_dir=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+while true; do
+    num_seconds=$(random "$min_seconds" "$max_seconds")
+    sleep "$num_seconds"
+
+    if debug; then
+        if "$script_dir"/i_am_working; then
+            debug_echo "I'm working"
+            continue
+        fi
+    else
+        if "$script_dir"/i_am_working 2>/dev/null; then
+            continue
+        fi
+    fi
+
+    if ! is_during_workday; then
+        debug_echo "Not during workday, quitting"
+        break
+    fi
+
+    debug_echo "Displaying notification"
+    script="display notification \"${message} (${num_seconds} seconds)\" with title \"Work reminder\""
+    osascript -e "$script"
+    text="[[volm ${volm}]] $message"
+    say "$text" --voice="$voice"
+done
