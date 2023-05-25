@@ -17,7 +17,20 @@ die() {
     exit 1
 }
 
-subject=$(head -n1 "$file")
+comment_char=$(git config core.commentChar)
+echo "comment_char: ${comment_char}"
+# shellcheck disable=SC1003
+case "$comment_char" in
+    $) comment_char='\$' ;;
+    [) comment_char='\[' ;;
+    .) comment_char='\.' ;;
+    \\) comment_char='\\' ;;
+esac
+echo "comment_char: ${comment_char}"
+
+cleaned=$(grep -v "^${comment_char}" "$file") ||
+    die "Internal error: Could not filter out comment lines."
+subject=$(echo "$cleaned" | head -n1)
 num_chars=$(printf '%s' "$subject" | wc -c)
 max_num_chars=80
 
@@ -29,18 +42,8 @@ if echo "$subject" | grep "\. *$" >/dev/null 2>&1; then
     die "The subject line should not end in a period."
 fi
 
-num_lines=$(wc -l < "$file")
-line2=$(sed '2q;d' "$file")
-subject_and_body_separated="The subject and body should be separated by an empty line."
-case "$num_lines" in
-    0|1) ;;
-    2) if [ "$line2" = "" ]; then
-           die "There should only be blank line after the subject if there is further text"
-       else
-           die "$subject_and_body_separated"
-       fi
-       ;;
-    *) if [ "$line2" != "" ]; then
-           die "$subject_and_body_separated"
-       fi
-esac
+num_lines=$(echo "$cleaned" | wc -l)
+line2=$(echo "$cleaned" | sed '2q;d')
+if [ "$num_lines" -gt 1 ] && [ "$line2" != "" ]; then
+    die "The subject and body should be separated by an empty line."
+fi
