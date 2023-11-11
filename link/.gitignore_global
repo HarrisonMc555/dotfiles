@@ -87,3 +87,6 @@ node_modules/
 # Other version control systems #
 #################################
 svn/
+
+tmp/
+temp/
