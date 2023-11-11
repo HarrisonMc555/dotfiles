@@ -18,7 +18,6 @@ die() {
 }
 
 comment_char=$(git config core.commentChar)
-echo "comment_char: ${comment_char}"
 # shellcheck disable=SC1003
 case "$comment_char" in
     $) comment_char='\$' ;;
@@ -26,7 +25,6 @@ case "$comment_char" in
     .) comment_char='\.' ;;
     \\) comment_char='\\' ;;
 esac
-echo "comment_char: ${comment_char}"
 
 cleaned=$(grep -v "^${comment_char}" "$file") ||
     die "Internal error: Could not filter out comment lines."
