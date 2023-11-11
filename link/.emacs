@@ -3,7 +3,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(after-save-hook '(rmail-after-save-hook))
+ '(after-save-hook nil)
  '(ansi-color-faces-vector
    [default default default italic underline success warning error])
  '(asm-comment-char 35)
@@ -81,7 +81,7 @@
      ("melpa" . "http://melpa.org/packages/")
      ("melpa stable" . "https://stable.melpa.org/packages/")))
  '(package-selected-packages
-   '(lua-mode rust-mode lsp-ui use-package emojify monokai-theme lsp-mode gitattributes-mode gitconfig-mode gitignore-mode org deadgrep protobuf-mode adaptive-wrap jq-mode editorconfig goto-chg vterm edit-server notmuch swift-mode minitest move-text drag-stuff diff-hl git-gutter ac-helm prettier-js string-inflection counsel-etags sql-indent wucuo helm clang-format gradle-mode paredit cider flycheck-clojure inf-clojure haskell-mode epl cmake-font-lock eglot matlab-mode elm-mode flycheck-elm csv csv-mode toml toml-mode meghanada yaml-mode web-mode tabbar solarized-theme smartparens ruby-extra-highlight markdown-mode magit jinja2-mode haskell-tab-indent haskell-emacs-text haskell-emacs-base go-autocomplete ghci-completion ghc-imported-from ghc flymd flymake-ruby flymake-python-pyflakes flymake-hlint flymake-haskell-multi flycheck-hdevtools flycheck-haskell flycheck-ghcmod exec-path-from-shell django-mode company-inf-ruby ac-js2 ac-inf-ruby ac-haskell-process 2048-game))
+   '(kotlin-mode jq-format lua-mode rust-mode lsp-ui use-package emojify monokai-theme lsp-mode gitattributes-mode gitconfig-mode gitignore-mode org deadgrep protobuf-mode adaptive-wrap jq-mode editorconfig goto-chg vterm edit-server notmuch swift-mode minitest move-text drag-stuff diff-hl git-gutter ac-helm prettier-js string-inflection counsel-etags sql-indent wucuo helm clang-format gradle-mode paredit cider flycheck-clojure inf-clojure haskell-mode epl cmake-font-lock eglot matlab-mode elm-mode flycheck-elm csv csv-mode toml toml-mode meghanada yaml-mode web-mode tabbar solarized-theme smartparens ruby-extra-highlight markdown-mode magit jinja2-mode haskell-tab-indent haskell-emacs-text haskell-emacs-base go-autocomplete ghci-completion ghc-imported-from ghc flymd flymake-ruby flymake-python-pyflakes flymake-hlint flymake-haskell-multi flycheck-hdevtools flycheck-haskell flycheck-ghcmod exec-path-from-shell django-mode company-inf-ruby ac-js2 ac-inf-ruby ac-haskell-process 2048-game))
  '(paradox-github-token t)
  '(python-indent-offset 3)
  '(safe-local-variable-values '((engine . django)))
@@ -113,7 +113,8 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(ediff-current-diff-Ancestor ((t (:background "darkblue")))))
+ '(ediff-current-diff-Ancestor ((t (:background "darkblue"))))
+ '(region ((t (:inherit highlight :extend t :background "#8a8875")))))
 
 ;; list the packages you want
 (defvar package-list '())

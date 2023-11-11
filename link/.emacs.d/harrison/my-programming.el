@@ -52,6 +52,9 @@
 ;; (add-to-list 'flycheck-checkers 'meghanada)
 
 
+;; JQ ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(add-to-list 'auto-mode-alist '("\\.jq\\'" . jq-mode))
+
 ;; Kotlin ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defun ktlint-fix-file ()
