@@ -32,7 +32,12 @@
 	cp = cherry-pick
 	cpc = cherry-pick --continue
 	cpa = cherry-pick --abort
+	cps = cherry-pick --skip
 	cpcne = cherry-pick-continue-no-edit
+	showns = show --name-status
+	showno = show --name-only
+	diffns = diff --name-status
+	diffno = diff --name-only
 	pp = !"echo 'Pull'; git pull; echo 'Push'; git push"
 	amend = "commit --amend"
 	compare = "!f() { if [[ $# -eq 0 ]] || [[ $# -gt 2 ]]; then >&2 echo \"Usage: git compare BRANCH1 [BRANCH2]\"; return 1; fi; b1=\"$1\"; b2=\"${2:-HEAD}\"; git log --oneline --graph --decorate \"$b1\" \"$b2\" \"$(git merge-base \"$b1\" \"$b2\")^!\"; }; f"
@@ -68,7 +73,9 @@
 	changed-files = diff-tree --no-commit-id --name-only -r
 	ol-vanilla = log --format='%C(bold blue)%h%C(reset) %C(bold green)%as%C(reset) %C(bold yellow)%<(12,trunc)%an%C(reset) %C(white)%s%C(reset)'
 	ol = ol-vanilla --first-parent
-	wip = for-each-ref --sort='authordate:iso8601' --format=' %(color:green)%(authordate:relative)%09%(color:white)%(refname:short)' refs/heads
+	olns = "!f() { git ol --name-status \"$@\" | awk '/[0-9a-f]{8}/ { print \"\" } { print }' | less -F; }; f"
+	wip = !"git reflog | egrep -io \"moving from [^[:space:]]+ to [^[:space:]]+\" | awk '{ print $5 }' | awk ' !x[$0]++' | egrep -v '^[a-f0-9]{40}$' | grep -v '@' | head -n20 | tac"
+	wipa = for-each-ref --sort='authordate:iso8601' --format=' %(color:green)%(authordate:relative)%09%(color:white)%(refname:short)' refs/heads
 	wipc = for-each-ref --sort='committerdate:iso8601' --format=' %(color:green)%(committerdate:relative)%09%(color:white)%(refname:short)' refs/heads
 	branch-status = !git-branch-status
 	local-branches = !git branch -vv | cut -c 3- | awk '$3 !~/\\[/ { print $1 }'
@@ -95,7 +102,7 @@
 	# merge-check = !"f() { if [[ $# -ne 2 ]]; then >&2 echo \"Usage: git merge-check branch-from branch-to\"; return 1; fi; git format-patch \"$(git merge-base \"$1\" \"$2\")\"..\"$1\" --stdout | git apply --3way --check -; }; f"
 	merge-check = !"f() { if [[ $# -ne 2 ]]; then >&2 echo \"Usage: git merge-check branch-from branch-to\"; return 1; fi; if git merge-tree \"$(git merge-base \"$1\" \"$2\")\" \"$1\" \"$2\" | grep -E -q \"(<<<<<|>>>>>)\"; then >&2 echo \"Conflict\"; return 1; else echo \"No conflicts \"; fi; }; f"
 	dry-run = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git dry-run BRANCH\"; return 1; fi; git merge \"$1\" --no-commit --no-ff >/dev/null 2>/dev/null; result=$?; git merge --abort >/dev/null 2>/dev/null; if [[ \"$result\" = 0 ]]; then echo \"Success\"; else echo \"Failure\"; fi; return $?; }; f"
-	cherry-grab = "!f() { if [[ $# -ne 1 ]]; then >& echo \"Usage: git cherry-grab COMMITISH\"; return 1; fi; git rev-list $1^2 ^$1^1 | tac | xargs git cherry-pick; }; f"
+	cherry-grab = "!f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git cherry-grab COMMITISH\"; return 1; fi; git rev-list $1^2 ^$1^1 | tac | xargs git cherry-pick; }; f"
 	cherry-pick-pull-request = cherry-grab
 	cherry-pick-pr = cherry-grab
 	pull-request = !"f() { if [[ $# -lt 1 ]]; then >&2 echo \"Usage: git pull-request COMMITISH\"; return 1; fi; h=\"$1\"; shift; git log \"$h\"^..\"$h\"^2 \"$@\"; }; f"
@@ -107,6 +114,7 @@
 	show-merge = "!f() { if [[ $# -ne 2 ]]; then >&2 echo \"Usage: git show-merge X Y\"; return 1; fi; sh -c 'merge=$(git find-merge \"$0\" \"$1\") && [ -n \"$merge\" ] && git show $merge'; }; f"
 	most-changed = "!f() { cd \"${GIT_PREFIX:-.}\" && git log --pretty=tformat: --name-only \"$@\" | grep . | sort | uniq -c | sort -rg | head -n20 | sed 's/^ *//' | cut -d' ' -f2- | while read -r line; do echo \"${line#${GIT_PREFIX}}\"; done; }; f"
 	cpnc = cherry-pick --no-commit
+	rename-upstream = "!f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git rename-upstream NEW_NAME\"; return 1; fi; name=\"$1\" && upstream_info=\"$(git rev-parse --abbrev-ref --symbolic-full-name @{upstream})\" && remote=\"${upstream_info%%/*}\" && upstream_branch=\"${upstream_info#*/}\" && git push --delete \"$remote\" \"$upstream_branch\" && git branch --unset-upstream && git branch --move \"$name\" && git push; }; f"
 [branch "master"]
 	remote = origin
 	merge = refs/heads/master
