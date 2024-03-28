@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+if [[ -f ~/.cargo/env ]]; then
+    source ~/.cargo/env
+fi
+
 if is_available rustc; then
     export RUST_BACKTRACE=1
     if is_available cargo; then
