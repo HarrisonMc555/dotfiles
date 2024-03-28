@@ -80,7 +80,7 @@ function get_os() {
     is_$os; [[ $? == ${1:-0} ]] && echo $os
   done
 }
-export -f is_osx is_ubuntu is_ubuntu_desktop get_os 
+export -f is_osx is_ubuntu is_ubuntu_desktop get_os
 
 # Remove an entry from $PATH
 # Based on http://stackoverflow.com/a/2108540/142339
