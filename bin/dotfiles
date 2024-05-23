@@ -73,7 +73,7 @@ function is_ubuntu() {
 function is_ubuntu_desktop() {
   # dpkg -l ubuntu-desktop >/dev/null 2>&1 || return 1
   # https://unix.stackexchange.com/a/338862/238000
-  xhost >& /dev/null
+  is_ubuntu && xhost >& /dev/null
 }
 function get_os() {
   for os in osx ubuntu ubuntu_desktop; do
