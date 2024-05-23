@@ -106,6 +106,9 @@
 (add-hook 'org-mode-hook (lambda () (flyspell-mode nil)))
 
 (setq org-export-with-section-numbers nil)
+;; Required to be able to manually set image widths in-line (otherwise images
+;; are typically way too big to show in-line)
+(setq org-image-actual-width nil)
 
 ; https://christiantietze.de/posts/2021/02/emacs-org-todo-doing-done-checkbox-cycling/
 
