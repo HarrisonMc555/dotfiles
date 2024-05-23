@@ -1,0 +1,197 @@
+#!/usr/bin/env bash
+
+bitbucket_url="https://git.romariccorp.com:7990"
+default_remote="origin"
+
+function usage() {
+    echo "Usage: git mass-cherry-pick COMMIT_PATTERN BRANCH [BRANCH2, ...]"
+}
+
+__red='\033[0;31m'
+__clear='\033[0m'
+function e_err() {
+    >&2 echo -e "${__red}$*${__clear}"
+}
+
+function die() {
+    if [[ $# -gt 0 ]]; then
+        e_err "$@"
+    fi
+    exit 1
+}
+
+function die_with_usage() {
+    if [[ $# -gt 0 ]]; then
+        e_err "$@"
+    fi
+    echo -en "${__red}"
+    >&2 usage
+    echo -en "${__clear}"
+    exit 1
+}
+
+__tput_smul="$(tput smul)"
+__tput_rmul="$(tput rmul)"
+function e_underline() {
+    if [[ $# != 1 ]]; then
+        echo "usage: e_underline <message>"
+        return
+    fi
+
+    str="$1"
+    echo -e "\n${__tput_smul}${str}${__tput_rmul}"
+}
+
+
+for arg in "$@"; do
+    case "$arg" in
+        -h|--help)
+            usage
+            die
+            ;;
+        --)
+            break
+            ;;
+    esac
+done
+
+[[ $# -ge 1 ]] || die_with_usage "Missing argument COMMIT_PATTERN"
+commit_pattern="$1"
+shift
+[[ "${commit_pattern}" = -* ]] && die_with_usage "Invalid COMMIT_PATTERN: \"${commit_pattern}\""
+
+[[ $# -ge 1 ]] || die_with_usage "Missing argument BRANCH"
+branches=("$@")
+for branch in "${branches[@]}"; do
+    [[ "${branch}" = -* ]] && die_with_usage "Invalid BRANCH: \"${branch}\""
+done
+
+original_branch=$(git rev-parse --abbrev-ref HEAD) ||
+    die "Could not retrieve current branch"
+if [[ "$original_branch" = "HEAD" ]]; then
+    original_branch=$(git rev-parse HEAD) ||
+        die "Could not retrieve current commit"
+fi
+
+commit=$(git log --max-count 1 --all --merges --grep "${commit_pattern}" --merges --pretty='%H') ||
+    die "Could not find merge commit with pattern \"${commit_pattern}\""
+# shellcheck disable=SC2016
+merge_commit_message=$(git show --quiet --pretty='%B' "${commit}") ||
+    die "Could not retrieve commit message for commit: \"${commit}\""
+merge_branch_name=$(echo "$merge_commit_message" |
+                        grep -E '^Merge in ' |
+                        sed -E 's/^Merge in .* from (.*) to (.*)$/\1/') ||
+    die "Could not find branch name in commit message for commit ${commit}"
+
+if [[ "$merge_branch_name" = "" ]]; then
+    e_err "Could not find merge branch name from git commit message:"
+    >&2 echo "${merge_commit_message}"
+    die
+fi
+
+# shellcheck disable=SC1083
+if ! branch_remote_ref=$(git rev-parse --abbrev-ref --symbolic-full-name "@{upstream}"); then
+    e_err "Could not get remote ref for current branch"
+    e_err "Using default value: \"${default_remote}\""
+    branch_remote_ref="${default_remote}"
+fi
+
+remote="${branch_remote_ref%%/*}"
+[[ "${remote}" != "${branch}" ]] ||
+    die "Could not extract remote from remote ref \"${branch_remote_ref}\""
+
+remote_url=$(git remote get-url "${remote}") ||
+    die "Could not get URL for remote \"${remote}\""
+
+[[ "${remote_url}" =~ ^[^:]*://([^@]+@)?([^/]+)(/.*)?/([^/]*)/([^/.]*).git$ ]] ||
+    die "Pattern does not match URL: \"${remote_url}\""
+
+project="${BASH_REMATCH[4]}"
+[[ "${project}" != "" ]] ||
+    die "No project found in URL: \"${remote_url}\""
+
+repository="${BASH_REMATCH[5]}"
+[[ "${repository}" != "" ]] ||
+    die "No repository found in URL: \"${remote_url}\""
+
+# for branch in "${branches[@]}"; do
+while [[ "${#branches[@]}" -gt 0 ]]; do
+    for branch_index in "${!branches[@]}"; do
+        break
+    done
+    if [[ "${branch_index}" = "" ]]; then
+        die "Internal error: Could not get branch index"
+    fi
+
+    branch="${branches[$branch_index]}"
+    if [[ "${branch}" = "" ]]; then
+        die "Internal error: No branch found at index ${branch_index}"
+    fi
+    unset 'branches["$branch_index"]'
+
+    e_underline "${branch}"
+    if [[ "${branch}" = "${merge_branch_name}" ]]; then
+        echo "Skipping because it the target branch of the merge commit"
+        continue
+    fi
+
+    if ! target_branch_suffix=$(echo "${branch}" | tr '/' '_'); then
+        e_err "Could not clean up branch name \"${branch}\""
+        continue
+    fi
+
+    new_branch_name="${merge_branch_name}_${target_branch_suffix}"
+    create_pull_request_url="${bitbucket_url}/projects/${project}/repos/${repository}/pull-requests?create&sourceBranch=refs/heads/${new_branch_name}"
+
+    if ! git switch "${branch}"; then
+        e_err "Could not switch to branch: \"${branch}\""
+        e_err "This requires manual resolution"
+        exit 1
+    fi
+
+    if ! git pull; then
+        e_err "Could not update local branch: \"${branch}\""
+    fi
+
+    if ! { git switch -c "${new_branch_name}" || git switch "${new_branch_name}"; }; then
+        e_err "Could not create new branch: \"${new_branch_name}\""
+        continue
+    fi
+
+    if ! original_branch_head=$(git log --max-count 1 --pretty='%H' HEAD) ||
+       [[ "$original_branch_head" = "" ]]; then
+        e_err "Could not retrieve the current branch HEAD"
+        continue
+    fi
+
+    if ! git cherry-pick --ff "${commit}^..${commit}^2"; then
+        e_err "Could not cherry-pick commits"
+        e_err "This requires manual resolution"
+        if [[ "${#branches[@]}" -gt 0 ]]; then
+            e_err "Resume by executing \`git mass-cherry-pick ${commit_pattern} ${branches[*]}'"
+        fi
+        die
+    fi
+
+    if ! new_branch_head=$(git log --max-count 1 --pretty='%H' HEAD) ||
+       [[ "$new_branch_head" = "" ]]; then
+        e_err "Could not retrieve the new branch HEAD"
+        e_err "Continuing anyways"
+    fi
+
+    if [[ "${new_branch_head}" != "" ]] && [[ "${new_branch_head}" = "${original_branch_head}" ]]; then
+        echo "Nothing changed after the cherry-pick, assuming the change was already applied to this branch"
+        echo "Skipping"
+        continue
+    fi
+
+    if ! git -c push.default=current push; then
+        e_err "Could not push branch: \"${new_branch_name}\""
+        continue
+    fi
+
+    open "${create_pull_request_url}"
+    echo "Create pull request: ${create_pull_request_url}"
+done
+
+git switch "${original_branch}"
