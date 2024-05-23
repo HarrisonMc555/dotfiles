@@ -98,17 +98,20 @@ if is_available git && is_available fzf; then
         else
             args=("-a")
         fi
-        out=("$(git branch --color=always "${args[@]}" | grep -v '/HEAD\s' | sort |
+        mapfile -t out < <(git branch --color=always "${args[@]}" | grep -v '/HEAD\s' | sort |
             fzf-down --ansi --multi --tac --preview-window right:70% \
                      --expect=ctrl-o \
-                     --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1) | head -'"$LINES")")
-        key=$(head -1 <<< "${out[@]}")
-        # branch=$(head -2 <<< "${out[@]}" | tail -1 | sed 's/^..//' | cut -d' ' -f1 | sed 's#^remotes/##')
-        branch=$(head -2 <<< "${out[@]}" | tail -1 | sed 's/^..//' | cut -d' ' -f1)
-        if [[ "$key" != ctrl-o ]]; then
-            branch="${branch#remotes/*/}"
-        fi
-        echo "$branch"
+                     --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1) | head -'"$LINES")
+        key="${out[0]}"
+        unset 'out[0]'
+        for branch in "${out[@]}"; do
+            branch=$(echo "$branch" | cut -c3- | cut -d' ' -f1)
+            if [[ "$key" != ctrl-o ]]; then
+                echo "${branch#remotes/*/}"
+            else
+                echo "$branch"
+            fi
+        done
     }
 
     # Git branch from master
