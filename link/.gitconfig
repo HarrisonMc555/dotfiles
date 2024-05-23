@@ -36,6 +36,8 @@
 	cpcne = cherry-pick-continue-no-edit
 	showns = show --name-status
 	showno = show --name-only
+	logns = log --oneline --name-status
+	logno = log --oneline --name-only
 	diffns = diff --name-status
 	diffno = diff --name-only
 	pp = !"echo 'Pull'; git pull; echo 'Push'; git push"
@@ -115,6 +117,7 @@
 	most-changed = "!f() { cd \"${GIT_PREFIX:-.}\" && git log --pretty=tformat: --name-only \"$@\" | grep . | sort | uniq -c | sort -rg | head -n20 | sed 's/^ *//' | cut -d' ' -f2- | while read -r line; do echo \"${line#${GIT_PREFIX}}\"; done; }; f"
 	cpnc = cherry-pick --no-commit
 	rename-upstream = "!f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git rename-upstream NEW_NAME\"; return 1; fi; name=\"$1\" && upstream_info=\"$(git rev-parse --abbrev-ref --symbolic-full-name @{upstream})\" && remote=\"${upstream_info%%/*}\" && upstream_branch=\"${upstream_info#*/}\" && git push --delete \"$remote\" \"$upstream_branch\" && git branch --unset-upstream && git branch --move \"$name\" && git push; }; f"
+	all-my-history = "!f() { email=\"$(git config user.email)\" && git reflog --all --author=\"$email\" --pretty='%C(yellow)%h%Creset %C(bold blue)%cd%Creset %s' --date=format:'%Y-%m-%d %H:%M:%S (%a)' \"$@\"; }; f"
 [branch "master"]
 	remote = origin
 	merge = refs/heads/master
