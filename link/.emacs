@@ -68,6 +68,7 @@
  '(org-adapt-indentation t)
  '(org-cycle-include-plain-lists 'integrate)
  '(org-enforce-todo-dependencies t)
+ '(org-export-with-sub-superscripts '{})
  '(org-indent-mode-turns-off-org-adapt-indentation nil)
  '(org-link-frame-setup
    '((vm . vm-visit-folder-other-frame)
