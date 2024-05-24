@@ -4,7 +4,7 @@ bitbucket_url="https://git.romariccorp.com:7990"
 default_remote="origin"
 
 function usage() {
-    echo "Usage: git mass-cherry-pick COMMIT_PATTERN BRANCH [BRANCH2, ...]"
+    echo "Usage: git mass-cherry-pick COMMIT BRANCH [BRANCH2, ...]"
 }
 
 __red='\033[0;31m'
@@ -55,10 +55,10 @@ for arg in "$@"; do
     esac
 done
 
-[[ $# -ge 1 ]] || die_with_usage "Missing argument COMMIT_PATTERN"
-commit_pattern="$1"
+[[ $# -ge 1 ]] || die_with_usage "Missing argument COMMIT"
+commit="$1"
 shift
-[[ "${commit_pattern}" = -* ]] && die_with_usage "Invalid COMMIT_PATTERN: \"${commit_pattern}\""
+[[ "${commit}" = -* ]] && die_with_usage "Invalid COMMIT: \"${commit}\""
 
 [[ $# -ge 1 ]] || die_with_usage "Missing argument BRANCH"
 branches=("$@")
@@ -73,8 +73,6 @@ if [[ "$original_branch" = "HEAD" ]]; then
         die "Could not retrieve current commit"
 fi
 
-commit=$(git log --max-count 1 --all --merges --grep "${commit_pattern}" --merges --pretty='%H') ||
-    die "Could not find merge commit with pattern \"${commit_pattern}\""
 # shellcheck disable=SC2016
 merge_commit_message=$(git show --quiet --pretty='%B' "${commit}") ||
     die "Could not retrieve commit message for commit: \"${commit}\""
@@ -168,7 +166,7 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
         e_err "Could not cherry-pick commits"
         e_err "This requires manual resolution"
         if [[ "${#branches[@]}" -gt 0 ]]; then
-            e_err "Resume by executing \`git mass-cherry-pick ${commit_pattern} ${branches[*]}'"
+            e_err "Resume by executing \`git mass-cherry-pick ${commit} ${branches[*]}'"
         fi
         die
     fi
