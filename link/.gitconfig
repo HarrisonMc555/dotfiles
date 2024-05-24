@@ -118,6 +118,7 @@
 	cpnc = cherry-pick --no-commit
 	rename-upstream = "!f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git rename-upstream NEW_NAME\"; return 1; fi; name=\"$1\" && upstream_info=\"$(git rev-parse --abbrev-ref --symbolic-full-name @{upstream})\" && remote=\"${upstream_info%%/*}\" && upstream_branch=\"${upstream_info#*/}\" && git push --delete \"$remote\" \"$upstream_branch\" && git branch --unset-upstream && git branch --move \"$name\" && git push; }; f"
 	all-my-history = "!f() { email=\"$(git config user.email)\" && git reflog --all --author=\"$email\" --pretty='%C(yellow)%h%Creset %C(bold blue)%cd%Creset %s' --date=format:'%Y-%m-%d %H:%M:%S (%a)' \"$@\"; }; f"
+	switchoc = "!f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git switchoc BRANCH\"; return 1; fi; git switch \"$1\" 2>/dev/null || git switch -c \"$1\"; }; f"
 [branch "master"]
 	remote = origin
 	merge = refs/heads/master
