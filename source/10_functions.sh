@@ -259,5 +259,6 @@ random_exclusive() {
     echo $((min + RANDOM % diff))
 }
 
-export -f is_available urlencode urldecode visual_nowait_editor yesno noyes \
-       is_iterm2 bak prepend countdown timer
+export -f pip histeval is_available urlencode urldecode visual_nowait_editor \
+          yesno noyes is_iterm2 bak prepend append countdown timer notify \
+          notify_result random random_exclusive
