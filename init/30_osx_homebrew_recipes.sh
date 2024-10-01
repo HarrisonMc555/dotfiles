@@ -20,6 +20,7 @@ recipes=(
   diff-so-fancy
   dos2unix
   elm
+  eza
   fd
   findutils
   fswatch
