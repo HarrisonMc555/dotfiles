@@ -121,11 +121,11 @@ bak() {
 }
 
 prepend() {
-    if [[ $# -ne 1 ]]; then
+    if [[ $# -eq 0 ]]; then
         >&2 echo "Usage: prepend PREFIX"
         return 1
     fi
-    prefix="$1"
+    prefix="$*"
     awk -v prefix="$prefix" '{ print prefix $0}'
 }
 
