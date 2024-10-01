@@ -259,6 +259,25 @@ random_exclusive() {
     echo $((min + RANDOM % diff))
 }
 
+# Test if stdin is empty or not
+# Taken from https://stackoverflow.com/a/77595243
+stdin_empty() {
+    if IFS= read -r -d '' -n 1; then
+        # Forward data along if you want to
+        if [[ -n "$REPLY" ]]; then
+            printf "%s" "$REPLY"
+        else
+            # Properly handle zero byte in input
+            printf "\x00"
+        fi
+        cat
+        return 1
+    else
+        # Empty
+        return 0
+    fi
+}
+
 export -f pip histeval is_available urlencode urldecode visual_nowait_editor \
           yesno noyes is_iterm2 bak prepend append countdown timer notify \
-          notify_result random random_exclusive
+          notify_result random random_exclusive stdin_empty
