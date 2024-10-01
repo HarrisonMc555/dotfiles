@@ -8,7 +8,6 @@ crates=(
     bat
     fd-find
     hx
-    lsd
     ripgrep
     runiq
     sd

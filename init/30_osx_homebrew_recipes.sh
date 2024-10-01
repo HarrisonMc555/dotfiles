@@ -40,6 +40,7 @@ recipes=(
   ipython
   ispell
   isync
+  lsd
   lynx
   msmtp
   mu
