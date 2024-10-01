@@ -1,0 +1,70 @@
+#!/usr/bin/env bash
+
+# Converts a `png` image file into an `icns` icon file. Expects the PNG file to
+# be a 512x512 pixel PNG file.
+
+function die() {
+    if [[ $# -gt 0 ]]; then
+        >&2 echo "$*"
+    fi
+    if [[ -z "${tmp_dir+x}" ]]; then
+        :
+    else
+        rm -r "$tmp_dir"
+    fi
+    exit 1
+}
+
+[[ $# -eq 2 ]] || die "Usage: pngtoicns <png_image> <icns_name>"
+
+png_file="$1"
+icns_file="$2"
+
+[[ -r "$png_file" ]] || die "PNG file does not exist or is not readable: '$png_file'"
+
+file_output="$(file "$png_file")" || die "Could not test the file type of PNG file: '$png_file'"
+echo "$file_output" | grep -q 'PNG image data' || die "Does not appear to be a valid PNG file: '$png_file'"
+echo "$file_output" | grep -q '512 x 512' || die "PNG file must be 512 x 512"
+
+icns_name="${icns_file%.icns}"
+tmp_dir="$(mktemp --directory)" || die "Cannot create temmporary icns directory"
+icns_dir="${tmp_dir}/${icns_name}.iconset"
+mkdir "$icns_dir" || die "Cannot create temmporary icns directory"
+dimensions=(16 32 32 64 128 256 512)
+
+for dim in "${dimensions[@]}"; do
+    sips -z "$dim" "$dim" "$png_file" --out "${icns_dir}/icon_${dim}x${dim}.png" >/dev/null ||
+        die "Could not create icon file with dimension ${dim}x${dim}"
+    if [[ "$dim" -lt 512 ]]; then
+        dim2="$((dim * 2))"
+        sips -z "$dim2" "$dim2" "$png_file" --out "${icns_dir}/icon_${dim}x${dim}@2x.png" >/dev/null ||
+            die "Could not create icon file with dimension ${dim}x${dim}@2x"
+    fi
+done
+
+cp "$png_file" "${icns_dir}/icon_512x512@2x.png" ||
+    die "Could not copy png file"
+
+iconutil --convert icns "${icns_dir}" >/dev/null ||
+    die "Could not create icns file"
+
+icns_tmp_file="${icns_dir%.iconset}.icns"
+cp "$icns_tmp_file" "$icns_file" ||
+    die "Could not copy icns file to '$icns_file'"
+
+rm -r "$tmp_dir"
+
+# https://apple.stackexchange.com/questions/402621/convert-png-image-icon-to-icns-file-macos/402653#402653
+# mkdir MyIcon.iconset
+# sips -z 16 16     Icon1024.png --out MyIcon.iconset/icon_16x16.png
+# sips -z 32 32     Icon1024.png --out MyIcon.iconset/icon_16x16@2x.png
+# sips -z 32 32     Icon1024.png --out MyIcon.iconset/icon_32x32.png
+# sips -z 64 64     Icon1024.png --out MyIcon.iconset/icon_32x32@2x.png
+# sips -z 128 128   Icon1024.png --out MyIcon.iconset/icon_128x128.png
+# sips -z 256 256   Icon1024.png --out MyIcon.iconset/icon_128x128@2x.png
+# sips -z 256 256   Icon1024.png --out MyIcon.iconset/icon_256x256.png
+# sips -z 512 512   Icon1024.png --out MyIcon.iconset/icon_256x256@2x.png
+# sips -z 512 512   Icon1024.png --out MyIcon.iconset/icon_512x512.png
+# cp Icon1024.png MyIcon.iconset/icon_512x512@2x.png
+# iconutil -c icns MyIcon.iconset
+# rm -R MyIcon.iconset
