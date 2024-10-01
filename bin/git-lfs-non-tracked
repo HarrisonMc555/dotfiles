@@ -1,0 +1,44 @@
+#!/usr/bin/env bash
+
+#
+# Displays all files that ARE tracked by Git, are NOT tracked by Git LFS, but
+# SHOULD be tracked by Git LFS.
+#
+
+function usage() {
+    echo "Usage: git lfs-non-tracked"
+}
+
+__red='\033[0;31m'
+__clear='\033[0m'
+function e_err() {
+    >&2 echo -e "${__red}$*${__clear}"
+}
+
+function die() {
+    if [[ $# -gt 0 ]]; then
+        e_err "$@"
+    fi
+    exit 1
+}
+
+[[ $# -eq 0 ]] || { usage; die; }
+git_root=$(git rev-parse --show-toplevel) || die "Not in Git repository"
+cd "$git_root" || die "Could not cd to Git repository root '${git_root}'"
+git_attributes_file="${git_root}/.gitattributes"
+[[ -f "$git_attributes_file" ]] || die "No .gitattributes file found"
+readarray -t lfs_patterns < <(cut -d' ' -f1 "${git_root}/.gitattributes") ||
+    die "No .gitattributes file found"
+readarray -t git_tracked_files_list < <(git ls-files "${lfs_patterns[@]}")
+readarray -t lfs_tracked_files_list < <(git lfs ls-files | cut -c14-)
+
+declare -A lfs_tracked_files
+for file in "${lfs_tracked_files_list[@]}"; do
+    lfs_tracked_files["$file"]=true
+done
+
+for file in "${git_tracked_files_list[@]}"; do
+    if [[ "${lfs_tracked_files[$file]}" != true ]]; then
+        echo "$file"
+    fi
+done
