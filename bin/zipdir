@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+function usage() {
+    cat <<EOF
+usage: zipdir <directory> [<directory>, ..]
+
+Zips the entire contents of a directory into a ZIP archive. Each file in the
+directory is stored at the root level of the archive. The name of the ZIP file
+is the name of the directory plus the ".zip" suffix. The ZIP file itself is
+placed in the current working directory.
+EOF
+}
+
+function die() {
+    if [[ $# -gt 0 ]]; then
+        >&2 echo "$*"
+    fi
+    exit 1
+}
+
+if [[ $# -eq 0 ]]; then
+    >&2 usage
+    exit 1
+fi
+
+set -e
+for directory in "$@"; do
+    [[ -d "$directory" ]] || die "Argument '$directory' is not a directory"
+    path="$(realpath "$directory")"
+    zip_file_name="$(basename "$path").zip"
+    zip_path="$(realpath "$zip_file_name")"
+    (
+        cd "${directory}" || die "Could not cd to directory '$directory'"
+        zip -r --quiet "$zip_path" .
+    )
+done
