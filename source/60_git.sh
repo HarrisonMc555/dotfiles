@@ -26,10 +26,11 @@ if is_available git; then
     function _git_lp() { _git_log; }
     function _git_compare() { __git_complete_refs; }
     function _git_ahead_behind() { __git_complete_refs; }
+    function _git_log_author_date() { _git_log; }
+    function _git_b() { _git_branch; }
+    function _git_stsw() { __git_complete_refs; }
+    function _git_update_branches() { __git_complete_refs; }
     # function _git_alias() { __git_main; }
-
-    alias wdiff="git diff --no-index --word-diff"
-    alias gdn='git diff --no-index'
 
     # Git shortcuts
 
@@ -84,10 +85,22 @@ if is_available git; then
     # alias gst='gs'
     alias gd='git diff'
     __my_git_complete gd git_diff
+    alias gdd='git dd'
+    __my_git_complete gdd git_diff
+    alias wdiff="git diff --no-index --word-diff"
+    __my_git_complete wdiff git_diff
+    alias gdn='git diff --no-index'
+    __my_git_complete gdn git_diff
     alias gdw='gd --word-diff'
     __my_git_complete gdw git_diff
     alias gdc='gd --cached'
     __my_git_complete gdc git_diff
+    alias gds='git ds'
+    __my_git_complete gds git_diff
+    alias gdcs='git -c delta.side-by-side=true diff --cached'
+    __my_git_complete gdcs git_diff
+    alias gdsc='git -c delta.side-by-side=true diff --cached'
+    __my_git_complete gdsc git_diff
     # alias gm='git commit -m'
     # alias gma='git commit -am'
     alias gam='git commit --amend -m'
