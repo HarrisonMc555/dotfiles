@@ -1,11 +1,24 @@
 #!/usr/bin/env bash
 
-pandoc -t jira "$@" |
-    sed 's/\\&/\&/g' |
-    sed 's/&bsol;/\\/g' |
-    "$(which sd)" -fm '\n\n\{code\}' '\n{code}' |
-    "$(which sd)" -fm '\n\n\{noformat\}' '\n{noformat}' |
-    perl -pe 'chomp if eof'
+die() {
+    if [[ $# -gt 0 ]]; then
+        >&2 echo "$*"
+    fi
 
-# Why did I have this here???
-    # sed -E 's/{code(:java)?}/{noformat}/g' |
+    exit 1
+}
+
+script_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+jirafy_bin="${script_dir}/jirafy"
+
+if [[ $# -lt 1 ]]; then
+    die  "Usage: jirafyfile FILE [FILE2, ...]"
+fi
+
+for file in "$@"; do
+    if [[ ! -f "$file" ]]; then
+        die "Could not locate file '$file'"
+    fi
+
+    "$jirafy_bin" "$file" > "${file%.*}.jira"
+done
