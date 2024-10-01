@@ -1,0 +1,39 @@
+#!/usr/bin/env bash
+
+function die() {
+    if [[ $# -gt 0 ]]; then
+        >&2 echo "$*"
+    fi
+    exit 1
+}
+
+[[ $# -ge 2 ]] || die "Usage: git log-author-date <since> <until|\"now\"> [LOG_ARGS, ..]"
+
+since_date=$(date -Iseconds -d "$1") || die
+if [[ "$2" = now ]]; then
+    until_date=$(date -Iseconds)
+else
+    until_date=$(date -Iseconds -d "$2") || die
+fi
+
+shift
+shift
+
+git log --all --pretty='%aI %H' |
+    awk -v since_date="$since_date" -v until_date="$until_date" \
+        '$1 >= since_date && $1 <= until_date { print $2 }' |
+    {
+        # https://stackoverflow.com/a/77595243
+        if IFS= read -r -d '' -n 1; then
+            {
+                # forward data along if you want to
+                if [[ -n "$REPLY" ]]; then
+                    printf "%s" "$REPLY"
+                else
+                    # properly handle zero byte in input
+                    printf "\x00"
+                fi
+                cat
+            } | git log --no-walk --stdin "$@"
+        fi
+    }
