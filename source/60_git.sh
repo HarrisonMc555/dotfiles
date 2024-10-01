@@ -30,6 +30,7 @@ if is_available git; then
     function _git_b() { _git_branch; }
     function _git_stsw() { __git_complete_refs; }
     function _git_update_branches() { __git_complete_refs; }
+    function _git_exists() { __git_complete_refs; }
     # function _git_alias() { __git_main; }
 
     # Git shortcuts
