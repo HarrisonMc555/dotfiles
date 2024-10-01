@@ -20,7 +20,6 @@ recipes=(
   diff-so-fancy
   dos2unix
   elm
-  exa
   fd
   findutils
   fswatch
@@ -40,7 +39,6 @@ recipes=(
   ipython
   ispell
   isync
-  lsd
   lynx
   msmtp
   mu

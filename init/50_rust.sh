@@ -7,6 +7,7 @@ fi
 crates=(
     bat
     fd-find
+    exa
     hx
     lsd
     ripgrep
