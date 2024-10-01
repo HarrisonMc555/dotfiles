@@ -3,6 +3,13 @@
 
 if is_available git; then
 
+    if is_osx; then
+        # When using Git with large projects on MacOS I will occasionally get a
+        # "too many open files" error. Increasing the maximum number of open
+        # files fixes this error.
+        ulimit -n 1024
+    fi
+
     # Completions for git aliases
     function _git_diverge() { __git_complete_refs; }
     function _git_subject() { _git_show; }
