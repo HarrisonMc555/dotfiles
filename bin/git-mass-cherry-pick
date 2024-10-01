@@ -4,7 +4,7 @@ bitbucket_url="https://git.romariccorp.com:7990"
 default_remote="origin"
 
 function usage() {
-    echo "Usage: git mass-cherry-pick COMMIT BRANCH [BRANCH2, ...]"
+    echo "Usage: git mass-cherry-pick COMMIT BRANCH [BRANCH2, ...] [-h|--help] [-n|--no-merge-commit] [-b BRANCH_NAME|--branch BRANCH_NAME]"
 }
 
 __red='\033[0;31m'
@@ -43,27 +43,61 @@ function e_underline() {
 }
 
 
+merge=true
+positional_args=()
+double_dash=false
+merge_branch_name=
+next_arg_is_branch_name=false
 for arg in "$@"; do
+    if [[ "$next_arg_is_branch_name" = true ]]; then
+        echo "Merge branch name: $arg"
+        next_arg_is_branch_name=false
+        merge_branch_name="$arg"
+        continue
+    elif [[ "$double_dash" = true ]]; then
+        positional_args+=("$arg")
+        continue
+    fi
     case "$arg" in
         -h|--help)
             usage
             die
             ;;
+        -n|--no-merge-commit)
+            echo "NOT merge commit"
+            merge=false
+            ;;
+        -b|--branch)
+            next_arg_is_branch_name=true
+            ;;
         --)
+            double_dash=true
             break
+            ;;
+        *)
+            positional_args+=("$arg")
             ;;
     esac
 done
 
-[[ $# -ge 1 ]] || die_with_usage "Missing argument COMMIT"
-commit="$1"
-shift
-[[ "${commit}" = -* ]] && die_with_usage "Invalid COMMIT: \"${commit}\""
+echo "Positional args: ${positional_args[*]}"
+[[ "${#positional_args[@]}" -ge 1 ]] || die_with_usage "Missing argument COMMIT"
+commit="${positional_args[0]}"
+unset 'positional_args[0]'
+echo "commit: ${commit}"
+if [[ "$merge" = true ]]; then
+    git rev-parse --verify "${commit}" &>/dev/null ||
+        die_with_usage "Invalid commit: \"${commit}\""
+else
+    git --no-pager log "${commit}" &>/dev/null ||
+        die_with_usage "Invalid commit/commit range: \"${commit}\""
+fi
 
-[[ $# -ge 1 ]] || die_with_usage "Missing argument BRANCH"
-branches=("$@")
+echo "Positional args: ${positional_args[*]}"
+[[ "${#positional_args[@]}" -ge 1 ]] || die_with_usage "Missing argument BRANCH"
+branches=("${positional_args[@]}")
 for branch in "${branches[@]}"; do
-    [[ "${branch}" = -* ]] && die_with_usage "Invalid BRANCH: \"${branch}\""
+    git show-ref --quiet "$branch" || die_with_usage "Invalid BRANCH: \"${branch}\""
 done
 
 original_branch=$(git rev-parse --abbrev-ref HEAD) ||
@@ -73,18 +107,20 @@ if [[ "$original_branch" = "HEAD" ]]; then
         die "Could not retrieve current commit"
 fi
 
-# shellcheck disable=SC2016
-merge_commit_message=$(git show --quiet --pretty='%B' "${commit}") ||
-    die "Could not retrieve commit message for commit: \"${commit}\""
-merge_branch_name=$(echo "$merge_commit_message" |
-                        grep -E '^Merge in ' |
-                        sed -E 's/^Merge in .* from (.*) to (.*)$/\1/') ||
-    die "Could not find branch name in commit message for commit ${commit}"
+if [[ ! "$merge_branch_name" ]]; then
+    # shellcheck disable=SC2016
+    merge_commit_message=$(git show --quiet --pretty='%B' "${commit}") ||
+        die "Could not retrieve commit message for commit: \"${commit}\""
+    merge_branch_name=$(echo "$merge_commit_message" |
+                            grep -E '^Merge in ' |
+                            sed -E 's/^Merge in .* from (.*) to .*$/\1/') ||
+        die "Could not find branch name in commit message for commit ${commit}"
 
-if [[ "$merge_branch_name" = "" ]]; then
-    e_err "Could not find merge branch name from git commit message:"
-    >&2 echo "${merge_commit_message}"
-    die
+    if [[ "$merge_branch_name" = "" ]]; then
+        e_err "Could not find merge branch name from git commit message:"
+        >&2 echo "${merge_commit_message}"
+        die
+    fi
 fi
 
 # shellcheck disable=SC1083
@@ -129,7 +165,7 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
 
     e_underline "${branch}"
     if [[ "${branch}" = "${merge_branch_name}" ]]; then
-        echo "Skipping because it the target branch of the merge commit"
+        echo "Skipping because it is the target branch of the merge commit"
         continue
     fi
 
@@ -162,7 +198,13 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
         continue
     fi
 
-    if ! git cherry-pick --ff "${commit}^..${commit}^2"; then
+    if [[ "${merge}" = true ]]; then
+        cherry_pick_arg="${commit}^..${commit}^2"
+    else
+        cherry_pick_arg="${commit}"
+    fi
+    echo "Cherry pick arg: ${cherry_pick_arg}"
+    if ! git cherry-pick --ff "${cherry_pick_arg}"; then
         e_err "Could not cherry-pick commits"
         e_err "This requires manual resolution"
         if [[ "${#branches[@]}" -gt 0 ]]; then
