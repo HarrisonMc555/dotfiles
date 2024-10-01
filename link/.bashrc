@@ -1,6 +1,5 @@
 # Exit if not interactive
 if [[ $- != *i* ]]; then
-    echo "Not interactive"
     path_script="$DOTFILES/source/01_path.sh"
     if [[ -f "$path_script" ]]; then
         source "$path_script"
