@@ -264,6 +264,20 @@ function setdiff() {
   [[ "$1" ]] && echo "${setdiff_out[@]}"
 }
 
+# Used to see if required binary, alias, or function is already available. Used
+# commonly when conditionally performing actions or adding aliases only when a
+# tool is installed.
+function is_available() {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: is_available CMD"
+        echo "CMD can be a binary, alias, function, or anything that can be "\
+             "executed as a command"
+        return 1
+    fi
+    cmd="$1"
+    command -v "$cmd" &> /dev/null
+}
+
 # If this file was being sourced, exit now.
 [[ "$1" == "source" ]] && return
 

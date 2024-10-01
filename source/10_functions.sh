@@ -9,17 +9,6 @@ histeval() {
     eval "$@"
 }
 
-is_available() {
-    if [[ $# -ne 1 ]]; then
-        echo "Usage: is_available CMD"
-        echo "CMD can be a binary, alias, function, or anything that can be "\
-             "executed as a command"
-        return 1
-    fi
-    cmd="$1"
-    command -v "$cmd" &> /dev/null
-}
-
 urlencode() {
     # urlencode <string>
     old_lc_collate=$LC_COLLATE
@@ -278,6 +267,6 @@ stdin_empty() {
     fi
 }
 
-export -f pip histeval is_available urlencode urldecode visual_nowait_editor \
+export -f pip histeval urlencode urldecode visual_nowait_editor \
           yesno noyes is_iterm2 bak prepend append countdown timer notify \
           notify_result random random_exclusive stdin_empty
