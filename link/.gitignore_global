@@ -82,11 +82,15 @@ node_modules/
 *.bak[0-9]
 *.bak[0-9][0-9]
 *.bak[0-9][0-9][0-9]
-.*.kra
+tmp/
+temp/
+
 
 # Other version control systems #
 #################################
 svn/
 
-tmp/
-temp/
+# Other Programs #
+##################
+.*.kra
+*.hprof
