@@ -56,7 +56,7 @@ casks=(
   spaceradar # Storage space visualizer
   thonny # Python GUI
   webex # WebEx video call application
-  
+  nowplaying-cli # Use internal API to query "Now Playing" information
 
   ## These were installed by "Cowboy" Ben Alman
   # a-better-finder-rename
