@@ -6,7 +6,7 @@ if is_available exa; then
     alias ls='exa -I "*~"'
     alias la='exa -a'
     # h is actually for "header" here
-    alias ll='exa -alh'
+    alias ll='exa -alh --git'
 elif is_available lsd; then
     alias ls='lsd -I "*~"'
     alias la='lsd -A'
