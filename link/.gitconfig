@@ -197,3 +197,5 @@
 	defaultBranch = main
 [grep]
 	extendedRegexp = true
+[checkout]
+	defaultRemote = origin
