@@ -7,9 +7,7 @@ fi
 crates=(
     bat
     fd-find
-    hx
     ripgrep
-    runiq
     sd
     xsv
 )
