@@ -16,7 +16,9 @@ ls_alias=$(alias ls)
 ls_alias="${ls_alias#alias ls=\'}"
 ls_alias="${ls_alias%\'}"
 unalias ls
-source /opt/homebrew/opt/chruby/share/chruby/chruby.sh
-source /opt/homebrew/opt/chruby/share/chruby/auto.sh
+if [[ -d "/opt/homebrew/opt/chruby/share/chruby" ]]; then
+    source /opt/homebrew/opt/chruby/share/chruby/chruby.sh
+    source /opt/homebrew/opt/chruby/share/chruby/auto.sh
+fi
 # shellcheck disable=SC2139
 alias ls="$ls_alias"
