@@ -19,30 +19,30 @@ brew info --cask this-is-somewhat-annoying 2>/dev/null
 
 # Homebrew casks
 casks=(
-  alfred
-  amazon-music
-  background-music
-  caffeine
-  captin
-  emacs
-  emacsclient
-  fastscripts
-  firefox
-  font-hack-nerd-font
-  gimp
-  google-chrome
-  hex-fiend
-  istat-menus
-  iterm2
-  jumpcut
-  karabiner-elements
-  meld
-  mutespotifyads
-  screen
-  spotify
-  steam
-  vanilla
-  visual-studio-code
+  alfred # Can automate, mostly unused, kind of used for better application search than command-space
+  amazon-music # Music
+  background-music # Change volume for each app individually
+  caffeine # Keep computer awake
+  captin # Display when caps lock is turned on/off
+  emacs # Text editor
+  emacsclient # Launch text editor
+  fastscripts # Run script on keyboard shortcut, used for switching apps quickly (much faster than Automator)
+  firefox # Web browser
+  font-hack-nerd-font # Mostly unused, provides fun icons for terminal
+  gimp # Image editor, kind of like free version of Photoshop
+  google-chrome # Web browser
+  hex-fiend # Hex file viewer
+  istat-menus # Display memory and CPU usage in menu, mostly unused
+  iterm2 # Terminal emulator
+  jumpcut # Clipboard history
+  karabiner-elements # Customize keyboard, e.g. use Caps lock as "Super" key
+  meld # Diff merger
+  mutespotifyads # Mute ads on Spotify app
+  screen # Create, pause, and resume terminal sessions
+  spotify # Music
+  steam # Games
+  vanilla # Hide menu bar icons
+  visual-studio-code # Code editor, relatively lightweight IDE
 
   ## These were installed by me but I'm not sure if I want them every time
   sourcetree # Atlassian Git client
@@ -51,8 +51,8 @@ casks=(
   grandperspective # Storage space visualizer
   jetbrains-toolbox # Tool for managing JetBrains tool installations
   krita # pixel editor
-  microsoft-remote-desktop
-  onedrive
+  microsoft-remote-desktop # Connect to remote Windows computers
+  onedrive # Cloud storage
   spaceradar # Storage space visualizer
   thonny # Python GUI
   webex # WebEx video call application
