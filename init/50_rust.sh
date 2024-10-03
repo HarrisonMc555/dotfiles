@@ -5,11 +5,11 @@ if ! is_available rustup; then
 fi
 
 crates=(
-    bat
-    fd-find
-    ripgrep
-    sd
-    xsv
+    bat # Pager with syntax highlighting
+    fd-find # Find files
+    ripgrep # Search files
+    sd # Replace patterns in files
+    xsv # View, search, and modify CSV files
 )
 
 cargo install "${crates[@]}"
