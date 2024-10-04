@@ -4,7 +4,7 @@ bitbucket_url="https://git.romariccorp.com:7990"
 default_remote="origin"
 
 function usage() {
-    echo "Usage: git mass-cherry-pick COMMIT BRANCH [BRANCH2, ...] [-h|--help] [-n|--no-merge-commit] [-b BRANCH_NAME|--branch BRANCH_NAME]"
+    echo "Usage: git mass-cherry-pick <commit> <branch> [<branch>, ...] [-h|--help] [-n|--no-merge-commit] [-b <branch_name>|--branch <branch_name>] [-s <strategy>|--strategy <strategy>]"
 }
 
 __red='\033[0;31m'
@@ -47,6 +47,7 @@ merge=true
 positional_args=()
 double_dash=false
 merge_branch_name=
+strategy=
 args=("$@")
 for ((i = 0; i < $#; i++)); do
     arg="${args[$i]}"
@@ -67,6 +68,11 @@ for ((i = 0; i < $#; i++)); do
             ((i++))
             merge_branch_name="${args[i]}"
             echo "Branch name: $merge_branch_name"
+            ;;
+        -s|--strategy)
+            ((i++))
+            strategy="${args[i]}"
+            echo "Strategy: $strategy"
             ;;
         --)
             double_dash=true
@@ -200,13 +206,20 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
         continue
     fi
 
+    if [[ "$strategy" ]]; then
+        # Intentionally allow it to expand so we can add additional arguments
+        strategy_arg="--strategy="$strategy
+    else
+        strategy_arg="--ff"
+    fi
+    echo "Strategy arg: ${strategy_arg}"
     if [[ "${merge}" = true ]]; then
         cherry_pick_arg="${commit}^..${commit}^2"
     else
         cherry_pick_arg="${commit}"
     fi
     echo "Cherry pick arg: ${cherry_pick_arg}"
-    if ! git cherry-pick --ff "${cherry_pick_arg}"; then
+    if ! git cherry-pick ${strategy_arg} "${cherry_pick_arg}"; then
         e_err "Could not cherry-pick commits"
         e_err "This requires manual resolution"
         if [[ "${#branches[@]}" -gt 0 ]]; then
