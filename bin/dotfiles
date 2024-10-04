@@ -383,10 +383,11 @@ function config_do() {
 # Link custom files.
 # Create outside function to be available in other functions.
 declare -a custom_bases custom_dirs custom_names
-mappings_files_dir="$DOTFILES"/internal/custom/
+custom_mappings_dir="$DOTFILES"/custom/mappings/
+custom_files_dir="$DOTFILES"/custom/files/
 function custom_files() {
   local file base custom_base
-  for file in "$@"; do
+  for file in "${custom_files_dir%/}"/*; do
     base="$(basename "$file")"
     for custom_base in "${custom_bases[@]}"; do
       if [[ "$custom_base" = "$base" ]]; then
@@ -399,7 +400,7 @@ function custom_files() {
 function custom_prep() {
   declare -a lines
   mapfile -t oses < <(get_os 1)
-  for file in "${mappings_files_dir%/}"/*; do
+  for file in "${custom_mappings_dir%/}"/*; do
     for os in "${oses[@]}"; do
       if [[ "$file" =~ (^|[^a-z])$os($|[^a-z]) ]]; then
         # It matches a different OS, skip it
