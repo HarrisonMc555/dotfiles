@@ -28,10 +28,10 @@ fi
 export DOTFILES=~/.dotfiles
 
 # Logging stuff.
-function e_header()   { echo -e "\n\033[1m$@\033[0m"; }
-function e_success()  { echo -e " \033[1;32m✔\033[0m  $@"; }
-function e_error()    { echo -e " \033[1;31m✖\033[0m  $@"; }
-function e_arrow()    { echo -e " \033[1;34m➜\033[0m  $@"; }
+function e_header()   { echo -e "\n\033[1m$*\033[0m"; }
+function e_success()  { echo -e " \033[1;32m✔\033[0m  $*"; }
+function e_error()    { echo -e " \033[1;31m✖\033[0m  $*"; }
+function e_arrow()    { echo -e " \033[1;34m➜\033[0m  $*"; }
 
 # For testing some of these functions.
 function assert() {
@@ -60,7 +60,7 @@ function is_dotfiles_running() {
 
 # Test if this script was run via the "dotfiles" bin script (vs. via curl/wget)
 function is_dotfiles_bin() {
-  [[ "$(basename $0 2>/dev/null)" == dotfiles ]] || return 1
+  [[ "$(basename "$0" 2>/dev/null)" == dotfiles ]] || return 1
 }
 
 # OS detection
@@ -77,7 +77,7 @@ function is_ubuntu_desktop() {
 }
 function get_os() {
   for os in osx ubuntu ubuntu_desktop; do
-    is_$os; [[ $? == ${1:-0} ]] && echo $os
+    is_$os; [[ $? == "${1:-0}" ]] && echo $os
   done
 }
 export -f is_osx is_ubuntu is_ubuntu_desktop get_os
@@ -96,18 +96,20 @@ function path_remove() {
 # Display a fancy multi-select menu.
 # Inspired by http://serverfault.com/a/298312
 function prompt_menu() {
-  local exitcode prompt choices nums i n
+  local exitcode prompt nums i n
   exitcode=0
   if [[ "$2" ]]; then
     _prompt_menu_draws "$1"
-    read -t $2 -n 1 -sp "Press ENTER or wait $2 seconds to continue, or press any other key to edit."
+    read -r -t "$2" -n 1 -sp "Press ENTER or wait $2 seconds to continue, or press any other key to edit."
     exitcode=$?
     echo ""
   fi 1>&2
   if [[ "$exitcode" == 0 && "$REPLY" ]]; then
     prompt="Toggle options (Separate options with spaces, ENTER when done): "
-    while _prompt_menu_draws "$1" 1 && read -rp "$prompt" nums && [[ "$nums" ]]; do
-      _prompt_menu_adds $nums
+    while _prompt_menu_draws "$1" 1 &&
+            read -rp "$prompt" -a nums &&
+            [[ "${#nums[@]}" -gt 0 ]]; do
+      _prompt_menu_adds "${nums[@]}"
     done
   fi 1>&2
   _prompt_menu_adds
@@ -121,7 +123,7 @@ function _prompt_menu_iter() {
     for sel in "${menu_selects[@]}"; do
       [[ "$sel" == "${menu_options[i]}" ]] && state=1 && break
     done
-    $fn $state $i "$@"
+    $fn "$state" "$i" "$@"
   done
 }
 
@@ -133,8 +135,10 @@ function _prompt_menu_draws() {
 function _prompt_menu_draw() {
   local modes=(error success)
   if [[ "$3" ]]; then
+    # shellcheck disable=SC2086
     e_${modes[$1]} "$(printf "%2d) %s\n" $(($2+1)) "${menu_options[$2]}")"
   else
+    # shellcheck disable=SC2086
     e_${modes[$1]} "${menu_options[$2]}"
   fi
 }
@@ -162,6 +166,7 @@ function _prompt_menu_add() {
 # prints whatever map_fn prints. If map_fn is omitted, all input array items
 # are printed.
 # Usage: array_map array_name [map_fn]
+# shellcheck disable=0-9999
 function array_map() {
   local __i__ __val__ __arr__=$1; shift
   for __i__ in $(eval echo "\${!$__arr__[@]}"); do
@@ -175,7 +180,7 @@ function array_map() {
 }
 
 # Print bash array in the format "i <val>" (one per line) for debugging.
-function array_print() { array_map $1 __array_print; }
+function array_print() { array_map "$1" __array_print; }
 function __array_print() { echo "$2 <$1>"; }
 
 # Array filter. Calls filter_fn for each item ($1) and index ($2) in array_name
@@ -188,6 +193,7 @@ function array_filter() { __array_filter 1 "$@"; }
 # Works like array_filter, but outputs array indices instead of array items.
 function array_filter_i() { __array_filter 0 "$@"; }
 # The core function. Wheeeee.
+# shellcheck disable=0-9999
 function __array_filter() {
   local __i__ __val__ __mode__ __arr__
   __mode__=$1; shift; __arr__=$1; shift
@@ -213,6 +219,7 @@ function array_join() { __array_join 1 "$@"; }
 # Works like array_join, but removes empty items first.
 function array_join_filter() { __array_join 0 "$@"; }
 
+# shellcheck disable=0-9999
 function __array_join() {
   local __i__ __val__ __out__ __init__ __mode__ __arr__
   __mode__=$1; shift; __arr__=$1; shift
@@ -244,11 +251,14 @@ function n_times_i() {
 # (and not in a good way).
 # From http://stackoverflow.com/a/1617303/142339
 function setdiff() {
-  local debug skip a b
+  local debug skip a b IFS_old
   if [[ "$1" == 1 ]]; then debug=1; shift; fi
   if [[ "$1" ]]; then
     local setdiff_new setdiff_cur setdiff_out
-    setdiff_new=($1); setdiff_cur=($2)
+    IFS_old="$IFS"
+    read -ra setdiff_new -d '' < <(echo "$1")
+    read -ra setdiff_cur -d '' < <(echo "$2")
+    IFS="$IFS_old"
   fi
   setdiff_out=()
   for a in "${setdiff_new[@]}"; do
@@ -259,7 +269,12 @@ function setdiff() {
     [[ "$skip" ]] || setdiff_out=("${setdiff_out[@]}" "$a")
   done
   [[ "$debug" ]] && for a in setdiff_new setdiff_cur setdiff_out; do
-    echo "$a ($(eval echo "\${#$a[*]}")) $(eval echo "\${$a[*]}")" 1>&2
+    declare -n array
+    array="$a"
+    echo "${a} (${#array[*]}) ${array[*]}"
+    # If we don't do this, then (re-)assigning to "array" will re-assign the "a"
+    # variable and clobber the first element of the array.
+    unset -n array
   done
   [[ "$1" ]] && echo "${setdiff_out[@]}"
 }
@@ -305,7 +320,7 @@ function init_files() {
     IFS=$'\n' read -d '' -r -a menu_selects < "$init_file"
   else
     # Otherwise default to all scripts not specifically for other OSes
-    oses=($(get_os 1))
+    mapfile -t oses < <(get_os 1)
     for opt in "${menu_options[@]}"; do
       remove=
       for os in "${oses[@]}"; do
@@ -314,7 +329,7 @@ function init_files() {
       [[ "$remove" ]] || menu_selects=("${menu_selects[@]}" "$opt")
     done
   fi
-  prompt_menu "Run the following init scripts?" $prompt_delay
+  prompt_menu "Run the following init scripts?" "$prompt_delay"
   # Write out cache file for future reading.
   rm "$init_file" 2>/dev/null
   for i in "${!menu_selects[@]}"; do
@@ -348,7 +363,7 @@ function link_test() {
 }
 function link_do() {
   e_success "Linking ~/$1."
-  ln -sf ${2#$HOME/} ~/
+  ln -sf "${2#$HOME/}" ~/
 }
 
 # Link config files.
@@ -362,7 +377,7 @@ function config_test() {
 function config_do() {
   e_success "Linking ~/.config/$1."
   mkdir -p ~/.config/
-  ln -sf ../${2#$HOME/} ~/.config/
+  ln -sf "../${2#$HOME/}" ~/.config/
 }
 
 # Link custom files.
@@ -383,8 +398,8 @@ function custom_files() {
 }
 function custom_prep() {
   declare -a lines
-  oses=($(get_os 1))
-  for file in "$mappings_files_dir"/*; do
+  mapfile -t oses < <(get_os 1)
+  for file in "${mappings_files_dir%/}"/*; do
     for os in "${oses[@]}"; do
       if [[ "$file" =~ (^|[^a-z])$os($|[^a-z]) ]]; then
         # It matches a different OS, skip it
@@ -454,16 +469,16 @@ function custom_do() {
 # Copy, link, init, etc.
 function do_stuff() {
   local base dest skip
-  [[ $(declare -f "$1_prep") ]] && $1_prep
-  local files=("$DOTFILES"/$1/*)
-  [[ $(declare -f "$1_files") ]] && files=($($1_files "${files[@]}"))
+  [[ $(declare -f "$1_prep") ]] && "$1_prep"
+  local files=("$DOTFILES"/"$1"/*)
+  [[ $(declare -f "$1_files") ]] && mapfile -t files < <("$1_files" "${files[@]}")
   # No files? abort.
   if (( ${#files[@]} == 0 )); then return; fi
   # Run _header function only if declared.
   [[ $(declare -f "$1_header") ]] && "$1_header"
   # Iterate over files.
   for file in "${files[@]}"; do
-    base="$(basename $file)"
+    base="$(basename "$file")"
     # Get dest path.
     if [[ $(declare -f "$1_dest") ]]; then
       dest="$("$1_dest" "$base")" || {
@@ -552,7 +567,7 @@ THIS SHOULD ONLY BE ATTEMPTED IF YOU ARE LOGGED IN AS ROOT IN ANOTHER SHELL.
 
 This will be skipped if "Y" isn't pressed within the next $prompt_delay seconds.
 EOF
-  read -N 1 -t $prompt_delay -p "Update sudoers file? [y/N] " update_sudoers; echo
+  read -r -N 1 -t $prompt_delay -p "Update sudoers file? [y/N] " update_sudoers; echo
   if [[ "$update_sudoers" =~ [Yy] ]]; then
     e_header "Creating sudoers file"
     sudo bash -c "$(sudoers_code)"
@@ -584,13 +599,21 @@ fi
 if [[ ! -d "$DOTFILES" ]]; then
   # Dotfiles directory doesn't exist? Clone it!
   e_header "Downloading dotfiles"
-  git clone --branch ${DOTFILES_GH_BRANCH:-master} --recursive \
-      git://github.com/${DOTFILES_GH_USER:-HarrisonMc555}/dotfiles.git "$DOTFILES"
-  cd "$DOTFILES"
+  git clone --branch "${DOTFILES_GH_BRANCH:-master}" --recursive \
+      "git://github.com/${DOTFILES_GH_USER:-HarrisonMc555}/dotfiles.git" "$DOTFILES"
+  cd "$DOTFILES" || {
+    e_error "Could not cd to dotfiles directory '$DOTFILES'. Abort."
+    exit 1
+  }
+elif true; then
+     :
 elif [[ "$1" != "restart" ]]; then
   # Make sure we have the latest files.
   e_header "Updating dotfiles"
-  cd "$DOTFILES"
+  cd "$DOTFILES" || {
+    e_error "Could not cd to dotfiles directory '$DOTFILES'. Abort."
+    exit 1
+  }
   prev_head="$(git rev-parse HEAD)"
   git pull
   git submodule update --init --recursive --quiet
