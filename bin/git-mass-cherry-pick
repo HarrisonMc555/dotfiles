@@ -47,14 +47,10 @@ merge=true
 positional_args=()
 double_dash=false
 merge_branch_name=
-next_arg_is_branch_name=false
-for arg in "$@"; do
-    if [[ "$next_arg_is_branch_name" = true ]]; then
-        echo "Merge branch name: $arg"
-        next_arg_is_branch_name=false
-        merge_branch_name="$arg"
-        continue
-    elif [[ "$double_dash" = true ]]; then
+args=("$@")
+for ((i = 0; i < $#; i++)); do
+    arg="${args[$i]}"
+    if [[ "$double_dash" = true ]]; then
         positional_args+=("$arg")
         continue
     fi
@@ -68,11 +64,17 @@ for arg in "$@"; do
             merge=false
             ;;
         -b|--branch)
-            next_arg_is_branch_name=true
+            ((i++))
+            merge_branch_name="${args[i]}"
+            echo "Branch name: $merge_branch_name"
             ;;
         --)
             double_dash=true
+            echo "Double dash, treating all futher arguments as positional"
             break
+            ;;
+        -*)
+            die "Unrecognized flag: '$arg'"
             ;;
         *)
             positional_args+=("$arg")
