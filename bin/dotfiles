@@ -406,35 +406,33 @@ function custom_prep() {
         continue 2
       fi
     done
-    IFS=$'\n' read -d '' -r -a new_lines < "$file"
-    lines+=( "${new_lines[@]}" )
-  done
-
-  line_num=0
-  err=
-  for line in "${lines[@]}"; do
-    ((line_num++))
-    # Skip comment lines
-    [[ "$line" =~ ^[[:space:]]*#.*$ ]] && continue
-    # Skip blank lines
-    [[ "$line" =~ ^[[:space:]]*$ ]] && continue
-    IFS=$':' read -r -a elems <<< "$line"
-    num_elems=${#elems[@]}
-    if [[ "$num_elems" -ne 2 ]] && [[ "$num_elems" -ne 3 ]]; then
-      if ! [[ "$err" ]]; then
-        e_header "Parsing $mappings_file"
-        err=1
+    IFS=$'\n' read -d '' -r -a lines < "$file"
+    line_num=0
+    err=
+    for line in "${lines[@]}"; do
+      ((line_num++))
+      # Skip comment lines
+      [[ "$line" =~ ^[[:space:]]*#.*$ ]] && continue
+      # Skip blank lines
+      [[ "$line" =~ ^[[:space:]]*$ ]] && continue
+      IFS=$':' read -r -a elems <<< "$line"
+      num_elems=${#elems[@]}
+      if [[ "$num_elems" -ne 2 ]] && [[ "$num_elems" -ne 3 ]]; then
+        if ! [[ "$err" ]]; then
+          e_header "Parsing ${file}"
+          err=1
+        fi
+        e_error "Bad file format for ${file} on line $line_num: ${line}"
+        continue
       fi
-      e_error "Bad file format for $mappings_file on line $line_num: $line"
-      continue
-    fi
-    base="${elems[0]}"
-    dir="${elems[1]}"
-    name="${elems[2]}"
+      base="${elems[0]}"
+      dir="${elems[1]}"
+      name="${elems[2]}"
 
-    custom_bases+=("$base")
-    custom_dirs+=("$dir")
-    custom_names+=("$name")
+      custom_bases+=("$base")
+      custom_dirs+=("$dir")
+      custom_names+=("$name")
+    done
   done
 }
 function custom_header() { e_header "Linking files into custom directories"; }
