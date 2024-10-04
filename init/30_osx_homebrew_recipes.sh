@@ -67,6 +67,7 @@ recipes=(
   shpotify
   ssh-copy-id
   sshrc
+  tealdeer
   telnet
   the_silver_searcher
   tokei
