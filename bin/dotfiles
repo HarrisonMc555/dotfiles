@@ -376,11 +376,11 @@ function custom_prep() {
     for os in "${oses[@]}"; do
       if [[ "$file" =~ (^|[^a-z])$os($|[^a-z]) ]]; then
         # It matches a different OS, skip it
-        continue
+        continue 2
       fi
-      IFS=$'\n' read -d '' -r -a new_lines < "$file"
-      lines+=( "${new_lines[@]}" )
     done
+    IFS=$'\n' read -d '' -r -a new_lines < "$file"
+    lines+=( "${new_lines[@]}" )
   done
 
   line_num=0
