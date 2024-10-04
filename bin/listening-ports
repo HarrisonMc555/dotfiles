@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+if [[ $# -ne 0 ]]; then
+    >&2 echo "Usage: listening-ports"
+    exit 1
+fi
+
+sudo lsof -i -P

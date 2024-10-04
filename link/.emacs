@@ -105,6 +105,8 @@
  '(vhdl-highlight-translate-off t)
  '(vhdl-indent-comment-like-next-code-line t)
  '(vhdl-stutter-mode nil)
+ '(whitespace-style
+   '(face trailing tabs spaces newline missing-newline-at-eof empty indentation space-after-tab space-before-tab space-mark tab-mark newline-mark))
  '(xterm-color-names
    ["#eee8d5" "#dc322f" "#859900" "#b58900" "#268bd2" "#d33682" "#2aa198" "#073642"])
  '(xterm-color-names-bright
@@ -115,7 +117,8 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(ediff-current-diff-Ancestor ((t (:background "darkblue"))))
- '(region ((t (:inherit highlight :extend t :background "#8a8875")))))
+ '(region ((t (:inherit highlight :extend t :background "#8a8875"))))
+ '(whitespace-line ((t nil))))
 
 ;; list the packages you want
 (defvar package-list '())
