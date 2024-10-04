@@ -367,8 +367,20 @@ function config_do() {
 
 # Link custom files.
 # Create outside function to be available in other functions.
-declare -A custom_to_dir custom_to_name
+declare -a custom_bases custom_dirs custom_names
 mappings_files_dir="$DOTFILES"/internal/custom/
+function custom_files() {
+  local file base custom_base
+  for file in "$@"; do
+    base="$(basename "$file")"
+    for custom_base in "${custom_bases[@]}"; do
+      if [[ "$custom_base" = "$base" ]]; then
+        echo "$file"
+        continue 2
+      fi
+    done
+  done
+}
 function custom_prep() {
   declare -a lines
   oses=($(get_os 1))
@@ -401,12 +413,13 @@ function custom_prep() {
       e_error "Bad file format for $mappings_file on line $line_num: $line"
       continue
     fi
-    key="${elems[0]}"
+    base="${elems[0]}"
     dir="${elems[1]}"
     name="${elems[2]}"
 
-    custom_to_dir["$key"]="$dir"
-    [[ "$name" ]] && custom_to_name["$key"]="$name"
+    custom_bases+=("$base")
+    custom_dirs+=("$dir")
+    custom_names+=("$name")
   done
 }
 function custom_header() { e_header "Linking files into custom directories"; }
@@ -416,10 +429,15 @@ function custom_test() {
 function custom_dest() {
   local base dest_dir dest_name
   base="$1"
-  [[ "${custom_to_dir[$base]}" ]] || return 1
-  dest_dir="${custom_to_dir[$base]}"
-  dest_name="${custom_to_name[$base]:-$base}"
-  echo "$HOME/$dest_dir/$dest_name"
+  for i in "${!custom_bases[@]}"; do
+      if [[ "${custom_bases[$i]}" = "$base" ]]; then
+          dest_dir="${custom_dirs[$i]}"
+          dest_name="${custom_names[$i]:-$base}"
+          echo "$HOME/$dest_dir/$dest_name"
+          return
+      fi
+  done
+  return 1
 }
 function custom_do() {
   local base file dest dest_dir dest_name
