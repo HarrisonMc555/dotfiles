@@ -599,7 +599,7 @@ if [[ ! -d "$DOTFILES" ]]; then
   # Dotfiles directory doesn't exist? Clone it!
   e_header "Downloading dotfiles"
   git clone --branch "${DOTFILES_GH_BRANCH:-master}" --recursive \
-      "git://github.com/${DOTFILES_GH_USER:-HarrisonMc555}/dotfiles.git" "$DOTFILES"
+      "git@github.com:${DOTFILES_GH_USER:-HarrisonMc555}/dotfiles.git" "$DOTFILES"
   cd "$DOTFILES" || {
     e_error "Could not cd to dotfiles directory '$DOTFILES'. Abort."
     exit 1
