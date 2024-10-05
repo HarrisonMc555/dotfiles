@@ -267,6 +267,11 @@ stdin_empty() {
     fi
 }
 
+pause() {
+    local x
+    read -n1 -r -s -p $'Press any key to continue...\n' x
+}
+
 export -f pip histeval urlencode urldecode visual_nowait_editor \
           yesno noyes is_iterm2 bak prepend append countdown timer notify \
-          notify_result random random_exclusive stdin_empty
+          notify_result random random_exclusive stdin_empty pause
