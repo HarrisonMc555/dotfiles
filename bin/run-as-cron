@@ -1,0 +1,39 @@
+#!/bin/bash
+
+# Run a command with the same environment that cron executes commands. This is
+# good for testing cron jobs to see, for example, if there is an implicit
+# dependency on a path element that is not included in cron's default path.
+
+paths=(
+    /usr/local/sbin
+    /usr/local/bin
+    /usr/sbin
+    /usr/bin
+    /sbin
+    /bin
+    /usr/games
+    /usr/local/games
+    /snap/bin
+)
+
+path_variable=""
+for path in "${paths[@]}"; do
+    if [[ -d "$path" ]]; then
+        path_variable+="${path}:"
+    fi
+done
+path_variable="${path_variable%:}"
+
+variables=(
+    HOME="$HOME"
+    LOGNAME="$USER"
+    PATH="$path_variable"
+    LANG="en_US.UTF-8"
+    SHELL="/bin/sh"
+    PWD="$HOME"
+)
+echo "\$variables=${variables[@]}"
+
+
+cd "$HOME"
+/usr/bin/env -i "${variables[@]}" sh -c "$@"
