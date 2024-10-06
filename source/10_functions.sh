@@ -279,5 +279,5 @@ if is_osx; then
 fi
 
 export -f pip histeval urlencode urldecode visual_nowait_editor \
-          yesno noyes is_iterm2 bak prepend append countdown timer notify \
-          notify_result random random_exclusive stdin_empty pause
+          yesno noyes is_iterm2 bak prepend append countdown timer \
+          random random_exclusive stdin_empty pause
