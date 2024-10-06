@@ -149,7 +149,7 @@ function __set_prompt_host() {
   local host
   host="$(hostname)"
   if [[ "$__DEFAULT_PROMPT_HOST" != "$host" ]] || [[ "$SSH_TTY" ]]; then
-      __prompt_host="$host"
+      __prompt_host="${host%.local}"
   fi
 }
 
