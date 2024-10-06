@@ -272,6 +272,12 @@ pause() {
     read -n1 -r -s -p $'Press any key to continue...\n' x
 }
 
+if is_osx; then
+    function defaults_domains() {
+        defaults domains | sed 's/, /\n/g'
+    }
+fi
+
 export -f pip histeval urlencode urldecode visual_nowait_editor \
           yesno noyes is_iterm2 bak prepend append countdown timer notify \
           notify_result random random_exclusive stdin_empty pause
