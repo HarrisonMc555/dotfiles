@@ -39,6 +39,7 @@ recipes=(
   ipython
   ispell
   isync
+  OJFord/formulae/loginitems
   lsd
   lynx
   msmtp
