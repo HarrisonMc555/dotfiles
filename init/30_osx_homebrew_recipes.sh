@@ -34,7 +34,6 @@ recipes=(
   grip
   hexyl
   htop
-  http
   hyperfine
   imagemagick
   ipython
@@ -66,7 +65,6 @@ recipes=(
   shellcheck
   shpotify
   ssh-copy-id
-  sshrc
   tealdeer
   telnet
   the_silver_searcher
@@ -78,7 +76,6 @@ recipes=(
   wget
   xsv
   yarn
-  zola
 )
 
 brew_install_recipes
