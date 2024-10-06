@@ -148,7 +148,9 @@ function __set_prompt_host() {
   unset __prompt_host
   local host
   host="$(hostname)"
-  [[ "$__DEFAULT_PROMPT_HOST" == "$host" ]] || __prompt_host="$host"
+  if [[ "$__DEFAULT_PROMPT_HOST" != "$host" ]] || [[ "$SSH_TTY" ]]; then
+      __prompt_host="$host"
+  fi
 }
 
 # Shows the level of bash you're in. Perhaps not terribly useful, but it's good
