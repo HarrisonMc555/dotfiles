@@ -70,3 +70,7 @@ elif is_available dig; then
         dig +short myip.opendns.com @resolver1.opendns.com
     }
 fi
+
+function mylocalip() {
+    ifconfig | grep -F 192.168.0. | awk '{print $2}'
+}
