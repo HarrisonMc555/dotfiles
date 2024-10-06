@@ -1,5 +1,8 @@
 #!/bin/bash
 # Start emacsclient
+function is_osx () {
+    [[ "$OSTYPE" =~ ^darwin ]] || return 1
+}
 
 if is_osx; then
     /Applications/Emacs.app/Contents/MacOS/bin/emacsclient "$@"
