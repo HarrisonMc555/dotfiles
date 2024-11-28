@@ -1,5 +1,5 @@
 [core]
-	editor = "emacsclient"
+	editor = emacsclient-wait
 	# autocrlf = input
 	# whitespace = fix,space-before-tab,tab-in-indent,trailing-space
 	excludesfile = ~/.gitignore_global
