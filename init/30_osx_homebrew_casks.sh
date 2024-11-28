@@ -22,6 +22,7 @@ casks=(
   alfred # Can automate, mostly unused, kind of used for better application search than command-space
   amazon-music # Music
   background-music # Change volume for each app individually
+  balenaetcher # Flash OS ISO images onto USB drive to boot into, e.g. Linux
   caffeine # Keep computer awake
   captin # Display when caps lock is turned on/off
   emacs # Text editor
