@@ -34,6 +34,7 @@ apt_packages+=(
   git
   htop
   imagemagick
+  ispell
   # ipython
   lsd
   nodejs
