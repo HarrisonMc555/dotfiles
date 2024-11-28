@@ -380,11 +380,18 @@ if is_available git; then
         done
     }
 
-    function magit() {
-        emacsclient -n -a "" -e "(call-interactively #'magit-status)" \
-                    >/dev/null
-        ~/Library/Scripts/Launch/emacs.sh
-    }
+    if is_osx; then
+        function magit() {
+            emacsclient -n -a "" -e "(call-interactively #'magit-status)" \
+                        >/dev/null
+            ~/Library/Scripts/Launch/emacs.sh
+        }
+    else
+        function magit() {
+            emacsclient -n -a "" -e "(call-interactively #'magit-status)" \
+                        >/dev/null
+        }
+    fi
 
     # This is complex because we want to delegate to the completion for Git
     # itself without ending up with an infinite loop (which happens if you try
