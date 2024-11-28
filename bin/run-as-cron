@@ -32,7 +32,6 @@ variables=(
     SHELL="/bin/sh"
     PWD="$HOME"
 )
-echo "\$variables=${variables[@]}"
 
 
 cd "$HOME"
