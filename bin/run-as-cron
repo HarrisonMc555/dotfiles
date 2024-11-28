@@ -34,5 +34,8 @@ variables=(
 )
 
 
-cd "$HOME"
+cd "$HOME" || {
+    >&2 echo "Could not cd to home: '${HOME}'"
+    exit 1
+}
 /usr/bin/env -i "${variables[@]}" sh -c "$@"
