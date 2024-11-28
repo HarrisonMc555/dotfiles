@@ -44,6 +44,7 @@ apt_packages+=(
   ripgrep
   tree
   tealdeer # tldr
+  unzip
 )
 
 linuxbrew_recipes=(
