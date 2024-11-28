@@ -293,6 +293,8 @@ function is_available() {
     command -v "$cmd" &> /dev/null
 }
 
+export -f is_available
+
 # If this file was being sourced, exit now.
 [[ "$1" == "source" ]] && return
 
