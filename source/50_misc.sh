@@ -139,6 +139,11 @@ function slugify() {
     fi | tr ' _.' '-' | tr -d -c '[:alnum:]_-' | tr '[:upper:]' '[:lower:]'
 }
 
+if is_osx; then
+    export LC_CTYPE=en_US.UTF-8
+    export LC_ALL=en_US.UTF-8
+fi
+
 export -f c html2richtext htmlcopy sbashrc e_underline titlebar all_colors \
        foreground_colors slugify
 
