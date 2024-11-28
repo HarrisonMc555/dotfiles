@@ -2,6 +2,7 @@
 
 if ! is_available rustup; then
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    . "$HOME/.cargo/env"
 fi
 
 crates=(
