@@ -43,6 +43,7 @@ apt_packages+=(
   python3-pip
   ripgrep
   tree
+  tealdeer # tldr
 )
 
 linuxbrew_recipes=(
