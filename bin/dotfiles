@@ -75,12 +75,19 @@ function is_ubuntu_desktop() {
   # https://unix.stackexchange.com/a/338862/238000
   is_ubuntu && xhost >& /dev/null
 }
+function is_wsl() {
+    [[ -f /proc/sys/fs/binfmt_misc/WSLInterop ]]
+}
+function is_windows() {
+    uname="$(uname -a 2>/dev/null)" &&
+        [[ "$uname" = MINGW* ]]
+}
 function get_os() {
-  for os in osx ubuntu ubuntu_desktop; do
+  for os in osx ubuntu ubuntu_desktop windows; do
     is_$os; [[ $? == "${1:-0}" ]] && echo $os
   done
 }
-export -f is_osx is_ubuntu is_ubuntu_desktop get_os
+export -f is_osx is_ubuntu is_ubuntu_desktop is_wsl is_windows get_os
 
 # Remove an entry from $PATH
 # Based on http://stackoverflow.com/a/2108540/142339
