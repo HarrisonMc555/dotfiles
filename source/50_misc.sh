@@ -43,12 +43,21 @@ if is_osx; then
     alias lock="open -a ScreenSaverEngine"
 fi
 
-if is_ubuntu; then
+if is_wsl; then
+    function pbcopy() {
+        echo "$@" | clip.exe
+    }
+    export -f pbcopy
+elif is_ubuntu; then
     # shellcheck disable=SC2120
     function pbcopy() {
         xclip -i -selection clipboard "$@"
     }
     export -f pbcopy
+elif is_windows; then
+    function pbcopy() {
+        echo "$*" | clip.exe
+    }
 fi
 
 # Trim trailing new line and copy to clipboard
