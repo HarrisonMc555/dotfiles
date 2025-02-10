@@ -71,6 +71,8 @@ elif is_available dig; then
     }
 fi
 
-function mylocalip() {
-    ifconfig | grep -F 192.168.0. | awk '{print $2}'
-}
+if is_available ifconfig; then
+    function mylocalip() {
+        ifconfig | grep -F 192.168. | awk '{print $2}' | head -n1
+    }
+fi
