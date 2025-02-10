@@ -7,7 +7,14 @@ if is_available git; then
         # When using Git with large projects on MacOS I will occasionally get a
         # "too many open files" error. Increasing the maximum number of open
         # files fixes this error.
-        ulimit -n 1024
+
+        # Since making this change, I've changed the maximum open files with
+        # launchctl, and now the starting default soft limit is 64000 and the
+        # starting default hard limit is unlimited.
+
+        # ulimit -n 1024
+
+        :
     fi
 
     # Completions for git aliases
