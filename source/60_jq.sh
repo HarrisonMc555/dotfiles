@@ -10,3 +10,12 @@ if is_available jq; then
     }
 fi
 
+if is_available xq; then
+    function xql() {
+        if [[ -t 1 ]]; then
+            xq -C "$@" | less -S
+        else
+            xq "$@"
+        fi
+    }
+fi
