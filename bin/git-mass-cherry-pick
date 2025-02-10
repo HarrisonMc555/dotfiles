@@ -13,6 +13,12 @@ function e_err() {
     >&2 echo -e "${__red}$*${__clear}"
 }
 
+function e_debug() {
+    if [[ "$debug" = true ]]; then
+        echo "$@"
+    fi
+}
+
 function die() {
     if [[ $# -gt 0 ]]; then
         e_err "$@"
@@ -43,13 +49,34 @@ function e_underline() {
 }
 
 
+debug=false
+double_dash=false
+args=()
+for arg in "$@"; do
+    if [[ "$double_dash" = true ]]; then
+        args+=("$arg")
+        continue
+    fi
+    case "$arg" in
+        --)
+            args+=("$arg")
+            double_dash=true
+            ;;
+        -d|--debug)
+            debug=true
+            ;;
+        *)
+            args+=("$arg")
+            ;;
+    esac
+done
+
 merge=true
 positional_args=()
 double_dash=false
 merge_branch_name=
 strategy=
-args=("$@")
-for ((i = 0; i < $#; i++)); do
+for ((i = 0; i < "${#args[@]}"; i++)); do
     arg="${args[$i]}"
     if [[ "$double_dash" = true ]]; then
         positional_args+=("$arg")
@@ -61,22 +88,22 @@ for ((i = 0; i < $#; i++)); do
             die
             ;;
         -n|--no-merge-commit)
-            echo "NOT merge commit"
+            e_debug "NOT merge commit"
             merge=false
             ;;
         -b|--branch)
             ((i++))
             merge_branch_name="${args[i]}"
-            echo "Branch name: $merge_branch_name"
+            e_debug "Branch name: $merge_branch_name"
             ;;
         -s|--strategy)
             ((i++))
             strategy="${args[i]}"
-            echo "Strategy: $strategy"
+            e_debug "Strategy: $strategy"
             ;;
         --)
             double_dash=true
-            echo "Double dash, treating all futher arguments as positional"
+            e_debug "Double dash, treating all futher arguments as positional"
             break
             ;;
         -*)
@@ -88,11 +115,11 @@ for ((i = 0; i < $#; i++)); do
     esac
 done
 
-echo "Positional args: ${positional_args[*]}"
+e_debug "Positional args: ${positional_args[*]}"
 [[ "${#positional_args[@]}" -ge 1 ]] || die_with_usage "Missing argument COMMIT"
 commit="${positional_args[0]}"
 unset 'positional_args[0]'
-echo "commit: ${commit}"
+e_debug "commit: ${commit}"
 if [[ "$merge" = true ]]; then
     git rev-parse --verify "${commit}" &>/dev/null ||
         die_with_usage "Invalid commit: \"${commit}\""
@@ -101,9 +128,10 @@ else
         die_with_usage "Invalid commit/commit range: \"${commit}\""
 fi
 
-echo "Positional args: ${positional_args[*]}"
+e_debug "Positional args: ${positional_args[*]}"
 [[ "${#positional_args[@]}" -ge 1 ]] || die_with_usage "Missing argument BRANCH"
 branches=("${positional_args[@]}")
+
 for branch in "${branches[@]}"; do
     git show-ref --quiet "$branch" || die_with_usage "Invalid BRANCH: \"${branch}\""
 done
@@ -193,6 +221,7 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
 
     if ! git pull; then
         e_err "Could not update local branch: \"${branch}\""
+        e_err "Continuing anyways..."
     fi
 
     if ! { git switch -c "${new_branch_name}" || git switch "${new_branch_name}"; }; then
@@ -212,13 +241,13 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
     else
         strategy_arg="--ff"
     fi
-    echo "Strategy arg: ${strategy_arg}"
+    e_debug "Strategy arg: ${strategy_arg}"
     if [[ "${merge}" = true ]]; then
         cherry_pick_arg="${commit}^..${commit}^2"
     else
         cherry_pick_arg="${commit}"
     fi
-    echo "Cherry pick arg: ${cherry_pick_arg}"
+    e_debug "Cherry pick arg: ${cherry_pick_arg}"
     if ! git cherry-pick ${strategy_arg} "${cherry_pick_arg}"; then
         e_err "Could not cherry-pick commits"
         e_err "This requires manual resolution"
