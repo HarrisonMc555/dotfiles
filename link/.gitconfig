@@ -3,7 +3,7 @@
 	# autocrlf = input
 	# whitespace = fix,space-before-tab,tab-in-indent,trailing-space
 	excludesfile = ~/.gitignore_global
-	pager = less -RFXS
+	pager = less -RFXSi
 	commentChar = !
 [pager]
 	diff = _git_pager
