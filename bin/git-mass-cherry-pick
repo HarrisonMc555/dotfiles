@@ -252,7 +252,15 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
         e_err "Could not cherry-pick commits"
         e_err "This requires manual resolution"
         if [[ "${#branches[@]}" -gt 0 ]]; then
-            e_err "Resume by executing \`git mass-cherry-pick ${commit} ${branches[*]}'"
+            command="git mass-cherry-pick \"$commit\" --branch \"$merge_branch_name\""
+            if [[ "$strategy" ]]; then
+                command+=" --strategy ${strategy}"
+            fi
+            if [[ "$merge" = false ]]; then
+                command+=" --no-merge-commit"
+            fi
+            command+=" ${branches[*]}"
+            e_err "Resume by executing \`${command}'"
         fi
         die
     fi
