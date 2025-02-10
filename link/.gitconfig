@@ -155,6 +155,7 @@
 	untracked = cyan
 [push]
 	default = current
+	autoSetupRemote = true
 [merge]
 	log = true
 	conflictStyle = diff3
