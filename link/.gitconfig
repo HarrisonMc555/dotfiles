@@ -23,7 +23,7 @@
 	rsa = restore --staged --worktree
 	rsp = restore --patch
 	rssp = restore --staged --patch
-	rb = rebase --rebase-merges
+	rb = rebase --autostash --rebase-merges
 	rbd = rebase origin/develop --autostash --rebase-merges
 	rbi = rebase --interactive --autostash --rebase-merges
 	rba = rebase --abort
