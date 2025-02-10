@@ -4,7 +4,7 @@ export PAGER=/usr/bin/less
 alias grep='grep --color=auto'
 
 if is_available delta; then
-    export DELTA_PAGER='less -RXS'
+    export DELTA_PAGER='less -RXSF'
 fi
 
 # Add an "alert" alias for long running commands.  Use like so:
