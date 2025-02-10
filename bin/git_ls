@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+
+args=("$@")
+treeish=
+double_dash=false
+positional_args=()
+for ((index = 0; index < $#; index++)); do
+    arg="${args[$index]}"
+    if [[ "$double_dash" = true ]]; then
+        positional_args+=("$arg")
+        continue
+    fi
+    case "$arg" in
+        -t|--tree)
+            if [[ "$treeish" ]]; then
+                >&2 echo "Cannot specify '${arg}' more than once"
+                exit 1
+            fi
+            ((index++))
+            treeish="${args[$index]}"
+            ;;
+
+        --)
+            double_dash=true
+            ;;
+
+        -*)
+            >&2 echo "Unrecognized flag '${arg}'"
+            exit 1
+            ;;
+
+        *)
+            positional_args+=("$arg")
+            ;;
+    esac
+done
+
+if ! [[ "$treeish" ]]; then
+    treeish=HEAD
+fi
+
+if [[ "${#positional_args[@]}" -eq 0 ]]; then
+    directories=(".")
+else
+    directories=("${positional_args[@]}")
+fi
+
+function process() {
+    local treeish directory prefix
+    treeish="$1"
+    directory="$2"
+    prefix="$3"
+    git ls-tree "$treeish" "$directory" |
+        awk '{ printf "%s",$0; print ($2 == "tree") ? "/" : ""; }' |
+        cut -c54- |
+        if [[ "$directory" = */ ]]; then
+            sed "s:^$directory::"
+        else
+            cat
+        fi |
+        sed "s:^:$prefix:"
+}
+
+if [[ "${#directories[@]}" -eq 1 ]]; then
+    process "$treeish" "${directories[0]}"
+else
+    first=true
+    for directory in "${directories[@]}"; do
+        if [[ "$first" = true ]]; then
+            first=false
+        else
+            echo
+        fi
+        echo "${directory}:"
+        process "$treeish" "$directory" $'\t'
+    done
+fi

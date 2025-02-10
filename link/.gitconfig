@@ -117,7 +117,6 @@
 	pull-request = !"f() { if [[ $# -lt 1 ]]; then >&2 echo \"Usage: git pull-request COMMITISH\"; return 1; fi; h=\"$1\"; shift; git log \"$h\"^..\"$h\"^2 \"$@\"; }; f"
 	showpr = pull-request
 	showprp = !"f() { git showpr \"$@\" --patch; }; f"
-	ls = !"f() { cur_dir=\"${GIT_PREFIX:-./}\"; cd \"$cur_dir\" || { >&2 echo \"Could not cd to $cur_dir\"; return 1; }; git ls-tree --name-only HEAD \"$@\" | sort --version-sort; }; f"
 	find-merge = "!f() { commit=\"$1\" && branch=\"${2:-HEAD}\" && { git rev-list $commit..$branch --ancestry-path | cat -n; git rev-list \"$commit..$branch\" --first-parent | cat -n; } | sort -k2 -s | uniq -f1 -d | sort -n | tail -1 | cut -f2; }; f"
 	show-merge = "!f() { if [[ $# -ne 1 ]] && [[ $# -ne 2 ]]; then >&2 echo \"Usage: git show-merge X Y\"; return 1; fi; merge=$(git find-merge \"$@\") && if [[ -n \"$merge\" ]]; then git show \"$merge\"; else >&2 echo \"No merge found\"; return 1; fi; }; f"
 	most-changed = "!f() { cd \"${GIT_PREFIX:-.}\" && git log --pretty=tformat: --name-only \"$@\" | grep . | sort | uniq -c | sort -rg | head -n20 | sed 's/^ *//' | cut -d' ' -f2- | while read -r line; do echo \"${line#${GIT_PREFIX}}\"; done; }; f"
