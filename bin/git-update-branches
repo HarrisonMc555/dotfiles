@@ -8,16 +8,6 @@ if [[ $# -eq 0 ]]; then
     exit 1
 fi
 
-function delete_gone_branches() {
-    # shellcheck disable=SC2016
-    local awk_cmd='$2 == "[gone]" {sub("refs/heads/", "", $1); print $1}' &&
-        git fetch -p &&
-        for branch in $(git for-each-ref --format '%(refname) %(upstream:track)' refs/heads |
-                            awk "$awk_cmd"); do
-            git branch -d "$branch"
-        done
-}
-
 __tput_smul="$(tput smul)"
 __tput_rmul="$(tput rmul)"
 function e_underline() {
@@ -36,28 +26,112 @@ function e_error() {
     fi
 }
 
+function die() {
+    e_error "$@"
+    exit 1
+}
+
+# https://stackoverflow.com/a/3879077
+function require_clean_work_tree () {
+    # Update the index
+    git update-index -q --ignore-submodules --refresh
+    err=0
+
+    # Disallow unstaged changes in the working tree
+    if ! git diff-files --quiet --ignore-submodules --
+    then
+        echo >&2 "cannot $1: you have unstaged changes."
+        git diff-files --name-status -r --ignore-submodules -- >&2
+        err=1
+    fi
+
+    # Disallow uncommitted changes in the index
+    if ! git diff-index --cached --quiet HEAD --ignore-submodules --
+    then
+        echo >&2 "cannot $1: your index contains uncommitted changes."
+        git diff-index --cached --name-status -r --ignore-submodules HEAD -- >&2
+        err=1
+    fi
+
+    if [ $err = 1 ]
+    then
+        echo >&2 "Please commit or stash them."
+        return 1
+    fi
+}
+
+if ! require_clean_work_tree "udpate branches" >/dev/null 2>/dev/null; then
+    e_underline "Stashing changes"
+    git stash || die "Failed to stash changes"
+    stashed=true
+fi
+
 original_branch="$(git rev-parse --abbrev-ref HEAD)"
 if [[ "$original_branch" = "HEAD" ]]; then
     original_branch="$(git rev-parse HEAD)"
 fi
 
 e_underline "Updating from remote"
-if ! git fetch; then
+if ! git fetch -p; then
     >&2 echo "Cannot update from remote"
     exit 1
 fi
 
+# shellcheck disable=SC2016
+awk_cmd='$2 == "[gone]" {sub("refs/heads/", "", $1); print $1}'
 while [[ $# -gt 0 ]]; do
     branch="$1"
+    shift
     e_underline "$branch"
+
+    if ! upstream="$(git for-each-ref --format='%(upstream:short)' "refs/heads/${branch}")"; then
+        >&2 e_error "Cannot find upstream for '${branch}'"
+        continue
+    fi
+    if ! local_commit="$(git rev-parse "$branch")"; then
+        >&2 e_error "Cannot find commit for '${branch}'"
+        continue
+    fi
+    if ! remote_commit="$(git rev-parse "$upstream")"; then
+        >&2 e_error "Cannot find remote commit for '${branch}'"
+        continue
+    fi
+
+    if [[ "$local_commit" != "$remote_commit" ]]; then
+        out_of_date=true
+    else
+        out_of_date=false
+    fi
+
+    deleted_branches_to_delete=()
+    for deleted_branch in $(git for-each-ref --format '%(refname) %(upstream:track)' refs/heads |
+                        awk "$awk_cmd"); do
+        deleted_branch_ahead="$(git rev-list --count "^${remote_commit}" "${deleted_branch}")" || continue
+        if [[ "$deleted_branch_ahead" -eq 0 ]]; then
+            deleted_branches_to_delete+=("$deleted_branch")
+        fi
+    done
+
+    if [[ "$out_of_date" = false ]] && [[ "${#deleted_branches_to_delete[@]}" -eq 0 ]]; then
+        echo "Branch '$branch' is up-to-date and will not delete any branches, skipping"
+        continue
+    fi
+
     if ! { git switch "$branch" && git merge --ff-only; }; then
         >&2 e_error "Error processing branch '$branch'"
-        >&2 e_error "Resume by running 'git update-branches $*'"
+        >&2 e_error "Resume by running 'git update-branches ${branch} $*'"
         break
     fi
-    delete_gone_branches
-    shift
+
+    for deleted_branch in "${deleted_branches_to_delete[@]}"; do
+        git branch -d "$deleted_branch"
+    done
 done
 
 e_underline "Returning back to '$original_branch'"
 git switch "$original_branch"
+
+if [[ "$stashed" ]]; then
+    e_underline "Popping stash"
+    git stash pop
+fi
