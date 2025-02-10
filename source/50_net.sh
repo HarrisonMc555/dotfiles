@@ -76,3 +76,29 @@ if is_available ifconfig; then
         ifconfig | grep -F 192.168. | awk '{print $2}' | head -n1
     }
 fi
+
+if is_osx; then
+    if is_available rg; then
+        function listening() {
+            if [ $# -eq 0 ]; then
+                sudo lsof -iTCP -sTCP:LISTEN -n -P
+            elif [ $# -eq 1 ]; then
+                sudo lsof -iTCP -sTCP:LISTEN -n -P | rg "$1"
+            else
+                echo "Usage: listening [pattern]"
+                return 1
+            fi
+        }
+    else
+        function listening() {
+            if [ $# -eq 0 ]; then
+                sudo lsof -iTCP -sTCP:LISTEN -n -P
+            elif [ $# -eq 1 ]; then
+                sudo lsof -iTCP -sTCP:LISTEN -n -P | grep -i --color "$1"
+            else
+                echo "Usage: listening [pattern]"
+                return 1
+            fi
+        }
+    fi
+fi
