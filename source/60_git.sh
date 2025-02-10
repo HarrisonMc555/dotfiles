@@ -31,6 +31,10 @@ if is_available git; then
     function _git_stsw() { __git_complete_refs; }
     function _git_update_branches() { __git_complete_refs; }
     function _git_exists() { __git_complete_refs; }
+    function _git_rename_upstream() { __git_complete_refs; }
+    function _git_mass_cherry_pick() { __git_complete_refs; }
+    function _git_find_merge() { __git_complete_refs; }
+    function _git_show_merge() { __git_complete_refs; }
     # function _git_alias() { __git_main; }
 
     # Git shortcuts
