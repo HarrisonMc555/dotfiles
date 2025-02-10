@@ -196,7 +196,7 @@
 [merge "ours"]
 	driver = true
 [init]
-	defaultBranch = main
+	defaultBranch = master
 [grep]
 	extendedRegexp = true
 [checkout]
