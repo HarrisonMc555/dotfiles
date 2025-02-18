@@ -4,7 +4,7 @@ bitbucket_url="https://git.romariccorp.com:7990"
 default_remote="origin"
 
 function usage() {
-    echo "Usage: git mass-cherry-pick <commit> <branch> [<branch>, ...] [-h|--help] [-n|--no-merge-commit] [-b <branch_name>|--branch <branch_name>] [-s <strategy>|--strategy <strategy>] [-r|--real] [--dry-run]"
+    echo "Usage: git mass-cherry-pick <commit> <branch> [<branch>, ...] [-h|--help] [-n|--no-merge-commit] [-b <branch_name>|--branch <branch_name>|--direct] [-s <strategy>|--strategy <strategy>] [-r|--real] [--dry-run]"
 }
 
 __red='\033[0;31m'
@@ -87,6 +87,7 @@ if [[ "$set_x" = true ]]; then
 fi
 
 real=
+direct=
 merge=true
 positional_args=()
 double_dash=
@@ -122,6 +123,9 @@ for ((i = 0; i < "${#args[@]}"; i++)); do
             ;;
         --dry-run)
             real=
+            ;;
+        --direct)
+            direct=true
             ;;
         --)
             double_dash=true
@@ -165,7 +169,11 @@ if [[ "$original_branch" = "HEAD" ]]; then
         die "Could not retrieve current commit"
 fi
 
-if [[ ! "$merge_branch_name" ]]; then
+if [[ "$direct" ]]; then
+    if [[ "$merge_branch_name" ]]; then
+        die "--branch and --direct flags are incompatible"
+    fi
+elif [[ ! "$merge_branch_name" ]]; then
     # shellcheck disable=SC2016
     merge_commit_message=$(git show --quiet --pretty='%B' "${commit}") ||
         die "Could not retrieve commit message for commit: \"${commit}\""
@@ -181,30 +189,32 @@ if [[ ! "$merge_branch_name" ]]; then
     fi
 fi
 
-# shellcheck disable=SC1083
-if ! branch_remote_ref=$(git rev-parse --abbrev-ref --symbolic-full-name "@{upstream}"); then
-    e_err "Could not get remote ref for current branch"
-    e_err "Using default value: \"${default_remote}\""
-    branch_remote_ref="${default_remote}"
+if ! [[ "$direct" ]]; then
+    # shellcheck disable=SC1083
+    if ! branch_remote_ref=$(git rev-parse --abbrev-ref --symbolic-full-name "@{upstream}"); then
+        e_err "Could not get remote ref for current branch"
+        e_err "Using default value: \"${default_remote}\""
+        branch_remote_ref="${default_remote}"
+    fi
+
+    remote="${branch_remote_ref%%/*}"
+    [[ "${remote}" != "${branch}" ]] ||
+        die "Could not extract remote from remote ref \"${branch_remote_ref}\""
+
+    remote_url=$(git remote get-url "${remote}") ||
+        die "Could not get URL for remote \"${remote}\""
+
+    [[ "${remote_url}" =~ ^[^:]*://([^@]+@)?([^/]+)(/.*)?/([^/]*)/([^/.]*).git$ ]] ||
+        die "Pattern does not match URL: \"${remote_url}\""
+
+    project="${BASH_REMATCH[4]}"
+    [[ "${project}" != "" ]] ||
+        die "No project found in URL: \"${remote_url}\""
+
+    repository="${BASH_REMATCH[5]}"
+    [[ "${repository}" != "" ]] ||
+        die "No repository found in URL: \"${remote_url}\""
 fi
-
-remote="${branch_remote_ref%%/*}"
-[[ "${remote}" != "${branch}" ]] ||
-    die "Could not extract remote from remote ref \"${branch_remote_ref}\""
-
-remote_url=$(git remote get-url "${remote}") ||
-    die "Could not get URL for remote \"${remote}\""
-
-[[ "${remote_url}" =~ ^[^:]*://([^@]+@)?([^/]+)(/.*)?/([^/]*)/([^/.]*).git$ ]] ||
-    die "Pattern does not match URL: \"${remote_url}\""
-
-project="${BASH_REMATCH[4]}"
-[[ "${project}" != "" ]] ||
-    die "No project found in URL: \"${remote_url}\""
-
-repository="${BASH_REMATCH[5]}"
-[[ "${repository}" != "" ]] ||
-    die "No repository found in URL: \"${remote_url}\""
 
 # for branch in "${branches[@]}"; do
 while [[ "${#branches[@]}" -gt 0 ]]; do
@@ -222,18 +232,20 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
     unset 'branches["$branch_index"]'
 
     e_underline "${branch}"
-    if [[ "${branch}" = "${merge_branch_name}" ]]; then
-        echo "Skipping because it is the target branch of the merge commit"
-        continue
-    fi
+    if ! [[ "$direct" ]]; then
+        if [[ "${branch}" = "${merge_branch_name}" ]]; then
+            echo "Skipping because it is the target branch of the merge commit"
+            continue
+        fi
 
-    if ! target_branch_suffix=$(echo "${branch}" | tr '/' '_'); then
-        e_err "Could not clean up branch name \"${branch}\""
-        continue
-    fi
+        if ! target_branch_suffix=$(echo "${branch}" | tr '/' '_'); then
+            e_err "Could not clean up branch name \"${branch}\""
+            continue
+        fi
 
-    new_branch_name="${merge_branch_name}_${target_branch_suffix}"
-    create_pull_request_url="${bitbucket_url}/projects/${project}/repos/${repository}/pull-requests?create&sourceBranch=refs/heads/${new_branch_name}"
+        new_branch_name="${merge_branch_name}_${target_branch_suffix}"
+        create_pull_request_url="${bitbucket_url}/projects/${project}/repos/${repository}/pull-requests?create&sourceBranch=refs/heads/${new_branch_name}"
+    fi
 
     if ! run git switch "${branch}"; then
         e_err "Could not switch to branch: \"${branch}\""
@@ -246,7 +258,7 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
         continue
     fi
 
-    if ! { run git switch -c "${new_branch_name}" || run git switch "${new_branch_name}"; }; then
+    if ! [[ "$direct" ]] && ! { run git switch -c "${new_branch_name}" || run git switch "${new_branch_name}"; }; then
         e_err "Could not create new branch: \"${new_branch_name}\""
         continue
     fi
@@ -274,7 +286,12 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
         e_err "Could not cherry-pick commits"
         e_err "This requires manual resolution"
         if [[ "${#branches[@]}" -gt 0 ]]; then
-            command="git mass-cherry-pick \"$commit\" --branch \"$merge_branch_name\""
+            command="git mass-cherry-pick \"$commit\""
+            if [[ "$direct" ]]; then
+                command+=" --direct"
+            else
+                command+=" --branch \"{$merge_branch_name}\""
+            fi
             if [[ "$strategy" ]]; then
                 command+=" --strategy ${strategy}"
             fi
@@ -307,8 +324,10 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
         continue
     fi
 
-    run open "${create_pull_request_url}"
-    echo "Create pull request: ${create_pull_request_url}"
+    if ! [[ "$direct" ]]; then
+        run open "${create_pull_request_url}"
+        echo "Create pull request: ${create_pull_request_url}"
+    fi
 done
 
 e_underline "Switching to original branch"
