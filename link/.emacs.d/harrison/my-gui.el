@@ -36,6 +36,12 @@
 ;; This is intended to maximize emacs on startup.
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 
+;; Allow Emacs to resize by pixel (presumably instead of by line). This allows
+;; it to resize to, for example, exactly half screen on MacOS (and maybe other
+;; OSes).
+(setq frame-resize-pixelwise t)
+(pixel-scroll-precision-mode 1)
+
 ;; Default font size
 (set-face-attribute 'default nil :height 105)
 
