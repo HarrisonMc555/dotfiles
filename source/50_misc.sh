@@ -88,6 +88,19 @@ function e_underline()   {
     echo -e "\n${__tput_smul}${str}${__tput_rmul}"
 }
 
+function e_title () {
+    if [[ $# -eq 0 ]]; then
+        echo "usage: e_title <message>"
+        return
+    fi
+    # title=$(echo "$*" | tr '[:lower:]' '[:upper:]')
+    box_line=$(echo " $* " | sed -E 's/./─/g' )
+    echo
+    echo "┌${box_line}┐"
+    echo -e "│ \033[1;3m$*\033[0m │"
+    echo "└${box_line}┘"
+}
+
 # Set the terminal's title bar.
 function titlebar() {
     echo -n $'\e]0;'"$*"$'\a'
@@ -144,8 +157,8 @@ if is_osx; then
     export LC_ALL=en_US.UTF-8
 fi
 
-export -f c html2richtext htmlcopy sbashrc e_underline titlebar all_colors \
-       foreground_colors slugify
+export -f c html2richtext htmlcopy sbashrc e_underline e_title titlebar \
+       all_colors foreground_colors slugify
 
 complete -F _command eachdir
 complete -F _command eachfile
