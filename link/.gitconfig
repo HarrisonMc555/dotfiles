@@ -43,7 +43,6 @@
 	pp = !"echo 'Pull'; git pull; echo 'Push'; git push"
 	amend = "commit --amend"
 	compare = "!f() { if [[ $# -eq 0 ]] || [[ $# -gt 2 ]]; then >&2 echo \"Usage: git compare BRANCH1 [BRANCH2]\"; return 1; fi; b1=\"$1\"; b2=\"${2:-HEAD}\"; git log --oneline --graph --decorate \"$b1\" \"$b2\" \"$(git merge-base \"$b1\" \"$b2\")^!\"; }; f"
-	ahead-behind = !"f() { if [[ $# -eq 0 ]] || [[ $# -gt 2 ]]; then >&2 echo \"Usage: git ahead-behind FROM_BRANCH [TO_BRANCH]\"; return 1; fi; git rev-list --left-right --count \"$1\"...\"$2\" | awk '{print \"Behind \"$1\" - Ahead \"$2}'; }; f"
 	forgot = "commit --amend -C HEAD"
 	ff = merge --ff-only
 	lp = log -p
