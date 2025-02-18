@@ -367,10 +367,20 @@ The same result can also be be achieved by \\[universal-argument] \\[unhighlight
   (interactive)
   (let ((filename (if (equal major-mode 'dired-mode)
                       default-directory
-                    (buffer-file-name))))
+                    (file-name-nondirectory (buffer-file-name)))))
     (when filename
       (kill-new filename)
       (message "Copied buffer file name '%s' to the clipboard." filename))))
+
+(defun copy-file-path-to-clipboard ()
+  "Copy the current buffer file name to the clipboard."
+  (interactive)
+  (let ((filename (if (equal major-mode 'dired-mode)
+                      default-directory
+                    (buffer-file-name))))
+    (when filename
+      (kill-new filename)
+      (message "Copied buffer file path '%s' to the clipboard." filename))))
 
 (provide 'my-functions)
 ;;; my-functions.el ends here
