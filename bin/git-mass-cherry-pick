@@ -4,7 +4,7 @@ bitbucket_url="https://git.romariccorp.com:7990"
 default_remote="origin"
 
 function usage() {
-    echo "Usage: git mass-cherry-pick <commit> <branch> [<branch>, ...] [-h|--help] [-n|--no-merge-commit] [-b <branch_name>|--branch <branch_name>] [-s <strategy>|--strategy <strategy>]"
+    echo "Usage: git mass-cherry-pick <commit> <branch> [<branch>, ...] [-h|--help] [-n|--no-merge-commit] [-b <branch_name>|--branch <branch_name>] [-s <strategy>|--strategy <strategy>] [-r|--real] [--dry-run]"
 }
 
 __red='\033[0;31m'
@@ -48,6 +48,14 @@ function e_underline() {
     echo -e "\n${__tput_smul}${str}${__tput_rmul}"
 }
 
+function run() {
+    if ! [[ "$real" ]] || [[ "$debug" ]]; then
+        echo "$@"
+    fi
+    if [[ "$real" ]]; then
+        "$@"
+    fi
+}
 
 debug=
 double_dash=
@@ -71,6 +79,7 @@ for arg in "$@"; do
     esac
 done
 
+real=
 merge=true
 positional_args=()
 double_dash=
@@ -100,6 +109,12 @@ for ((i = 0; i < "${#args[@]}"; i++)); do
             ((i++))
             strategy="${args[i]}"
             e_debug "Strategy: $strategy"
+            ;;
+        -r|--real)
+            real=true
+            ;;
+        --dry-run)
+            real=
             ;;
         --)
             double_dash=true
@@ -213,18 +228,18 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
     new_branch_name="${merge_branch_name}_${target_branch_suffix}"
     create_pull_request_url="${bitbucket_url}/projects/${project}/repos/${repository}/pull-requests?create&sourceBranch=refs/heads/${new_branch_name}"
 
-    if ! git switch "${branch}"; then
+    if ! run git switch "${branch}"; then
         e_err "Could not switch to branch: \"${branch}\""
         e_err "This requires manual resolution"
         exit 1
     fi
 
-    if ! git pull; then
+    if ! run git pull; then
         e_err "Could not update local branch: \"${branch}\", skipping"
         continue
     fi
 
-    if ! { git switch -c "${new_branch_name}" || git switch "${new_branch_name}"; }; then
+    if ! { run git switch -c "${new_branch_name}" || run git switch "${new_branch_name}"; }; then
         e_err "Could not create new branch: \"${new_branch_name}\""
         continue
     fi
@@ -248,7 +263,7 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
         cherry_pick_arg="${commit}"
     fi
     e_debug "Cherry pick arg: ${cherry_pick_arg}"
-    if ! git cherry-pick ${strategy_arg} "${cherry_pick_arg}" --empty=drop; then
+    if ! run git cherry-pick ${strategy_arg} "${cherry_pick_arg}" --empty=drop; then
         e_err "Could not cherry-pick commits"
         e_err "This requires manual resolution"
         if [[ "${#branches[@]}" -gt 0 ]]; then
@@ -273,20 +288,21 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
         e_err "Continuing anyways"
     fi
 
-    if [[ "${new_branch_head}" != "" ]] && [[ "${new_branch_head}" = "${original_branch_head}" ]]; then
+    if [[ "$real" = true ]] && [[ "${new_branch_head}" != "" ]] && \
+           [[ "${new_branch_head}" = "${original_branch_head}" ]]; then
         echo "Nothing changed after the cherry-pick, assuming the change was already applied to this branch"
         echo "Skipping"
         continue
     fi
 
-    if ! git -c push.default=current push; then
+    if ! run git -c push.default=current push; then
         e_err "Could not push branch: \"${new_branch_name}\""
         continue
     fi
 
-    open "${create_pull_request_url}"
+    run open "${create_pull_request_url}"
     echo "Create pull request: ${create_pull_request_url}"
 done
 
 e_underline "Switching to original branch"
-git switch "${original_branch}"
+run git switch "${original_branch}"
