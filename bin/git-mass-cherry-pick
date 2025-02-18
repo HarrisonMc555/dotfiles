@@ -14,7 +14,7 @@ function e_err() {
 }
 
 function e_debug() {
-    if [[ "$debug" = true ]]; then
+    if [[ "$debug" ]]; then
         echo "$@"
     fi
 }
@@ -49,11 +49,11 @@ function e_underline() {
 }
 
 
-debug=false
-double_dash=false
+debug=
+double_dash=
 args=()
 for arg in "$@"; do
-    if [[ "$double_dash" = true ]]; then
+    if [[ "$double_dash" ]]; then
         args+=("$arg")
         continue
     fi
@@ -73,12 +73,12 @@ done
 
 merge=true
 positional_args=()
-double_dash=false
+double_dash=
 merge_branch_name=
 strategy=
 for ((i = 0; i < "${#args[@]}"; i++)); do
     arg="${args[$i]}"
-    if [[ "$double_dash" = true ]]; then
+    if [[ "$double_dash" ]]; then
         positional_args+=("$arg")
         continue
     fi
@@ -89,7 +89,7 @@ for ((i = 0; i < "${#args[@]}"; i++)); do
             ;;
         -n|--no-merge-commit)
             e_debug "NOT merge commit"
-            merge=false
+            merge=
             ;;
         -b|--branch)
             ((i++))
@@ -120,7 +120,7 @@ e_debug "Positional args: ${positional_args[*]}"
 commit="${positional_args[0]}"
 unset 'positional_args[0]'
 e_debug "commit: ${commit}"
-if [[ "$merge" = true ]]; then
+if [[ "$merge" ]]; then
     git rev-parse --verify "${commit}" &>/dev/null ||
         die_with_usage "Invalid commit: \"${commit}\""
 else
@@ -256,7 +256,7 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
             if [[ "$strategy" ]]; then
                 command+=" --strategy ${strategy}"
             fi
-            if [[ "$merge" = false ]]; then
+            if ! [[ "$merge" ]]; then
                 command+=" --no-merge-commit"
             fi
             for branch in "${branches[@]}"; do
