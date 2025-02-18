@@ -73,11 +73,18 @@ for arg in "$@"; do
         -d|--debug)
             debug=true
             ;;
+        -x)
+            set_x=true
+            ;;
         *)
             args+=("$arg")
             ;;
     esac
 done
+
+if [[ "$set_x" = true ]]; then
+    set -x
+fi
 
 real=
 merge=true
