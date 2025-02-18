@@ -37,6 +37,7 @@
 	showns = show --name-status
 	showno = show --name-only
 	logns = log --oneline --name-status
+	logns = !"cd -- \"${GIT_PREFIX:-.}\" && f() { git -c color.ui=always log --oneline --name-status \"$@\" | awk '/[0-9a-f]{8}/ { print \"\" } { print }' | if [[ \"$(git config core.pager)\" ]]; then $(git config core.pager); else cat; fi ; }; f"
 	logno = log --oneline --name-only
 	diffns = diff --name-status
 	diffno = diff --name-only

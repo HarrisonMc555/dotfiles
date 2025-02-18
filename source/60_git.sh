@@ -42,6 +42,7 @@ if is_available git; then
     function _git_mass_cherry_pick() { __git_complete_refs; }
     function _git_find_merge() { __git_complete_refs; }
     function _git_show_merge() { __git_complete_refs; }
+    function _git_logns() { _git_log; }
     # function _git_alias() { __git_main; }
 
     # Git shortcuts
