@@ -242,6 +242,10 @@ if git_contains_uncommitted_changes; then
     stashed_changes=true
 fi
 
+if ! run git fetch; then
+    die "Could not fetch from remote"
+fi
+
 while [[ "${#branches[@]}" -gt 0 ]]; do
     for branch_index in "${!branches[@]}"; do
         break
@@ -278,7 +282,7 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
         exit 1
     fi
 
-    if ! run git pull; then
+    if ! run git merge --ff-only; then
         e_err "Could not update local branch: \"${branch}\", skipping"
         continue
     fi
