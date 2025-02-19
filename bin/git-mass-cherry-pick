@@ -4,7 +4,7 @@ bitbucket_url="https://git.romariccorp.com:7990"
 default_remote="origin"
 
 function usage() {
-    echo "Usage: git mass-cherry-pick <commit> <branch> [<branch>, ...] [-h|--help] [-n|--no-merge-commit] [-b <branch_name>|--branch <branch_name>|--direct] [-s <strategy>|--strategy <strategy>] [-r|--real] [--dry-run]"
+    echo "Usage: git mass-cherry-pick <commit> <branch> [<branch>, ...] [-h|--help] [-n|--no-merge-commit] [-b <branch_name>|--branch <branch_name>|--direct] [-s <strategy>|--strategy <strategy>] [-r|--real] [--dry-run] [--push|--no-push]"
 }
 
 __red='\033[0;31m'
@@ -57,6 +57,17 @@ function run() {
     fi
 }
 
+function run_always() {
+    if ! [[ "$real" ]] || [[ "$debug" ]]; then
+        echo "$@"
+    fi
+    "$@"
+}
+
+function git_contains_uncommitted_changes() {
+    git status --short | grep -q -E -v '^\?\?'
+}
+
 debug=
 double_dash=
 args=()
@@ -93,6 +104,7 @@ positional_args=()
 double_dash=
 merge_branch_name=
 strategy=
+push=true
 for ((i = 0; i < "${#args[@]}"; i++)); do
     arg="${args[$i]}"
     if [[ "$double_dash" ]]; then
@@ -104,7 +116,7 @@ for ((i = 0; i < "${#args[@]}"; i++)); do
             usage
             die
             ;;
-        -n|--no-merge-commit)
+        -n|--no-merge-commit|--no-merge)
             e_debug "NOT merge commit"
             merge=
             ;;
@@ -123,6 +135,12 @@ for ((i = 0; i < "${#args[@]}"; i++)); do
             ;;
         --dry-run)
             real=
+            ;;
+        --push)
+            push=true
+            ;;
+        --no-push)
+            push=
             ;;
         --direct)
             direct=true
@@ -147,10 +165,10 @@ commit="${positional_args[0]}"
 unset 'positional_args[0]'
 e_debug "commit: ${commit}"
 if [[ "$merge" ]]; then
-    git rev-parse --verify "${commit}" &>/dev/null ||
+    run_always git rev-parse --verify "${commit}" &>/dev/null ||
         die_with_usage "Invalid commit: \"${commit}\""
 else
-    git --no-pager log "${commit}" &>/dev/null ||
+    run_always git --no-pager log "${commit}" &>/dev/null ||
         die_with_usage "Invalid commit/commit range: \"${commit}\""
 fi
 
@@ -216,7 +234,14 @@ if ! [[ "$direct" ]]; then
         die "No repository found in URL: \"${remote_url}\""
 fi
 
-# for branch in "${branches[@]}"; do
+if git_contains_uncommitted_changes; then
+    e_underline "Stashing uncommitted changes"
+    if ! run_always git stash; then
+        die "Could not stash changes"
+    fi
+    stashed_changes=true
+fi
+
 while [[ "${#branches[@]}" -gt 0 ]]; do
     for branch_index in "${!branches[@]}"; do
         break
@@ -272,8 +297,6 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
     if [[ "$strategy" ]]; then
         # Intentionally allow it to expand so we can add additional arguments
         strategy_arg="--strategy="$strategy
-    else
-        strategy_arg="--ff"
     fi
     e_debug "Strategy arg: ${strategy_arg}"
     if [[ "${merge}" = true ]]; then
@@ -282,7 +305,11 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
         cherry_pick_arg="${commit}"
     fi
     e_debug "Cherry pick arg: ${cherry_pick_arg}"
-    if ! run git cherry-pick ${strategy_arg} "${cherry_pick_arg}" --empty=drop; then
+    if ! [[ "$real" ]]; then
+        cherry_pick_extra_arg="--no-commit"
+    fi
+    # shellcheck disable=SC2086
+    if ! run_always git cherry-pick ${strategy_arg} "${cherry_pick_arg}" ${cherry_pick_extra_arg} --empty=drop; then
         e_err "Could not cherry-pick commits"
         e_err "This requires manual resolution"
         if [[ "${#branches[@]}" -gt 0 ]]; then
@@ -306,6 +333,12 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
         die
     fi
 
+    if ! [[ "$real" ]]; then
+        git_root=$(git rev-parse --show-toplevel)
+        run_always git restore --staged "$git_root"
+        run_always git restore "$git_root"
+    fi
+
     if ! new_branch_head=$(git log --max-count 1 --pretty='%H' HEAD) ||
        [[ "$new_branch_head" = "" ]]; then
         e_err "Could not retrieve the new branch HEAD"
@@ -319,9 +352,14 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
         continue
     fi
 
-    if ! run git -c push.default=current push; then
-        e_err "Could not push branch: \"${new_branch_name}\""
-        continue
+    push_command=(git -c push.default=current push)
+    if [[ "$real" ]] && [[ "$push" ]]; then
+        if ! run "${push_command[@]}"; then
+            e_err "Could not push branch: \"${new_branch_name}\""
+            continue
+        fi
+    else
+        echo "NOT pushing with command: ${push_command[*]}"
     fi
 
     if ! [[ "$direct" ]]; then
@@ -332,3 +370,8 @@ done
 
 e_underline "Switching to original branch"
 run git switch "${original_branch}"
+
+if [[ "$stashed_changes" ]]; then
+    e_underline "Restoring changes from stash"
+    run_always git stash pop
+fi
