@@ -305,11 +305,8 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
         cherry_pick_arg="${commit}"
     fi
     e_debug "Cherry pick arg: ${cherry_pick_arg}"
-    if ! [[ "$real" ]]; then
-        cherry_pick_extra_arg="--no-commit"
-    fi
     # shellcheck disable=SC2086
-    if ! run_always git cherry-pick ${strategy_arg} "${cherry_pick_arg}" ${cherry_pick_extra_arg} --empty=drop; then
+    if ! run git cherry-pick ${strategy_arg} "${cherry_pick_arg}" --empty=drop; then
         e_err "Could not cherry-pick commits"
         e_err "This requires manual resolution"
         if [[ "${#branches[@]}" -gt 0 ]]; then
@@ -333,12 +330,6 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
         die
     fi
 
-    if ! [[ "$real" ]]; then
-        git_root=$(git rev-parse --show-toplevel)
-        run_always git restore --staged "$git_root"
-        run_always git restore "$git_root"
-    fi
-
     if ! new_branch_head=$(git log --max-count 1 --pretty='%H' HEAD) ||
        [[ "$new_branch_head" = "" ]]; then
         e_err "Could not retrieve the new branch HEAD"
@@ -353,13 +344,13 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
     fi
 
     push_command=(git -c push.default=current push)
-    if [[ "$real" ]] && [[ "$push" ]]; then
+    if [[ "$push" ]]; then
         if ! run "${push_command[@]}"; then
             e_err "Could not push branch: \"${new_branch_name}\""
             continue
         fi
     else
-        echo "NOT pushing with command: ${push_command[*]}"
+        echo "NOT pushing changes"
     fi
 
     if ! [[ "$direct" ]]; then
