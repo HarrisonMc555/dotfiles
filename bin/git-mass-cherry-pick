@@ -4,7 +4,7 @@ bitbucket_url="https://git.romariccorp.com:7990"
 default_remote="origin"
 
 function usage() {
-    echo "Usage: git mass-cherry-pick <commit> <branch> [<branch>, ...] [-h|--help] [-n|--no-merge-commit] [-b <branch_name>|--branch <branch_name>|--direct] [-s <strategy>|--strategy <strategy>] [-r|--real] [--dry-run] [--push|--no-push]"
+    echo "Usage: git mass-cherry-pick <commit> <branch> [<branch>, ...] [-h|--help] [-n|--no-merge-commit] [-b <branch_name>|--branch <branch_name>|--direct] [-s <strategy>|--strategy <strategy>] [-r|--real] [--dry-run] [--push|--no-push] [-d|--debug]"
 }
 
 __red='\033[0;31m'
@@ -92,6 +92,18 @@ for arg in "$@"; do
             ;;
     esac
 done
+
+min_git_version_empty_flag=2.45.0
+if ! current_git_version=$(git --version | awk '{print $3}'); then
+    die "Error running 'git --version', is Git installed?"
+fi
+
+# https://unix.stackexchange.com/a/285928
+smaller_git_version=$(printf '%s\n' "$min_git_version_empty_flag" "$current_git_version" |
+                          sort -V | head -n1)
+if [[ "$smaller_git_version" = "$min_git_version_empty_flag" ]]; then
+    git_supports_empty_flag=1
+fi
 
 if [[ "$set_x" = true ]]; then
     set -x
@@ -309,8 +321,14 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
         cherry_pick_arg="${commit}"
     fi
     e_debug "Cherry pick arg: ${cherry_pick_arg}"
+    # shellcheck disable=SC2206
+    cherry_pick_command=(git cherry-pick ${strategy_arg} "${cherry_pick_arg}")
+    if [[ "$git_supports_empty_flag" ]]; then
+        cherry_pick_command+=("--empty=drop")
+    fi
     # shellcheck disable=SC2086
-    if ! run git cherry-pick ${strategy_arg} "${cherry_pick_arg}" --empty=drop; then
+    # if ! run git cherry-pick ${strategy_arg} "${cherry_pick_arg}" --empty=drop; then
+    if ! run "${cherry_pick_command[@]}"; then
         e_err "Could not cherry-pick commits"
         e_err "This requires manual resolution"
         if [[ "${#branches[@]}" -gt 0 ]]; then
