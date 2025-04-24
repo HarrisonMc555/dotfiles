@@ -7,10 +7,10 @@ function die() {
     exit 1
 }
 
-[[ $# -ge 2 ]] || die "Usage: git log-author-date <since> <until|\"now\"> [LOG_ARGS, ..]"
+[[ $# -ge 1 ]] || die "Usage: git log-author-date <since> <until|\"now\"> [LOG_ARGS, ..]"
 
 since_date=$(date -Iseconds -d "$1") || die
-if [[ "$2" = now ]]; then
+if [[ "$2" = now ]] || ! [[ "$2" ]]; then
     until_date=$(date -Iseconds)
 else
     until_date=$(date -Iseconds -d "$2") || die
