@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+# Deletes branches from origin if they are present in origin, i.e. runs:
+#
+#     git push --delete origin <branch1> <branch2> ...
+#
+# But only for the branches that actually exist on origin.
+
+if [[ $# -eq 0 ]]; then
+    >&2 echo "Usage git delete-remote-branches-if-present BRANCH [BRANCH, ..]"
+    exit 1
+fi
+
+__tput_smul="$(tput smul)"
+__tput_rmul="$(tput rmul)"
+
+function e_underline () {
+    if [[ $# != 1 ]]; then
+        echo "usage: e_underline <message>";
+        return;
+    fi;
+    str="$1";
+    echo -e "\n${__tput_smul}${str}${__tput_rmul}"
+}
+
+mapfile -t remote_branches < <(git for-each-ref --format='%(refname:short)' refs /remotes/origin/ |
+                                   grep '^origin/' | sed 's_^origin/__')
+
+declare -A remote_branches_set
+
+for remote_branch in "${remote_branches[@]}"; do
+    remote_branches_set["$remote_branch"]=1
+done
+
+branches_to_delete=()
+for branch in "$@"; do
+    if [[ "${remote_branches_set[$branch]}" ]]; then
+        branches_to_delete+=("$branch")
+    fi
+done
+
+e_underline "Deleting branches:"
+for branch in "${branches_to_delete[@]}"; do
+    echo "$branch"
+done
+
+echo git push --delete origin "${branches_to_delete[@]}"
