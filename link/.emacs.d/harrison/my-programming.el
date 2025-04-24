@@ -190,6 +190,9 @@
 
 (add-to-list 'auto-mode-alist '("\\.ys\\'" . asm-mode))
 
+;; ssh config ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(add-to-list 'auto-mode-alist '("\\.ssh_config$" . conf-mode))
+
 ;; Markdown ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun my-markdown-mode-hook ()
   (visual-line-mode)
