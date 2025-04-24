@@ -4,33 +4,82 @@ function usage() {
     echo "Usage: $0 OPENING [CLOSING [file*]]"
 }
 
-if [[ $# -lt 1 ]]; then
+positional_args=()
+double_dash=
+for arg in "$@"; do
+    if [[ "$double_dash" ]]; then
+        positional_args+=()
+        continue
+    fi
+    case "$arg" in
+        -h|--help) usage; exit;;
+        --) double_dash=true;;
+        *) positional_args+=("$arg")
+    esac
+done
+
+if [[ "${#positional_args[@]}" -lt 1 ]]; then
    usage
    exit 1
 fi
 
-opening="$1"
-closing="$2"
-if [[ $# -gt 2 ]]; then
-    has_files=true
-fi
-shift; shift
+opening="${positional_args[0]}"
+closing="${positional_args[1]}"
+files=("${positional_args[@]:2}")
+# if [[ $# -gt 2 ]]; then
+#     has_files=true
+# fi
+# shift; shift
 
-opening="${opening//\//\\\/}"
-closing="${closing//\//\\\/}"
+# opening="${opening//\//\\\/}"
+# closing="${closing//\//\\\/}"
+
+# These cursed lines replace each backslash with two backslashes. The syntax
+# ${var/pattern/replacement} replaces _one_ instance of pattern with
+# replacement. The syntax ${var//pattern/replacement} replaces _all_ instances
+# of pattern with replacement. Backslashes must be escaped inside double strings
+# in Bash, so to match one backslash we type \\ and to replace it with two
+# backslashes we type \\\\.
+
+opening="${opening//\\/\\\\}"
+closing="${closing//\\/\\\\}"
+
+# shellcheck disable=SC2016
+awk_command='
+{
+    if (found && closing != "" && $0 ~ closing) {
+        exit
+    }
+    if ($0 ~ opening) {
+        found=1
+    }
+}
+found {
+    print
+}
+'
+
+# echo "\$opening=\"$opening\""
+# echo "\$closing=\"$closing\""
+# echo "\$files=\"${files[*]}\""
+# echo awk -v opening="$opening" -v closing="$closing" "$awk_command" "${files[@]}"
+awk -v opening="$opening" -v closing="$closing" "$awk_command" "${files[@]}"
+exit $?
+
 
 if [[ "$has_files" ]]; then
     for file in "$@"; do
         if [[ "$closing" ]]; then
-            awk "/${opening}/ { found=1; } found { print } /${closing}/ { found=0; }" "$file"
+            awk "{ if (found && $0 ~ /${closing}) { exit } } /${opening}/ { found=1 } found { print } /${closing}/ { exit } "
+            awk "/${opening}/ { found=1 } found { print } /${closing}/ { exit }" "$file"
         else
-            awk "/${opening}/ { found=1; } found { print }" "$file"
+            awk "/${opening}/ { found=1 } found { print }" "$file"
         fi
     done
 else
     if [[ "$closing" ]]; then
-        awk "/${opening}/ { found=1; } found { print } /${closing}/ { found=0; } "
+        awk "{ if (found && $0 ~ /${closing}) { exit } } /${opening}/ { found=1 } found { print } /${closing}/ { exit } "
     else
-        awk "/${opening}/ { found=1; } found { print }"
+        awk "/${opening}/ { found=1 } found { print }"
     fi
 fi
