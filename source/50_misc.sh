@@ -158,6 +158,12 @@ if is_osx; then
     export LC_ALL=en_US.UTF-8
 fi
 
+if is_available baobab; then
+    function baobab() {
+        command baobab "$@" &>/dev/null & disown
+    }
+fi
+
 export -f c html2richtext htmlcopy sbashrc e_underline e_title titlebar \
        all_colors foreground_colors slugify
 
