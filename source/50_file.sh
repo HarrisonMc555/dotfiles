@@ -16,20 +16,68 @@ alias df='df -h'
 
 # Recursively delete `.DS_Store` files
 function dsstore() {
-    dirs=( "$@" )
-    if [[ ! "$1" ]]; then
+    if [[ $# -eq 0 ]]; then
         dirs=( . )
+    else
+        dirs=( "$@" )
     fi
-    find_no_err "${dirs[@]}" -name '*.DS_Store' -type f -ls -delete
+    find_no_err "${dirs[@]}" -name '.DS_Store' -type f -print0 | xargs -0 rm
 }
 
 # Recursively delete `*~` files
 function tilde() {
-    dirs=( "$@" )
-    if [[ ! "$1" ]]; then
+    if [[ $# -eq 0 ]]; then
         dirs=( . )
+    else
+        dirs=( "$@" )
     fi
-    find_no_err "${dirs[@]}" -name '*~' -type f -ls -delete
+    find_no_err "${dirs[@]}" -name '*~' -type f -print0 | xargs -0 rm
+}
+
+# Recursively delete `#*` files
+function pound() {
+    if [[ $# -eq 0 ]]; then
+        dirs=( . )
+    else
+        dirs=( "$@" )
+    fi
+    find_no_err "${dirs[@]}" -name '#*' -type f -print0 | xargs -0 rm
+}
+
+# Recursively delete `__MACOSX` directories
+function __macosx() {
+    if [[ $# -eq 0 ]]; then
+        dirs=( . )
+    else
+        dirs=( "$@" )
+    fi
+    find_no_err "${dirs[@]}" -name '__MACOSX' -type d -print0 | xargs -0 rm -r
+}
+
+function cleanup() {
+    if [[ $# -eq 0 ]]; then
+        dirs=( . )
+    else
+        dirs=( "$@" )
+    fi
+    find_no_err "${dirs[@]}" \
+                \( \
+                \( -name '__MACOSX' -type d \) -o \
+                \( -name '.DS_Store' -type f \) -o \
+                \( -name '*~' -type f \) -o \
+                \( -name '#*' -type f \) \
+                \) -print0 |
+        xargs -0 rm -r
+}
+
+function remove-empty-directories() {
+    if [[ $# -eq 0 ]]; then
+        directories=(.)
+    else
+        directories=("$@")
+    fi
+    # I cannot delete the .Trash folder in OneDrive. That's fine.
+    find "${directories[@]}" -type d -empty -and -not -name .Trash -print -delete
 }
 
 function editbin() {
