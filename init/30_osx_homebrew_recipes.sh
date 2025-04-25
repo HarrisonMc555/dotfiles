@@ -58,7 +58,6 @@ recipes=(
   procs
   proselint
   pygments
-  rbenv-aliases
   ripgrep
   ripgrep-all
   sd
