@@ -73,7 +73,7 @@ fi
 
 if is_available ifconfig; then
     function mylocalip() {
-        ifconfig | grep -F 192.168. | awk '{print $2}' | head -n1
+        ifconfig | grep -E '(192.168.|10.0.[01])' | awk '{print $2}' | head -n1
     }
 fi
 
