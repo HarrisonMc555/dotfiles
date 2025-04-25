@@ -32,7 +32,10 @@ ctrl-v:page-down\
     function cdf() {
         local file
         local dir
-        file=$(fzf +m -q "$1") && dir=$(dirname "$file") && histeval cd "$dir"
+        file=$(fzf +m -q "$1") && dir=$(dirname "$file") && {
+                history -s cdf "$@"
+                histeval cd "$dir"
+            }
     }
 
     # fe [FUZZY PATTERN] - Open the selected file with the default editor
@@ -44,6 +47,7 @@ ctrl-v:page-down\
         while IFS=$'' read -r line; do files+=("$line"); done < <(ff --query="$1" --multi --select-1 --exit-0)
         echo "files = ${files[*]}"
         if [[ "${#files[@]}" -ne 0 ]]; then
+            history -s fe "$@"
             histeval $(visual_nowait_editor) "${files[@]}"
         fi
     }
@@ -53,13 +57,14 @@ ctrl-v:page-down\
     #   - CTRL-E or Enter key to open with the $EDITOR
     function fo() {
         local out file key
-        IFS=$'\n' out=("$(ff --query="$1" --exit-0 --expect=ctrl-o,ctrl-e)")
-        key=$(head -1 <<< "${out[@]}")
-        file=$(head -2 <<< "${out[@]}" | tail -1)
+        out=$(ff --query="$1" --exit-0 --expect=ctrl-o,ctrl-e)
+        key=$(head -n1 <<< "$out")
+        file=$(tail -n+2 <<< "$out" | head -n1)
         [[ -z "$file" ]] && return
         if [[ "$key" = ctrl-o ]]; then
             open "$file"
         elif [[ "$key" = ctrl-e ]]; then
+            history -s fo "$@"
             histeval $(visual_nowait_editor) "$file"
         else
             echo "$file"
@@ -72,20 +77,43 @@ ctrl-v:page-down\
         files=()
         while IFS=$'' read -r line; do files+=("$line"); done < <(ff --query="$1" --multi --select-1 --exit-0)
         if [[ "${#files[@]}" -ne 0 ]]; then
+            history -s fsr "$@"
             histeval source "${files[@]}"
         fi
     }
 
     # Try bat, highlight, coderay, rougify in turn, then fall back to cat
     function ff() {
-        # shellcheck disable=SC2016
-        fzf --preview '[[ $(file --mime {}) =~ binary ]] &&
-                 echo {} is a binary file ||
-                 (bat --style=numbers --color=always {} ||
-                  highlight -O ansi -l {} ||
-                  coderay {} ||
-                  rougify {} ||
-                  cat {}) 2> /dev/null | head -500' "$@"
+        local options double_dash directory
+        options=()
+        positional_args=()
+        for arg in "$@"; do
+            if [[ "$double_dash" ]]; then
+                positional_args+=("$arg")
+                continue
+            fi
+            case "$arg" in
+                --) double_dash=true;;
+                -*) options+=("$arg");;
+                *) positional_args+=("$arg");;
+            esac
+        done
+        if [[ "${#positional_args[@]}" -gt 1 ]]; then
+            >&2 echo "Expected 0 or 1 positional arguments, found ${#positional_args[@]}"
+            >&2 echo "Usage: ff [DIR] [fzf_options..]"
+            return 1
+        fi
+        directory="${positional_args[0]:-.}"
+        (
+            cd "$directory" &&
+                fzf --preview '[[ $(file --mime {}) =~ binary ]] &&
+                         echo {} is a binary file ||
+                         (bat --style=numbers --color=always {} ||
+                          highlight -O ansi -l {} ||
+                          coderay {} ||
+                          rougify {} ||
+                          cat {}) 2> /dev/null | head -500' "${options[@]}"
+        )
     }
 
     # fkill - kill processes - list only the ones you can kill. Modified the earlier script.
@@ -133,23 +161,31 @@ ctrl-v:page-down\
     # Fuzzy match file names that contain matches for a given pattern
     # mnemonic [F]ind [I]n [F]ile
     function fif() {
-        if [[ $# -lt 1 ]] || [[ $# -gt 2 ]]; then
-            >&2 echo "Usage: fif PATTERN [DIRECTORY]"
+        if [[ $# -lt 1 ]]; then
+            >&2 echo "Usage: fif PATTERN [DIRECTORY/FILE, ..]"
             return 1
         fi
+        local pattern paths rg_search out key file
         pattern="$1"
-        directory="${2:-.}"
-        rg_search="rg --ignore-case --pretty --context 10 --colors 'match:bg:magenta' '$pattern'"
-        IFS=$'\n' out=("$(rg --files-with-matches --no-messages "$pattern" "$directory" |
-            fzf --exit-0 --expect=ctrl-o,ctrl-e --preview "(bat --style=numbers --color=always --pager='less -p \"$pattern\"' 2> /dev/null {} | $rg_search || highlight -O ansi -l {} 2> /dev/null | $rg_search || cat {} | $rg_search || tree -C {})")")
-        key=$(head -1 <<< "${out[@]}")
-        file=$(head -2 <<< "${out[@]}" | tail -1)
-        [[ -z "$file" ]] && return
+        shift
+        paths=("$@")
+        if [[ "${#paths[@]}" -eq 0 ]]; then
+            paths=(.)
+        fi
+        rg_search=$(printf "rg --ignore-case --pretty --context 10 --colors 'match:bg:magenta' -e %q" "$pattern")
+        if ! out=$(rg --files-with-matches --no-messages -e "$pattern" "${paths[@]}" |
+                       fzf --exit-0 --expect=ctrl-o,ctrl-e --preview "(bat --style=numbers --color=always --pager='less -p \"$pattern\"' 2> /dev/null {} | $rg_search || highlight -O ansi -l {} 2> /dev/null | $rg_search || cat {} | $rg_search || tree -C {})"); then
+            >&2 echo "Aborted"
+            return 1
+        fi
+        key=$(head -n1 <<< "$out")
+        file=$(tail -n+2 <<< "$out" | head -n1)
+        [[ "$file" ]] || return
         if [[ "$key" = ctrl-o ]]; then
-            history -s "$@"
+            history -s fif "$pattern" "$@"
             histeval open "$file"
         elif [[ "$key" = ctrl-e ]]; then
-            history -s "$@"
+            history -s fif "$pattern" "$@"
             histeval $(visual_nowait_editor) "$file"
         else
             echo "$file"
@@ -159,19 +195,24 @@ ctrl-v:page-down\
     # Fuzzy match file names that contain matches for a given pattern and open for editing
     # mnemonic [F]ind [E]dit [F]ile
     function fef() {
-        if [[ $# -lt 1 ]] || [[ $# -gt 2 ]]; then
-            >&2 echo "Usage: fif PATTERN [DIRECTORY]"
+        if [[ $# -lt 1 ]]; then
+            >&2 echo "Usage: fef PATTERN [DIRECTORY/FILE, ..]"
             return 1
         fi
         pattern="$1"
-        directory="${2:-.}"
-        rg_search="rg --ignore-case --pretty --context 10 --colors 'match:bg:magenta' '$pattern'"
-        file="$(rg --files-with-matches --no-messages "$pattern" "$directory" |
-            fzf --preview "(bat --style=numbers --color=always --pager='less -p \"$pattern\"' 2> /dev/null {} | $rg_search || highlight -O ansi -l {} 2> /dev/null | $rg_search || cat {} | $rg_search || tree -C {})")" || {
+        shift
+        paths=("$@")
+        if [[ "${#paths[@]}" -eq 0 ]]; then
+            paths=(.)
+        fi
+        rg_search=$(printf "rg --ignore-case --pretty --context 10 --colors 'match:bg:magenta' -e %q" "$pattern")
+        if ! file="$(rg --files-with-matches --no-messages -e "$pattern" "${paths[@]}" |
+            fzf --preview "(bat --style=numbers --color=always --pager='less -p \"$pattern\"' 2> /dev/null {} | $rg_search || highlight -O ansi -l {} 2> /dev/null | $rg_search || cat {} | $rg_search || tree -C {})")"; then
             >&2 echo "Aborted."
             return 1
-        }
-        history -a
+        fi
+        # history -a
+        history -s fef "$pattern" "$@"
         histeval $(visual_nowait_editor) "$file"
     }
 fi
