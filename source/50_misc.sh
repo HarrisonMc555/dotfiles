@@ -164,6 +164,19 @@ if is_available baobab; then
     }
 fi
 
+if is_osx; then
+    function active_apps() {
+        if [[ $# -ne 0 ]]; then
+            >&2 echo "Usage: active_apps"
+            return 1
+        fi
+        lsappinfo metainfo |
+            grep bringForwardOrder |
+            grep -E -o '"[^"]+"' |
+            tr -d '"'
+    }
+fi
+
 export -f c html2richtext htmlcopy sbashrc e_underline e_title titlebar \
        all_colors foreground_colors slugify
 
