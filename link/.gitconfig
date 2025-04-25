@@ -133,6 +133,8 @@
 	ls-by-date = "!cd -- \"${GIT_PREFIX:-.}\" && f() { git log --pretty=%cd --date=format:'%Y-%m-%d %H:%M:%S' --name-only \"$@\" | awk '{ if ($0 ~ /^[0-9]{4}(-[0-9]{2}){2} [0-9]{2}(:[0-9]{2}){2}$/) { date=$0 } else if ($0 != \"\" && !seen[$0]++) {print date \"\t\" $0} }' ; }; f"
 	exists = "!f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git exists BRANCH\"; return 1; fi; git rev-parse --verify \"$1\" >/dev/null 2>/dev/null; }; f"
 	stash-keep = !git stash store $(git stash create)
+	stash-dates = stash list --format='%C(bold blue)%<(11)%gd%C(reset) %C(bold green)%<(14)%cr%C(reset) %gs'
+	stash-list = stash list --format='%C(bold blue)%<(11)%gd%C(reset) %gs'
 [branch "master"]
 	remote = origin
 	merge = refs/heads/master
