@@ -18,7 +18,7 @@
 	d = diff
 	g = grep -I
 	dc = diff --cached
-	rs = restore
+	# rs = restore
 	rss = restore --staged
 	rsa = restore --staged --worktree
 	rsp = restore --patch
