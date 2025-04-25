@@ -139,6 +139,7 @@
  goto-chg
  (global-set-key (kbd "C-.") 'goto-last-change)
  (global-set-key (kbd "C-,") 'goto-last-change-reverse)
+ (global-set-key (kbd "S-s-<backspace>") 'goto-last-change)
  )
 
 ;; diff-hl
