@@ -38,11 +38,14 @@ if is_available git; then
     function _git_stsw() { __git_complete_refs; }
     function _git_update_branches() { __git_complete_refs; }
     function _git_exists() { __git_complete_refs; }
+    function _git_rename_branch() { __git_complete_refs; }
     function _git_rename_upstream() { __git_complete_refs; }
     function _git_mass_cherry_pick() { __git_complete_refs; }
     function _git_find_merge() { __git_complete_refs; }
     function _git_show_merge() { __git_complete_refs; }
     function _git_logns() { _git_log; }
+    function _git_stash_list() { _git_log; }
+    function _git_stash_dates() { _git_log; }
     # function _git_alias() { __git_main; }
 
     # Git shortcuts
@@ -100,6 +103,8 @@ if is_available git; then
     __my_git_complete gd git_diff
     alias gdd='git dd'
     __my_git_complete gdd git_diff
+    alias gddc='git ddc'
+    __my_git_complete gddc git_diff
     alias wdiff="git diff --no-index --word-diff"
     __my_git_complete wdiff git_diff
     alias gdn='git diff --no-index'
