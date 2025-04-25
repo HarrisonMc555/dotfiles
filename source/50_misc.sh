@@ -31,7 +31,8 @@ elif is_ubuntu; then
     export -f alert
 fi
 
-alias time='/usr/bin/time'
+# There are a lot of benefits to using the time builtin over the command.
+# alias time='/usr/bin/time'
 
 alias e='echo'
 alias l='less'
