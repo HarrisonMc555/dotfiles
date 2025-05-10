@@ -103,6 +103,11 @@
  (global-set-key (kbd "C-c f") 'flycheck-next-error)
  (global-set-key (kbd "C-c b") 'flycheck-previous-error))
 
+(with-library
+ hideshow
+ (global-set-key (kbd "s-+") 'hs-show-block)
+ (global-set-key (kbd "s-_") 'hs-hide-block))
+
 ;; (global-set-key (kbd "C-c <right>") 'hs-show-block)
 ;; (global-set-key (kbd "C-c <left>")  'hs-hide-block)
 ;; (global-set-key (kbd "C-c <up>")    'hs-hide-all)
