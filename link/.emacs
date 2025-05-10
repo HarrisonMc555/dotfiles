@@ -64,6 +64,7 @@
  '(nrepl-message-colors
    '("#dc322f" "#cb4b16" "#b58900" "#546E00" "#B4C342" "#00629D" "#2aa198" "#d33682" "#6c71c4"))
  '(org-adapt-indentation t)
+ '(org-babel-load-languages '((emacs-lisp . t) (shell . t)))
  '(org-cycle-include-plain-lists 'integrate)
  '(org-enforce-todo-dependencies t)
  '(org-export-with-sub-superscripts '{})
