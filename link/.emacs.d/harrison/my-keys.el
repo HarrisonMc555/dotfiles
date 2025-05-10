@@ -83,6 +83,12 @@
  (global-set-key (kbd "C-\\") 'toggle-selective-display)
  (global-set-key (kbd "C-S-J") 'join-line))
 
+
+(if (string-equal system-type "darwin")
+    (with-library
+     my-functions
+     (global-set-key (kbd "s-w") 'kill-current-buffer)))
+
 (with-library
  view
  (global-set-key (kbd "C-v") 'View-scroll-half-page-forward)
