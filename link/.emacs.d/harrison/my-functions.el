@@ -382,5 +382,43 @@ The same result can also be be achieved by \\[universal-argument] \\[unhighlight
       (kill-new filename)
       (message "Copied buffer file path '%s' to the clipboard." filename))))
 
+;; Useful tips:
+; https://stackoverflow.com/questions/605846/how-do-i-access-the-contents-of-the-current-region-in-emacs-lisp
+; https://www.gnu.org/software/emacs/manual/html_node/elisp/String-Conversion.html
+; https://emacs.stackexchange.com/questions/12334/elisp-for-applying-command-to-only-the-selected-region
+; https://emacs.stackexchange.com/questions/40981/convert-unix-time-to-org-mode-timestamp
+; https://stackoverflow.com/questions/14201740/replace-region-with-result-of-calling-a-function-on-region
+; File rect.el.gz rectangle-number-lines
+; https://emacs.stackexchange.com/questions/24551/how-to-reuse-last-input-in-command-with-a-prompt
+; Needs time zones in the form like "America/Chicago", trying to use zones like
+; "CST" gives inconsistent results.
+(defun convert-region-to-timestamp (beg end &optional zone)
+  "Convert the region into a timestamp.
+
+ZONE is the time zone to use, as per format-time-string. When called
+interactively with a prefix argument, prompt for ZONE."
+  (interactive "r")
+  (if (use-region-p)
+      (save-excursion
+        (let* ((zone (if current-prefix-arg
+                         (setq convert-region-to-timestamp-zone
+                               (read-string (format "Time zone [%s]: "
+                                                    convert-region-to-timestamp-zone)
+                                            nil 'convert-region-to-timestamp-zone-history
+                                            convert-region-to-timestamp-zone))
+                       nil))
+               (region-contents (buffer-substring beg end))
+               (timestamp-num-raw (string-to-number region-contents))
+               ;; Heuristic to distinguish betwen milliseconds and seconds
+               (timestamp-seconds (if (< timestamp-num-raw 100000000000)
+                                      timestamp-num-raw
+                                    (/ timestamp-num-raw 1000.0)))
+               (timestamp-time (seconds-to-time timestamp-seconds))
+               (timestamp-string (format-time-string "%Y-%m-%d %H:%M:%S.%3N"
+                                                     timestamp-time zone)))
+          (kill-region beg end)
+          (insert timestamp-string)))
+    (message "Region is not active")))
+
 (provide 'my-functions)
 ;;; my-functions.el ends here
