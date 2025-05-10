@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+if [[ $# -lt 2 ]]; then
+    >&2 echo "Usage: $0 PATTERN ZIP_FILE [ZIP_FILE, ..]"
+    exit 1
+fi
+
+pattern="$1"
+shift
+zip_files=("$@")
+
+for zip_file in "${zip_files[@]}"; do
+    unzip -l "$zip_file" |
+        rg "$pattern" --quiet &&
+        echo "$zip_file"
+done
