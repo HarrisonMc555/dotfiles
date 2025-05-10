@@ -254,6 +254,11 @@
             (flyspell-mode 1)
             ))
 
+; Open Magit in full window instead of defaulting to "half" window.
+; https://www.reddit.com/r/emacs/comments/17af1q5/comment/k5db6c6/
+(setq magit-display-buffer-function 'magit-display-buffer-fullframe-status-v1)
+(setq magit-bury-buffer-function 'magit-restore-window-configuration)
+
 ;(setq tmp-directory "/tmp")
 ;(when (file-directory-p tmp-directory)
 ;  (open-dribble-file tmp-directory))
