@@ -263,10 +263,16 @@
 ;(when (file-directory-p tmp-directory)
 ;  (open-dribble-file tmp-directory))
 
+
+;; Edit Server
 (edit-server-start)
 
+
+;; EditorConfig
 (editorconfig-mode 1)
 
+
+;; Miscellaneous
 (add-hook 'visual-line-mode-hook
           (lambda ()
             (adaptive-wrap-prefix-mode)))
