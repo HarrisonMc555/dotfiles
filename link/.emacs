@@ -31,6 +31,19 @@
  '(flycheck-python-pylint-executable "/home/harrison/.local/bin/pylint")
  '(flymake-python-pyflakes-executable "/home/harrison/.local/bin/pyflakes")
  '(git-commit-fill-column 70)
+ '(git-commit-setup-hook
+   '((closure
+         (t)
+         nil
+       (set
+        (make-local-variable 'comment-start)
+        "!")
+       (set-fill-column 70)
+       (auto-fill-mode 1)
+       (visual-line-mode -1)
+       (visual-fill-column-mode -1)
+       (flyspell-mode 1))
+     git-commit-save-message git-commit-setup-changelog-support git-commit-turn-on-auto-fill git-commit-propertize-diff bug-reference-mode))
  '(global-auto-revert-mode t)
  '(global-auto-revert-mode-text "auto-revert")
  '(global-edit-server-edit-mode t)

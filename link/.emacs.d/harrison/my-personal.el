@@ -232,9 +232,15 @@
 
 ;; Magit ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (defun my-git-commit-setup-hook ()
-  (let ((alert-project-dir "/Projects/Alert"))
-    (when (string-prefix-p  file)
-      (draft-mode))))
+  ;; (let ((alert-project-dir "/Projects/Alert"))
+  ;;   (when (string-prefix-p  file)
+  ;;     (draft-mode)))
+  (setq-local comment-start "!")
+  (set-fill-column 70)
+  (auto-fill-mode 1)
+  (visual-line-mode -1)
+  (visual-fill-column-mode -1)
+  (flyspell-mode 1))
 
 (add-hook 'git-commit-setup-hook 'my-git-commit-setup-hook)
 (setq git-commit-major-mode 'markdown-mode)
