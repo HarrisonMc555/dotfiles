@@ -63,7 +63,7 @@
  '(hl-fg-colors
    '("#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3" "#fdf6e3"))
  '(ibuffer-never-show-predicates
-   '("^\\*scratch\\*$" "^\\*Messages\\*$" "^\\*Warnings\\*$" "^\\*Help\\*$" "^\\*Info\\*$" "^\\*Completions\\*$" "^\\*Disabled Command\\*$") nil (ibuf-ext))
+   '("^\\*scratch\\*$" "^\\*Messages\\*$" "^\\*Warnings\\*$" "^\\*Help\\*$" "^\\*Info\\*$" "^\\*Completions\\*$" "^\\*Disabled Command\\*$" "^magit: ") nil (ibuf-ext))
  '(indent-guide-delay -1)
  '(indent-guide-global-mode nil)
  '(indent-guide-recursive nil)
