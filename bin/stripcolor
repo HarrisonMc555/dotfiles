@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+# Remove all ANSI escape (typically color) codes from stdin or the provided
+# files.
+
+# https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
+
+rg '\x1b\[[0-9;]*m' --replace '' -- "$@"
