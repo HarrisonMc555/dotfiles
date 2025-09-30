@@ -5,7 +5,11 @@ if is_available rg; then
     export RIPGREP_CONFIG_PATH=~/.ripgreprc
 
     function rgl() {
-        rg -n --color=always --sort path --heading "$@" | less
+        if [[ -t 1 ]]; then
+            rg -n --color=always --sort path --heading "$@" | less -S
+        else
+            rg -n --sort path --heading "$@"
+        fi
     }
 
     function rgh() {
@@ -13,11 +17,13 @@ if is_available rg; then
     }
 
     function rghl() {
-        rg -n --hidden --no-ignore --color=always --sort path --heading "$@" | less
+        if [[ -t 1 ]]; then
+            rg -n --hidden --no-ignore --color=always --sort path --heading "$@" | less -S
+        else
+            rg -n --hidden --no-ignore --sort path --heading "$@" | less -S
+        fi
     }
 
-    function rglh() {
-        rghl "$@"
-    }
+    alias rglh=rghl
 
 fi
