@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+
+# Usage: run-ssh-commands HOST [HOST2, ..] -- command
+
+__tput_smul="$(tput smul)"
+__tput_rmul="$(tput rmul)"
+
+function e_underline () {
+    if [[ $# != 1 ]]; then
+        echo "usage: e_underline <message>";
+        return;
+    fi;
+    str="$1";
+    echo -e "\n${__tput_smul}${str}${__tput_rmul}"
+}
+
+function usage() {
+    echo "Usage: $(basename "$0") HOST [HOST2, ..] -- command"
+}
+
+hosts=()
+script=""
+double_dash=
+for arg in "$@"; do
+    if [[ "$double_dash" ]]; then
+        script+="${arg} "
+        continue
+    fi
+
+    case "$arg" in
+        --) double_dash=true;;
+        -h|--help) usage; exit;;
+        -*) >&2 echo "Unrecognized flag '${arg}'"; exit 1;;
+        *) hosts+=("$arg");;
+    esac
+done
+
+if [[ "${#hosts[@]}" -eq 0 ]]; then
+    >&2 echo "No hosts provided. Exiting."
+    exit 1
+fi
+
+if [[ "$script" = "" ]]; then
+    script=$(cat)
+fi
+
+if [[ "$script" = "" ]]; then
+    >&2 echo "No commands provided. Exiting."
+    exit 1
+fi
+
+for host in "${hosts[@]}"; do
+    if [[ "${#hosts[@]}" -gt 1 ]]; then
+        e_underline "$host"
+    fi
+    # shellcheck disable=SC2029
+    ssh "$host" "$script"
+
+    # I thought I would need to know the username for part of this. As it turns
+    # out, I don't. However, If I _did_ need to know the username, I could find
+    # out via this command:
+    ## username=$(ssh "$host" -G | sed -n 's/^user //p')
+done
