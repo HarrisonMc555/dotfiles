@@ -176,12 +176,21 @@ e_debug "Positional args: ${positional_args[*]}"
 commit="${positional_args[0]}"
 unset 'positional_args[0]'
 e_debug "commit: ${commit}"
-if [[ "$merge" ]]; then
-    run_always git rev-parse --verify "${commit}" &>/dev/null ||
-        die_with_usage "Invalid commit: \"${commit}\""
+# Taken from https://stackoverflow.com/a/16187325
+commit_parents_output=$(git show --no-patch --format=%P "$commit") ||
+    die_with_usage "Invalid commit: \"${commit}\""
+if [[ "$commit_parents_output" = *\ * ]]; then
+    if ! [[ "$merge" ]]; then
+        >&2 echo "The --no-merge-commit flag was provided, but commit has multiple parents: ${commit}"
+        >&2 echo "Re-run command without the --no-merge-commit flag or use a non-merge commit"
+        die
+    fi
 else
-    run_always git --no-pager log "${commit}" &>/dev/null ||
-        die_with_usage "Invalid commit/commit range: \"${commit}\""
+    if [[ "$merge" ]]; then
+        >&2 echo "The --no-merge-commit flag was NOT provided, but commit only has one parent: ${commit}"
+        >&2 echo "Re-run command with the --no-merge-commit flag or use a merge commit"
+        die
+    fi
 fi
 
 e_debug "Positional args: ${positional_args[*]}"
