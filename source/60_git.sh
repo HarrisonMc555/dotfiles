@@ -46,6 +46,7 @@ if is_available git; then
     function _git_logns() { _git_log; }
     function _git_stash_list() { _git_log; }
     function _git_stash_dates() { _git_log; }
+    function _git_pull_request() { _git_log; }
     # function _git_alias() { __git_main; }
 
     # Git shortcuts
