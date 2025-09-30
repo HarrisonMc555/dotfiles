@@ -1,0 +1,62 @@
+#!/usr/bin/env bash
+
+# Count the number of lines added, removed, and the difference between those for
+# the given authors (or all authors, if none is specified).
+
+function usage() {
+    cat <<EOF
+Usage: git count-lines NAME [NAME, ..] [-- LOG_ARGS, ..]
+
+Count the number of lines added, removed, and the difference between those for
+the given authors (or all authors, if none is specified).
+EOF
+}
+
+args=("$@")
+authors=()
+log_args=()
+for ((i = 0; i < $#; i++)); do
+    arg="${args[$i]}"
+    if [[ "$double_dash" = true ]]; then
+       log_args+=("$arg")
+       continue
+    fi
+    case "$arg" in
+        -h|--help)
+            usage
+            exit
+            ;;
+        --)
+            double_dash=true
+            ;;
+        -*)
+            >&2 echo "Unrecognized flag '$arg'"
+            >&2 echo
+            >&2 usage
+            exit 1
+            ;;
+        *)
+            authors+=("$arg")
+            ;;
+    esac
+done
+
+
+if [[ "${#authors[@]}" -eq 0 ]]; then
+    readarray -t authors < <(git log --format=%an | sort -u)
+fi
+
+for name in "${authors[@]}"; do
+    if [[ "${#authors[@]}" -gt 1 ]]; then
+        printf '%s\t' "$name"
+    fi
+    git log --author="^${name} <[^>]*>" --pretty=tformat: --numstat "${log_args[@]}" |
+        awk '{ add += $1; subs += $2; loc += $1 - $2 } END { print add "\t" subs }'
+done |
+    if [[ "${#authors[@]}" -gt 0 ]]; then
+        sort -t $'\t' -k2 -n
+    else
+        cat
+    fi |
+    awk -F $'\t' '{ printf "%s\tadded lines: %s\tremoved lines: %s\ttotal lines: %s\n", $1, $2, $3, $2 - $3 }' |
+    column -s $'\t' -t
