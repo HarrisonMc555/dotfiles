@@ -87,6 +87,7 @@
 (if (string-equal system-type "darwin")
     (with-library
      my-functions
+     (global-set-key (kbd "s-T") 'reopen-killed-file)
      (global-set-key (kbd "s-w") 'kill-current-buffer)))
 
 (with-library
