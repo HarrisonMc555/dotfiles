@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+function usage() {
+    echo "Usage: git ls [PATH, PATH..] [-t TREEISH]"
+}
+
 args=("$@")
 treeish=
 double_dash=false
@@ -14,6 +18,7 @@ for ((index = 0; index < $#; index++)); do
         -t|--tree)
             if [[ "$treeish" ]]; then
                 >&2 echo "Cannot specify '${arg}' more than once"
+                >&2 echo usage
                 exit 1
             fi
             ((index++))
@@ -26,6 +31,7 @@ for ((index = 0; index < $#; index++)); do
 
         -*)
             >&2 echo "Unrecognized flag '${arg}'"
+            >&2 usage
             exit 1
             ;;
 
