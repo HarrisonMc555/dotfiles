@@ -150,7 +150,7 @@ function slugify() {
         echo "$@"
     else
         cat
-    fi | tr ' _.' '-' | tr -d -c '[:alnum:]_-' | tr '[:upper:]' '[:lower:]'
+    fi | tr -s -c '[:alnum:]_-' '-' | tr '[:upper:]' '[:lower:]' | sed 's/-*$//'
 }
 
 if is_osx; then

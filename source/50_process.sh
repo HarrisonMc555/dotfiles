@@ -33,4 +33,13 @@ function is_running() {
     ps_process_names | grep_ignore_grep -q "$1"
 }
 
-export -f ps_process_names is_running
+function top_proc() {
+    if [[ $# -eq 0 ]]; then
+        >&2 echo "Usage: top_proc CMD [CMD, ..]"
+        return 1
+    fi
+    # shellcheck disable=SC2046
+    top $(pgrep "$@" | sed 's/^/-pid /' | tr '\n' ' ')
+}
+
+export -f psg ps_process_names is_running
