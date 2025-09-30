@@ -33,6 +33,7 @@ command_to_completion_commands=(
     "s:svn"
     "em:ls"
     "l:ls"
+    "ssh-multi:ssh"
     ""
 )
 
