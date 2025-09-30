@@ -48,6 +48,7 @@ closing="${closing//\\/\\\\}"
 awk_command='
 {
     if (found && closing != "" && $0 ~ closing) {
+        print
         exit
     }
     if ($0 ~ opening) {
