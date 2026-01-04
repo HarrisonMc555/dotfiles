@@ -10,7 +10,7 @@ notify() {
     osascript -e "display notification \"$*\" with title \"${title}\""
 }
 
-if ~/.dotfiles/bin/is_limit_personal_time; then
+if ~/OneDrive/bin/is_limit_personal_time; then
     notify "Limiting personal time" "We are currently limiting personal time"
     exit
 fi
