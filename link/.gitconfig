@@ -36,8 +36,11 @@
 	cpcne = cherry-pick-continue-no-edit
 	showns = show --name-status
 	showno = show --name-only
+	logr = log --reverse
 	logns = log --name-status
+	lognsr = logns --reverse
 	logno = log --oneline --name-only
+	lognor = logno --reverse
 	diffns = diff --name-status
 	diffno = diff --name-only
 	pp = !"echo 'Pull'; git pull; echo 'Push'; git push"
@@ -46,6 +49,7 @@
 	forgot = commit --amend --no-edit
 	ff = merge --ff-only
 	lp = log -p
+	lpr = lp --reverse
 	# See graph of commits. Bigger numbers correspond to more detail.
 	lg = lg1
 	lg1 = lg1-specific --all
@@ -79,7 +83,9 @@
 	changed-files = diff-tree --no-commit-id --name-only -r
 	ol-vanilla = log --format='%C(bold blue)%h%C(reset) %C(bold green)%as%C(reset) %C(bold yellow)%<(12,trunc)%an%C(reset) %C(white)%s%C(reset)'
 	ol = ol-vanilla --first-parent
-	olns = !"cd -- \"${GIT_PREFIX:-.}\" && f() { git -c color.ui=always ol-vanilla --name-status \"$@\" | sed '/^$/d'; }; f"
+	olr = ol --reverse
+	olns = !"cd -- \"${GIT_PREFIX:-.}\" && f() { git -c color.ui=always ol-vanilla --name-status \"$@\" | sed '/^$/d' | if [[ -t 1 ]]; then less -S; else cat; fi; }; f"
+	olnsr = olns --reverse
 	my-merges = "!f() { git log --merges --format='%C(bold blue)%h%C(reset) %C(bold green)%as%C(reset) %C(white)%s%C(reset)' --author=\"$(git config user.name)\"; }; f"
 	wip = !"git reflog | egrep -io \"moving from [^[:space:]]+ to [^[:space:]]+\" | awk '{ print $5 }' | awk ' !x[$0]++' | egrep -v '^[a-f0-9]{40}$' | grep -v '@' | head -n20 | tac"
 	wipa = "!f() { git for-each-ref --sort='authordate:iso8601' --format=' %(color:green)%(authordate:relative)%09%(color:white)%(refname:short)' --color=always refs/heads \"$@\" | tail -n20; }; f"
@@ -139,6 +145,10 @@
 	is-git-dir = "!git rev-parse --git-dir >/dev/null"
 	is-git-dir-quiet = "!git rev-parse --git-dir >/dev/null 2>/dev/null"
 	reflog-date = reflog --date=format-local:'%Y-%m-%d %H:%M:%S'
+	recent-branches = "!f() { if [[ $# -gt 1 ]]; then >&2 echo \"Usage: git recent-branches [COUNT]\"; return 1; fi; git reflog | grep 'checkout:' | grep -oE 'moving from [^ ]+ to [^ ]+' | awk '{ print $5 }' | awk '{ if (!seen[$0]) { seen[$0]=1; print; } }' | head -n \"${1:-10}\" | perl -e 'print reverse <>'; }; f"
+	# https://stackoverflow.com/a/3921928
+	is-rebase-in-progress = "!f() { if [[ $# -ne 0 ]]; then >&2 echo \"Usage: git is-rebase-in-progress\"; return 1; fi; test -d \"$(git rev-parse --git-path rebase-merge)\" || test -d \"$(git rev-parse --git-path rebase-apply)\"; }; f"
+	log-merge = "!f() { if [[ $# -lt 1 ]]; then >&2 echo \"Usage: git log-merge COMMITISH [ARGS]\"; return 1; fi; commitish=\"$1\"; shift; git log \"${commitish}^..${commitish}^2\" \"$@\"; }; f"
 [branch "master"]
 	remote = origin
 	merge = refs/heads/master

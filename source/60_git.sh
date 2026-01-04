@@ -28,8 +28,10 @@ if is_available git; then
     function _git_full_hash() { _git_log; }
     function _git_merge_check() { __gitcomp_nl "$(__git_refs)"; }
     function _git_ol() { _git_log; }
+    function _git_olr() { _git_log; }
     function _git_ol_vanilla() { _git_log; }
     function _git_olns() { _git_log; }
+    function _git_olnsr() { _git_log; }
     function _git_lp() { _git_log; }
     function _git_compare() { __git_complete_refs; }
     function _git_ahead_behind() { __git_complete_refs; }
@@ -47,6 +49,7 @@ if is_available git; then
     function _git_stash_list() { _git_log; }
     function _git_stash_dates() { _git_log; }
     function _git_pull_request() { _git_log; }
+    function _git_file_exists() { __git_complete_refs; }
     # function _git_alias() { __git_main; }
 
     # Git shortcuts
