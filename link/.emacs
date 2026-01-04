@@ -7,6 +7,7 @@
  '(ansi-color-faces-vector
    [default default default italic underline success warning error])
  '(asm-comment-char 35)
+ '(atomic-chrome-server-ghost-text-port 3899)
  '(auto-revert-remote-files t)
  '(case-fold-search t)
  '(column-number-mode t)

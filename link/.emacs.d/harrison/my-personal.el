@@ -264,8 +264,26 @@
 ;  (open-dribble-file tmp-directory))
 
 
+;; Atomic Chrome (https://github.com/KarimAziev/atomic-chrome)
+(use-package atomic-chrome
+  :demand t
+  :straight (atomic-chrome
+             :repo "KarimAziev/atomic-chrome"
+             :type git
+             :flavor nil
+             :host github)
+  :commands (atomic-chrome-start-server)
+  :config (atomic-chrome-start-server))
+(setq atomic-chrome-default-major-mode 'markdown-mode)
+(setq atomic-chrome-url-major-mode-alist
+      '(("github\\.com" . gfm-mode)
+        ;; ("redmine" . textile-mode)
+        ))
+(setq atomic-chrome-buffer-open-style 'full)
+
+
 ;; Edit Server
-(edit-server-start)
+;; (edit-server-start)
 
 
 ;; EditorConfig
