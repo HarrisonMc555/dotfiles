@@ -4,8 +4,8 @@ if [[ $# -eq 1 ]]; then
     git rev-list --left-right --count "$1..." |
         awk -v left="$1" -v right="$2" '{print "Behind " $1 " - Ahead " $2 }'
 elif [[ $# -eq 2 ]]; then
-    git rev-list --left-right --count "$1...$2" |
-        awk -v left="$1" -v right="$2" '{print right " is " $1 " behind and " $2 " ahead of " left }'
+    git rev-list --left-right --count "$2...$1" |
+        awk -v left="$2" -v right="$1" '{print right " is " $1 " behind and " $2 " ahead of " left }'
 else
     >&2 echo "Usage: git ahead-behind FROM_COMMITISH [TO_COMMITISH]"
     exit 1
