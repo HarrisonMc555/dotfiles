@@ -217,3 +217,5 @@
 	extendedRegexp = true
 [checkout]
 	defaultRemote = origin
+[diff "lfs"]
+	textconv = cat
