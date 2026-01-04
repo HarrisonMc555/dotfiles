@@ -323,6 +323,18 @@ if is_osx; then
     function defaults_domains() {
         defaults domains | sed 's/, /\n/g'
     }
+
+    function get_current_app() {
+        if [[ $# -ne 0 ]]; then
+            >&2 echo "Usage: get_current_app"
+            return 1
+        fi
+        /usr/bin/lsappinfo metainfo |
+                          /usr/bin/grep bringForwardOrder |
+                          /usr/bin/grep -E -o '"[^"]+"' |
+                          /usr/bin/tr -d '"' |
+                          /usr/bin/head -n1
+    }
 fi
 
 export -f pip histeval urlencode urldecode visual_nowait_editor \
