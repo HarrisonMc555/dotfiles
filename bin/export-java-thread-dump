@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+usage_str="Usage: export-java-thread-dump [SOURCE_OUT_FILE [DEST_DUMP_FILE]]"
+
+
+positional_args=()
+double_dash=false
+nth=1
+args=("$@")
+for ((i = 0; i < $#; i++)); do
+    arg="${args[$i]}"
+    if [[ "$double_dash" = true ]]; then
+       positional_args+=("$arg")
+       continue
+    fi
+    case "$arg" in
+        -h|--help)
+            usage
+            exit
+            ;;
+        -n*|--nth)
+            if [[ "$arg" = -n* ]] && [[ "$arg" != -n ]]; then
+                echo "arg: $arg"
+                nth="${arg#-n}"
+                echo "nth: $nth"
+            else
+                ((i++))
+                nth="${args[$i]}"
+            fi
+            if ! [[ "$nth" ]]; then
+                >&2 echo "Missing required argument after '${arg}' flag"
+                exit 1
+            fi
+            if ! [[ "$nth" =~ [0-9]+ ]]; then
+                >&2 echo "Argument for '${arg}' flag is not a number"
+                exit 1
+            fi
+            if [[ "$nth" -le 0 ]]; then
+                >&2 echo "Argument for '${arg}' flag must be 1 or greater ('${nth}' is invalid)"
+                exit 1
+            fi
+            ;;
+        --)
+            double_dash=true
+            ;;
+        -*)
+            >&2 echo "Unrecognized flag '$arg'"
+            exit 1
+            ;;
+        *)
+            positional_args+=("$arg")
+            ;;
+    esac
+done
+
+case "${#positional_args[@]}" in
+    0)
+        if [[ -d "$OUT_DIR" ]]; then
+            out_file="${OUT_DIR}/mcs-server.out"
+        else
+            >&2 echo "$usage_str"
+            exit 1
+        fi
+        ;;
+
+    1)
+        out_file="${positional_args[0]}"
+        ;;
+
+    2)
+        out_file="${positional_args[0]}"
+        export_file="${positional_args[1]}"
+        ;;
+
+    *)
+        >&2 echo "Too many arguments"
+        >&2 echo "$usage_str"
+        exit 1
+        ;;
+esac
+
+if ! [[ -f "$out_file" ]]; then
+    >&2 echo "File does not exist: $out_file"
+    exit 1
+fi
+if ! [[ -r "$out_file" ]]; then
+    >&2 echo "File is not readable: $out_file"
+    exit 1
+fi
+start_line_number=$(grep -n '^Full thread dump' "$out_file" |
+                        tail -n+"$nth" | head -n1 | cut -d ':' -f 1)
+if ! [[ "$start_line_number" ]]; then
+    >&2 echo "No full thread dump found in: $out_file"
+    exit 1
+fi
+
+last_line_offset=$(tail -n+"${start_line_number}" "$out_file" |
+                       grep -n '^Total' | head -n1 | cut -d ':' -f 1)
+
+if [[ "$last_line_offset" ]]; then
+    last_line_number=$((start_line_number + last_line_offset - 1))
+else
+    last_line_number='$'
+fi
+
+sed -n "${start_line_number},${last_line_number}p" "$out_file" |
+    if [[ "$export_file" ]]; then
+        cat > "$export_file"
+    elif [[ -t 1 ]]; then
+        cat > "$(date '+thread-dump_%Y-%m-%d_%H-%M-%S.txt')"
+    else
+        cat
+    fi
