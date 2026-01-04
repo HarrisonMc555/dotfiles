@@ -319,6 +319,33 @@ get_completions(){
     printf '%s\n' "${COMPREPLY[@]}" | LC_ALL=C sort
 }
 
+# Source - https://stackoverflow.com/a/24067243
+# Posted by vaab, modified by community. See post 'Timeline' for change history
+# Retrieved 2026-01-04, License - CC BY-SA 3.0
+function version_gt() {
+    if [[ $# -ne 2 ]]; then
+        >&2 echo "Usage: version_gt VER1 VER2"
+        return 2
+    fi
+
+    test "$(printf '%s\n' "$@" | sort -V | head -n 1)" != "$1"
+}
+
+function version_ge() {
+    if [[ $# -ne 2 ]]; then
+        >&2 echo "Usage: version_gt VER1 VER2"
+        return 2
+    fi
+    ver1="$1"
+    ver2="$2"
+
+    if [[ "$ver1" = "$ver2" ]]; then
+        return 0
+    fi
+
+    test "$(printf '%s\n%s\n' "$ver1" "$ver2" | sort -V | head -n 1)" != "$1"
+}
+
 if is_osx; then
     function defaults_domains() {
         defaults domains | sed 's/, /\n/g'
