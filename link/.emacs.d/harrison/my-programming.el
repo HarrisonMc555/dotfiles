@@ -281,6 +281,9 @@
 
 (add-hook 'sql-mode-hook #'my-sql-mode-hook)
 
+(eval-after-load "sql"
+  '(load-library "sql-indent"))
+
 ;; Clojure ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (add-hook 'clojure-mode-hook 'enable-paredit-mode)
 ;; (require 'clojure-mode-extra-font-locking)
