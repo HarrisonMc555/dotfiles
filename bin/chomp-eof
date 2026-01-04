@@ -1,0 +1,2 @@
+#!/usr/bin/env perl -p
+chomp if eof
