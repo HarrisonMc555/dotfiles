@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+# Check if the given file exists on the given commitish.
+
+function usage() {
+    echo "Usage: git file-exists FILE [COMMITISH]"
+}
+
+case $# in
+    1)
+        file_arg="$1"
+        ;;
+    2)
+        file_arg="$1"
+        commitish_arg="$2"
+        ;;
+    *)
+        >&2 usage
+        exit 1
+esac
+
+commitish="${commitish_arg:-@}"
+# Check if $commitish is valid
+# shellcheck disable=SC1083
+if ! git cat-file -e "$commitish"^{commit} >/dev/null 2>&1; then
+    >&2 echo "Not a valid branch or commit: ${commitish}"
+    >&2 echo
+    >&2 usage
+    exit 1
+fi
+
+file="${GIT_PREFIX:-.}/${file_arg}"
+
+git cat-file -e "${commitish}:${file}" 2>/dev/null
+return_code=$?
+
+# If the output is a terminal, print a message. Otherwise, stay quiet and only
+# exit with a proper return code (helps with scripting).
+if [[ -t 1 ]]; then
+    if [[ "$commitish_arg" ]]; then
+        commitish_ref=" on ${commitish_arg}"
+    fi
+    if [[ "$return_code" = 0 ]]; then
+        echo "Exists${commitish_ref}: ${file_arg}"
+    else
+        echo "Does NOT exist${commitish_ref}: ${file_arg}"
+    fi
+fi
+
+exit "$return_code"
