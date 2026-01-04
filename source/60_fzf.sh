@@ -3,7 +3,21 @@
 
 if is_available fzf; then
 
-    [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+    if ! [[ -f ~/.fzf.bash ]] &&
+            fzf_version=$(fzf --version | sed -E 's/^([^ ]*) .*$/\1/') &&
+            version_ge "$fzf_version" 0.48.0; then
+        tmp_file=$(mktemp)
+        if fzf --bash > "$tmp_file"; then
+            cp "$tmp_file" ~/.fzf.bash
+        else
+            >&2 echo "Could not create ~/.fzf.bash"
+        fi
+        rm "$tmp_file"
+    fi
+
+    if [[ -f ~/.fzf.bash ]]; then
+        source ~/.fzf.bash
+    fi
 
     # Export default options for preview scrolling
     export FZF_DEFAULT_OPTS="--bind '\
