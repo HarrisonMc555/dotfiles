@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+
+function set_prompt() {
+    # local green red blue reset
+    local green light_green red light_red magenta light_magenta reset
+    green='\[\e[0;32m\]'
+    light_green='\[\e[0;92m\]'
+    red='\[\e[0;31m\]'
+    light_red='\[\e[0;91m\]'
+    # blue='\[\e[1;34m\]'
+    magenta='\[\e[0;35m\]'
+    light_magenta='\[\e[0;95m\]'
+    # yellow='\[\e[0;33m\]'
+    blue='\[\e[0;34m\]'
+    light_blue='\[\e[0;94m\]'
+    reset='\[\e[0m\]'
+    if [[ "$(hostname)" = *prod* ]]; then
+        if [[ "$USER" != "x1079876" ]]; then
+            color="$light_red"
+        else
+            color="$red"
+        fi
+    elif [[ "$(hostname)" = *resq* ]]; then
+        if [[ "$USER" != "x1079876" ]]; then
+            color="$light_magenta"
+        else
+            color="$magenta"
+        fi
+    elif [[ "$(hostname)" = *rctrkprd* ]]; then
+        if [[ "$USER" != "x1079876" ]]; then
+            color="$light_blue"
+        else
+            color="$blue"
+        fi
+    else
+        if [[ "$USER" != "x1079876" ]]; then
+            color="$light_green"
+        else
+            color="$green"
+        fi
+    fi
+    export PS1="\n[${color}\$(date '+%Y-%m-%d %H:%M:%S')${reset}][${color}\w${reset}]\n[${color}\u@\h${reset}] \$ "
+}
+
+set_prompt
+
+alias la='ls -A'
+alias ll='ls -Alh'
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias -- -='cd -'
+alias ~=cd
+
+# Create a new directory and enter it
+function md() {
+    mkdir -p "$@" && {
+        if [[ $# -eq 1 ]]; then
+            cd "$@" || echo "Could not cd to '$*'"
+        else
+            echo "Not trying to cd to '$*'"
+        fi
+    }
+}
+
+set -o emacs
+
+export HISTCONTROL=ignorespace
+export LESS=-XRi
+alias lss='less -S'
+alias sbash='source ~/.bash_profile'
+
+function psg() {
+    ps -ef | head -n 1 && ps -ef --cols 2000 | grep -E --color=auto "$@" | grep --color=auto -v grep
+}
+
+if [[ -d ~/bin/ ]]; then
+    export PATH="$PATH:~/bin/"
+fi
