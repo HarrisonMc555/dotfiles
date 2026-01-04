@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+# Print the given message and then pass along the contents of stdin--but only if
+# there is data on stdin. If stdin is empty, do not print anything--not even the
+# given "prefix".
+
+# This can be useful when iterating through items (e.g. files) in a loop and
+# adding a "header" for each item, but skipping items that are empty (e.g. if
+# you are grepping through each file).
+
+if read -r first_line; then
+    echo "$@"
+    echo "$first_line"
+fi
+cat
