@@ -103,16 +103,38 @@ if is_available git && is_available fzf; then
         #     args=("-a")
         # fi
         # mapfile -t out < <(git branch --color=always "${args[@]}" |
-        mapfile -t out < <(git for-each-ref --sort='committerdate:iso8601' --color=always --format='%(color:white)%(HEAD) %(color:yellow)%(refname:short)%(color:reset)' refs/heads refs/remotes/origin |
-                               grep -v '/HEAD\s' |
+        # mapfile -t out < <(git for-each-ref --sort='committerdate:iso8601' --color=always --format='%(color:white)%(HEAD) %(color:yellow)%(refname:short)%(color:reset)' refs/heads refs/remotes/origin |
+        #                        grep -v '/HEAD\s' |
                                # sort |
-            fzf-down --ansi --multi --tac --preview-window right:70% \
-                     --expect=ctrl-o \
-                     --preview 'git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" $(sed s/^..// <<< {} | cut -d" " -f1) | head -'"$LINES")
+        declare -A branches
+        while read -r branch; do
+            branches["$branch"]=1
+        done < <(git branch --list --format='%(refname:lstrip=2)')
+        mapfile -t out < <(
+            git reflog |
+                # rg '^.*moving from [^ ] to ([^ ]+) .*$' --replace $'\t''$1' --passthru |
+                # rg '^.*returning to refs/heads/([^ ]+) .*$' --replace $'\t''$1' --passthru |
+                # grep -E '(checkout|rebase):' |
+                # grep -oE '(moving from|returning to) [^ ]+ to [^ ]+' |
+                gawk 'match($0, /: (moving from|renamed) ([^ ]+) to ([^ ]+)/, m) { print(m[2]); print(m[3]); next } match($0, /: (returning to refs\/heads|merge refs\/remotes\/[^ ]+\/|checkout )\/([^ ]+)/, m) { print(m[2]) }' |
+                # awk '{ print $5 }' |
+                awk '{ if (!seen[$0]) { seen[$0]=1; print; } }' |
+                while read -r branch; do
+                    if [[ "${branches[$branch]}" ]]; then
+                        echo "$branch"
+                    fi
+                    # git rev-parse --verify "$branch" &>/dev/null && echo "$branch"
+                done |
+                head -n 30 |
+                perl -e 'print reverse <>' |
+                fzf-down --ansi --multi --tac --preview-window right:70% \
+                         --expect=ctrl-o \
+                         --preview 'if git rev-parse {} &>/dev/null; then git log --oneline --graph --date=short --color=always --pretty="format:%C(auto)%cd %h%d %s" {} | head -'"$LINES"'; else echo "Branch {} no longer exists"; fi')
         key="${out[0]}"
         unset 'out[0]'
         for branch in "${out[@]}"; do
-            branch=$(echo "$branch" | cut -c3- | cut -d' ' -f1)
+            # branch=$(echo "$branch" | cut -c3- | cut -d' ' -f1)
+            branch=$(echo "$branch" | cut -d' ' -f1)
             if [[ "$key" != ctrl-o ]]; then
                 echo "${branch#remotes/*/}"
             else
