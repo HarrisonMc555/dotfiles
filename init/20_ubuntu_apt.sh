@@ -31,12 +31,15 @@ apt_packages+=(
   dos2unix
   emacs
   file
+  flatpak
+  gedit
   git
   htop
   imagemagick
   ispell
   # ipython
   lsd
+  net-tools
   nodejs
   openssh-client
   openssh-server
@@ -46,6 +49,7 @@ apt_packages+=(
   tree
   tealdeer # tldr
   unzip
+  vim
 )
 
 linuxbrew_recipes=(
