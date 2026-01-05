@@ -109,7 +109,6 @@
 	ignored = ls-files --others --ignored --exclude-standard
 	edit-commit = !"f() { if [[ $# -lt 1 ]]; then >&2 echo \"Usage: git edit-commit COMMIT-ISH [args]\"; return 1; fi; if ! git is-commit-ish \"$1\"; then >&2 echo \"$1 is not a valid commit-ish\"; return 1; fi; if ! git is-commit-ish \"$1\"^; then >&2 echo \"Parent of $1 is not a valid commit-ish\"; return 1; fi; commitish=\"$1\"; shift; GIT_SEQUENCE_EDITOR='gsed -i \"0,/^pick/{s/^pick /edit /}\"' git rebase --interactive --autostash --rebase-merges \"$commitish\"^ \"$@\"; }; f"
 	is-commit-ish = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git is-commit-ish COMMIT-ISH\"; return 1; fi; git cat-file -e \"$1\"^{commit} >/dev/null 2>&1; }; f"
-	staged = "!git -c color.status=always status | sed -n '/^Changes not staged for commit:$/q;p'"
 	lp1 = log -p -n1
 	lost = fsck --lost-found
 	hash = !"f() { if [[ $# -ne 1 ]]; then >&2 echo \"Usage: git hash COMMITISH\"; return 1; fi; h=$(git --no-pager log -n1 --format=%h \"$1\") && echo \"$h\" | perl -pe 'chomp if eof' | pbcopy && echo \"$h\"; }; f"
@@ -149,6 +148,9 @@
 	# https://stackoverflow.com/a/3921928
 	is-rebase-in-progress = "!f() { if [[ $# -ne 0 ]]; then >&2 echo \"Usage: git is-rebase-in-progress\"; return 1; fi; test -d \"$(git rev-parse --git-path rebase-merge)\" || test -d \"$(git rev-parse --git-path rebase-apply)\"; }; f"
 	log-merge = "!f() { if [[ $# -lt 1 ]]; then >&2 echo \"Usage: git log-merge COMMITISH [ARGS]\"; return 1; fi; commitish=\"$1\"; shift; git log \"${commitish}^..${commitish}^2\" \"$@\"; }; f"
+	staged = !"cd -- \"${GIT_PREFIX:-.}\" && f() { git status --short \"$@\" | grep \"^[ADM]  \" | cut -c4-; }; f"
+	modified = !"cd -- \"${GIT_PREFIX:-.}\" && f() { git status --short \"$@\" | grep \"^ [ADM] \" | cut -c4-; }; f"
+	untracked = !"cd -- \"${GIT_PREFIX:-.}\" && f() { git status --short \"$@\" | grep \"^?? \" | cut -c4-; }; f"
 [branch "master"]
 	remote = origin
 	merge = refs/heads/master
