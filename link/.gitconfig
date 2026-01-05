@@ -151,6 +151,7 @@
 	staged = !"cd -- \"${GIT_PREFIX:-.}\" && f() { git status --short \"$@\" | grep \"^[ADM]  \" | cut -c4-; }; f"
 	modified = !"cd -- \"${GIT_PREFIX:-.}\" && f() { git status --short \"$@\" | grep \"^ [ADM] \" | cut -c4-; }; f"
 	untracked = !"cd -- \"${GIT_PREFIX:-.}\" && f() { git status --short \"$@\" | grep \"^?? \" | cut -c4-; }; f"
+	path-from-root = rev-parse --show-prefix
 [branch "master"]
 	remote = origin
 	merge = refs/heads/master
