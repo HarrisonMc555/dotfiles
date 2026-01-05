@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+if [[ $# -gt 1 ]]; then
+    >&2 echo "Usage: git recent-branches [COUNT]"
+    return 1
+fi
+
+remote=$(git config --default=origin checkout.defaultRemote)
+declare -A branches
+while read -r branch; do
+    branches["$branch"]=1
+done < <(git for-each-ref --format='%(refname:short)' refs/heads refs/remotes |
+             sed -E 's_^refs/(heads|remotes)/__' |
+             sed "s_${remote}/__")
+
+git reflog |
+    grep 'checkout:' |
+    grep -oE 'moving from [^ ]+ to [^ ]+' |
+    awk '{ print $5 }' |
+    awk '{ if (!seen[$0]) { seen[$0]=1; print; } }' |
+    while read -r branch; do
+        if [[ "${branches[$branch]}" ]]; then
+            echo "$branch"
+        fi
+    done |
+    head -n "${1:-15}" |
+    perl -e 'print reverse <>'

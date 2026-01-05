@@ -145,7 +145,6 @@
 	is-git-dir = "!git rev-parse --git-dir >/dev/null"
 	is-git-dir-quiet = "!git rev-parse --git-dir >/dev/null 2>/dev/null"
 	reflog-date = reflog --date=format-local:'%Y-%m-%d %H:%M:%S'
-	recent-branches = "!f() { if [[ $# -gt 1 ]]; then >&2 echo \"Usage: git recent-branches [COUNT]\"; return 1; fi; git reflog | grep 'checkout:' | grep -oE 'moving from [^ ]+ to [^ ]+' | awk '{ print $5 }' | awk '{ if (!seen[$0]) { seen[$0]=1; print; } }' | head -n \"${1:-10}\" | perl -e 'print reverse <>'; }; f"
 	# https://stackoverflow.com/a/3921928
 	is-rebase-in-progress = "!f() { if [[ $# -ne 0 ]]; then >&2 echo \"Usage: git is-rebase-in-progress\"; return 1; fi; test -d \"$(git rev-parse --git-path rebase-merge)\" || test -d \"$(git rev-parse --git-path rebase-apply)\"; }; f"
 	log-merge = "!f() { if [[ $# -lt 1 ]]; then >&2 echo \"Usage: git log-merge COMMITISH [ARGS]\"; return 1; fi; commitish=\"$1\"; shift; git log \"${commitish}^..${commitish}^2\" \"$@\"; }; f"

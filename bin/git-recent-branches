@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+if [[ $# -gt 1 ]]; then
+    >&2 echo "Usage: git recent-branches [COUNT]"
+    return 1
+fi
+
+git reflog |
+    grep 'checkout:' |
+    grep -oE 'moving from [^ ]+ to [^ ]+' |
+    awk '{ print $5 }' |
+    awk '{ if (!seen[$0]) { seen[$0]=1; print; } }' |
+    head -n "${1:-15}" |
+    perl -e 'print reverse <>'
