@@ -12,5 +12,9 @@ OpenLinksByDirectClickEnabled=false
 [Keyboard]
 KeyBindings=default
 
+[Scrolling]
+HighlightScrolledLines=false
+HistorySize=10000
+
 [Terminal Features]
 FlowControlEnabled=false
