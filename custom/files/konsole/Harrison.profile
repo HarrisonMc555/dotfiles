@@ -1,6 +1,6 @@
 [Appearance]
 ColorScheme=Linux
-Font=DroidSansMono Nerd Font,12,-1,0,50,0,0,0,0,0,Book
+Font=DroidSansMono Nerd Font,12,-1,0,50,0,0,0,0,0
 
 [General]
 Name=Harrison
