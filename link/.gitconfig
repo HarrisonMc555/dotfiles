@@ -24,7 +24,6 @@
 	rsp = restore --patch
 	rssp = restore --staged --patch
 	rb = rebase --autostash --rebase-merges
-	rbd = rebase origin/develop --autostash --rebase-merges
 	rbi = rebase --interactive --autostash --rebase-merges
 	rba = rebase --abort
 	rbc = rebase --continue
