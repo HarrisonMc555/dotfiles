@@ -9,3 +9,4 @@
 konsole:.local/share
 kde-config:.kde/share:config
 kxmlgui5:.local/share
+gnome-key-bindings:.themes:Emacs
