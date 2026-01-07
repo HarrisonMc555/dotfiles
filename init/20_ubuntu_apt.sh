@@ -33,12 +33,14 @@ apt_packages+=(
   emacs
   file
   flatpak
+  gawk
   gedit
   git
   htop
   imagemagick
   ispell
   # ipython
+  konsole
   lsd
   net-tools
   nodejs
@@ -47,8 +49,8 @@ apt_packages+=(
   pandoc
   python3-pip
   ripgrep
-  tree
   tealdeer # tldr
+  tree
   unzip
   vim
 )
