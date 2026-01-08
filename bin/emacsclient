@@ -6,6 +6,10 @@ function is_osx () {
 
 if is_osx; then
     /Applications/Emacs.app/Contents/MacOS/bin/emacsclient "$@"
-else
+elif [[ -x /usr/bin/emacsclient ]]; then
     /usr/bin/emacsclient -a '' "$@"
+elif [[ -x /c/ProgramData/chocolatey/bin/emacsclientw ]]; then
+    /c/ProgramData/chocolatey/bin/emacsclientw -a '' "$@"
+elif [[ -x /c/ProgramData/chocolatey/bin/emacsclient ]]; then
+    /c/ProgramData/chocolatey/bin/emacsclient -a '' "$@"
 fi

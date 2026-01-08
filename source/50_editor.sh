@@ -24,6 +24,10 @@ alias emacs="emacsclient -n -a ''"
 alias emacsw="emacsclient -c -n -a ''"
 alias emacst="emacsclient -c -t -a ''"
 
+if is_windows; then
+    alias emacsclient=/c/tools/emacs/bin/emacsclientw.exe
+fi
+
 function is_emacs_deamon_running() {
     local name
     if is_osx; then
