@@ -47,7 +47,7 @@ if is_available ssh; then
                 echo "# $(basename "$file")"
                 cat "$file"
                 echo
-            ) >> "$tmp_file"
+            ) | dos2unix >> "$tmp_file"
         done
         [[ -s "$tmp_file" ]] && command mv "$tmp_file" "$orig_file"
     }
