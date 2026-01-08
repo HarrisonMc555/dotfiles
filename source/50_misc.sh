@@ -45,7 +45,11 @@ fi
 
 if is_wsl; then
     function pbcopy() {
-        echo "$@" | clip.exe
+        if [[ "$#" -gt 0 ]]; then
+            echo "$@"
+        else
+            cat
+        fi | clip.exe
     }
     export -f pbcopy
 elif is_ubuntu; then
@@ -56,7 +60,11 @@ elif is_ubuntu; then
     export -f pbcopy
 elif is_windows; then
     function pbcopy() {
-        echo "$*" | clip.exe
+        if [[ "$#" -gt 0 ]]; then
+            echo "$@"
+        else
+            cat
+        fi | clip.exe
     }
 fi
 
