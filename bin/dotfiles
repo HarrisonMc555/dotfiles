@@ -80,7 +80,7 @@ function is_wsl() {
 }
 function is_windows() {
     uname="$(uname -a 2>/dev/null)" &&
-        [[ "$uname" = MINGW* ]]
+        { [[ "$uname" = MINGW* ]] || [[ "$uname" = MSYS* ]]; }
 }
 function get_os() {
   for os in osx ubuntu ubuntu_desktop windows; do
