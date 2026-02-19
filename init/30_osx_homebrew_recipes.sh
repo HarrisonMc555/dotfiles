@@ -65,9 +65,10 @@ recipes=(
   shellcheck
   shpotify
   ssh-copy-id
-  tealdeer
+  # tealdeer # use tlrc instead
   telnet
   the_silver_searcher
+  tlrc
   tokei
   trash
   tree
