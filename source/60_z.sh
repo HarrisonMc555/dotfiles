@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if is_available z; then
+if [[ -r "$DOTFILES"/vendor/z/z.sh ]]; then
 
     # Fast directory switching
     mkdir -p "$DOTFILES"/caches/z
