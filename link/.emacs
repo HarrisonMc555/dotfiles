@@ -84,6 +84,7 @@
  '(ispell-choices-win-default-height 50)
  '(js2-indent-switch-body t)
  '(js2-strict-trailing-comma-warning nil)
+ '(magit-commit-show-diff nil)
  '(meghanada-cache-in-project nil)
  '(minibuffer-electric-default-mode t)
  '(nrepl-message-colors
