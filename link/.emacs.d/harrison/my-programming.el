@@ -374,6 +374,11 @@
 (diff-hl-flydiff-mode)
 (add-hook 'dired-mode-hook 'diff-hl-dired-mode-unless-remote)
 
+;; Applescript ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(add-to-list 'auto-mode-alist '("\\.scpt$" . apples-mode))
+(add-to-list 'auto-mode-alist '("\\.applescript$" . apples-mode))
+
 ;;; my-programming.el ends here
 (provide 'my-programming)
 
