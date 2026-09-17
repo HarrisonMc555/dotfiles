@@ -77,6 +77,7 @@ recipes=(
   wget
   xsv
   yarn
+  zoxide
 )
 
 brew_install_recipes

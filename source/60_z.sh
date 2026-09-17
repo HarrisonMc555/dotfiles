@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 
-if [[ -r "$DOTFILES"/vendor/z/z.sh ]]; then
+if is_available zoxide; then
+    eval "$(zoxide init bash)"
+elif [[ -r "$DOTFILES"/vendor/z/z.sh ]]; then
 
     # Fast directory switching
     mkdir -p "$DOTFILES"/caches/z
