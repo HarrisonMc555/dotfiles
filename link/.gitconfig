@@ -38,6 +38,7 @@
 	logr = log --reverse
 	logns = log --name-status
 	lognsr = logns --reverse
+	logrns = logns --reverse
 	logno = log --oneline --name-only
 	lognor = logno --reverse
 	diffns = diff --name-status
