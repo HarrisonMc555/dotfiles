@@ -5,6 +5,12 @@
 # loop to reflect your script's purpose. Then, add the main script logic
 # afterward.
 
+# Required tools:
+# - ...
+required_tools=(
+    # ...
+)
+
 function usage() {
     cat <<EOF
 Usage: template.sh [-h|--help]
@@ -42,6 +48,27 @@ function e_underline () {
 
 if [[ -t 1 ]]; then
     output_is_terminal=true
+fi
+
+function is_available () {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: is_available CMD"
+        echo "CMD can be a binary, alias, function, or anything that can be executed as a command"
+        return 1
+    fi
+    cmd="$1"
+    command -v "$cmd" &> /dev/null
+}
+
+unavailable_tools=()
+for required_tool in "${required_tools[@]}"; do
+    if ! is_available "$required_tool"; then
+        unavailable_tools+=("$required_tool")
+    fi
+done
+
+if [[ "${#unavailable_tools[@]}" -gt 0 ]]; then
+    die "Missing required tools: ${unavailable_tools[*]}"
 fi
 
 positional_args=()
