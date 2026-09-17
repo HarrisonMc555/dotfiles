@@ -50,6 +50,10 @@ if is_available git; then
     function _git_stash_dates() { _git_log; }
     function _git_pull_request() { _git_log; }
     function _git_file_exists() { __git_complete_refs; }
+    function _git_log_merge() { _git_log; }
+    function _git_log_on_date() { _git_log; }
+    function _git_log_on_author_date() { _git_log; }
+    function _git_cherry_pick_pr_and_merge() { _git_log; }
     # function _git_alias() { __git_main; }
 
     # Git shortcuts
