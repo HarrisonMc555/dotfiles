@@ -165,6 +165,33 @@ TRAILER_RE = (r"^\s*(?:(?:Signed-off-by|Co-authored-by|Reviewed-by|Acked-by|Test
               r"Reported-by|Suggested-by|Change-Id|Cc)\s*:|\(cherry picked from commit)")
 
 
+# Preset for --ignore-squash-headers: the metadata lines git writes for each commit in
+# a "Squashed commit of the following:" message. The squashed commits' own messages
+# are indented, so they still count (they describe the work).
+SQUASH_RE = (r"^(?:Squashed commit of the following:|commit [0-9a-f]{7,40}\b|"
+             r"Author:\s|Date:\s|Merge:\s)")
+
+
+def percentile(sorted_vals, p):
+    """Linear-interpolated percentile (p in 0..1) of an already sorted list."""
+    if not sorted_vals:
+        return 0.0
+    k = (len(sorted_vals) - 1) * p
+    lo = int(math.floor(k))
+    hi = min(lo + 1, len(sorted_vals) - 1)
+    return sorted_vals[lo] + (sorted_vals[hi] - sorted_vals[lo]) * (k - lo)
+
+
+def dist_cells(vals):
+    """Q1, median, Q3, max |value|, and the largest commit's share of total |value|."""
+    v = sorted(vals)
+    absum = sum(abs(x) for x in v)
+    big = max((abs(x) for x in v), default=0)
+    return ["%.1f" % percentile(v, 0.25), "%.1f" % percentile(v, 0.5),
+            "%.1f" % percentile(v, 0.75), "%d" % big,
+            "%.0f%%" % (100.0 * big / absum if absum else 0)]
+
+
 def msg_line_count(msg, count_blank, ignore_res=()):
     lines = [l for l in msg.split("\n") if not any(r.search(l) for r in ignore_res)]
     while lines and not lines[-1].strip():
@@ -581,7 +608,7 @@ def cmd_aggregate(args, commits, metric_key, have_scc):
         key, label = group_key(c, args.by)
         g = groups.setdefault(key, {
             "label": label, "key": key, "commits": 0, "msg": 0, "ccn_net": 0,
-            "ccn_churn": 0, "loc": 0, "scc_net": 0,
+            "ccn_churn": 0, "loc": 0, "scc_net": 0, "vals": [],
             "den": {md: 0.0 for md in modes}, "metric": 0})
         r = c["res"]
         g["commits"] += 1
@@ -590,6 +617,7 @@ def cmd_aggregate(args, commits, metric_key, have_scc):
             g[k] += r[k]
         g["scc_net"] += r["scc_net"] or 0
         g["metric"] += r[metric_key] or 0
+        g["vals"].append(r[metric_key] or 0)
         for md in modes:
             g["den"][md] += denominator(c["msg_lines"], md)
 
@@ -609,11 +637,12 @@ def cmd_aggregate(args, commits, metric_key, have_scc):
         rows.sort(key=lambda g: g["ratios"][0], reverse=not args.ascending)
 
     tot = {"label": "TOTAL", "key": "", "commits": 0, "msg": 0, "ccn_net": 0,
-           "ccn_churn": 0, "loc": 0, "scc_net": 0, "metric": 0,
+           "ccn_churn": 0, "loc": 0, "scc_net": 0, "metric": 0, "vals": [],
            "den": {md: 0.0 for md in modes}}
     for g in groups.values():
         for k in ("commits", "msg", "ccn_net", "ccn_churn", "loc", "scc_net", "metric"):
             tot[k] += g[k]
+        tot["vals"] += g["vals"]
         for md in modes:
             tot["den"][md] += g["den"][md]
     tot["ratios"] = [safe_div(tot["metric"], tot["den"][md]) for md in modes]
@@ -624,6 +653,8 @@ def cmd_aggregate(args, commits, metric_key, have_scc):
     head += ["Commits", "MsgLines", "CCN-net", "CCN-churn", "LOC"]
     if have_scc:
         head.append("SCC-net")
+    if args.distribution:
+        head += ["Q1", "Median", "Q3", "Max", "Max%"]
     head += ["%s/%s" % (args.metric, md) for md in modes]
 
     def row_of(g):
@@ -633,6 +664,8 @@ def cmd_aggregate(args, commits, metric_key, have_scc):
         cells += [g["commits"], g["msg"], "%+d" % g["ccn_net"], g["ccn_churn"], g["loc"]]
         if have_scc:
             cells.append("%+d" % g["scc_net"])
+        if args.distribution:
+            cells += dist_cells(g["vals"])
         cells += ["%.2f" % x for x in g["ratios"]]
         return [str(x) for x in cells]
 
@@ -658,6 +691,9 @@ def cmd_aggregate(args, commits, metric_key, have_scc):
         print(fmt(r))
     print(sep)
     print(fmt(table[-1]))
+    if args.distribution:
+        print("\nQ1/Median/Q3/Max: per-commit %s. Max%%: largest commit's share of the "
+              "group's total |%s|." % (args.metric, args.metric))
     print("\nratio = sum(%s) / sum(per-commit denominator); plus1 = 1 + msg lines, "
           "log = 1 + ln(msg lines)." % args.metric)
 
@@ -715,6 +751,10 @@ def build_parser():
                    help="preset: drop Signed-off-by, Co-authored-by, Reviewed-by, Acked-by, "
                         "Tested-by, Reported-by, Suggested-by, Change-Id, Cc and "
                         "'(cherry picked from commit' lines")
+    g.add_argument("--ignore-squash-headers", action="store_true",
+                   help="preset: drop the 'Squashed commit of the following:', 'commit <hash>', "
+                        "'Author:', 'Date:' and 'Merge:' lines git puts in squash messages "
+                        "(indented squashed messages still count)")
     g.add_argument("--rename-similarity", type=float, default=0.8, metavar="0-1",
                    help="body similarity needed to treat an unmatched removed/added "
                         "function pair as the same function (default 0.8; 1 disables)")
@@ -739,6 +779,9 @@ def build_parser():
 
     a = sub.add_parser("aggregate", parents=[common], help="aggregate commits into groups")
     a.add_argument("--by", choices=["author", "month", "year"], default="author")
+    a.add_argument("--distribution", action="store_true",
+                   help="add per-commit Q1, median, Q3, max of the metric and the largest "
+                        "commit's share of the total")
     a.add_argument("--min-commits", type=int, default=0, metavar="N",
                    help="hide groups with fewer than N commits")
     a.add_argument("--min-loc", type=int, default=0, metavar="N",
@@ -775,6 +818,8 @@ def main():
     patterns = list(args.ignore_msg_line)
     if args.ignore_trailers:
         patterns.append(TRAILER_RE)
+    if args.ignore_squash_headers:
+        patterns.append(SQUASH_RE)
     try:
         args.msg_ignore_res = [re.compile(p) for p in patterns]
     except re.error as e:
