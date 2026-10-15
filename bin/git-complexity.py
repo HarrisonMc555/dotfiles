@@ -40,6 +40,7 @@ from multiprocessing import Pool
 
 try:
     import lizard
+    from lizard_languages import get_reader_for
 except ImportError:
     sys.exit(
         "error: the 'lizard' Python package is required but not installed.\n"
@@ -159,8 +160,13 @@ def is_ignored(h, full, prefixes):
 # Selecting commits
 # ---------------------------------------------------------------------------
 
-def msg_line_count(msg, count_blank):
-    lines = msg.split("\n")
+# Preset for --ignore-trailers: conventional trailer lines that are not prose.
+TRAILER_RE = (r"^\s*(?:(?:Signed-off-by|Co-authored-by|Reviewed-by|Acked-by|Tested-by|"
+              r"Reported-by|Suggested-by|Change-Id|Cc)\s*:|\(cherry picked from commit)")
+
+
+def msg_line_count(msg, count_blank, ignore_res=()):
+    lines = [l for l in msg.split("\n") if not any(r.search(l) for r in ignore_res)]
     while lines and not lines[-1].strip():
         lines.pop()
     if count_blank:
@@ -213,7 +219,7 @@ def collect_commits(args, exts):
         h, name, email, date, msg = head.split("\x1f", 4)
         if is_ignored(h, full, prefixes):
             continue
-        entries, loc = [], 0
+        raw, binary, loc = [], set(), 0
         for line in rest.split("\n"):
             if line.startswith(":"):
                 parts = line.split("\t")
@@ -226,22 +232,27 @@ def collect_commits(args, exts):
                 opath = paths[0]
                 if omode in SKIP_MODES or nmode in SKIP_MODES:
                     continue
-                if not npath.lower().endswith(exts):
+                if exts and not npath.lower().endswith(exts):
                     continue
                 osha = None if osha == ZERO_SHA else osha
                 nsha = None if nsha == ZERO_SHA else nsha
                 if osha == nsha:
                     continue  # pure rename / mode change: nothing to analyze
-                entries.append((osha, nsha, opath, npath))
+                raw.append((osha, nsha, opath, npath))
             elif "\t" in line:
                 a, d, p = line.split("\t", 2)
-                if a.isdigit() and d.isdigit() and final_path(p).lower().endswith(exts):
+                fpath = final_path(p)
+                if a == "-" and d == "-":
+                    binary.add(fpath)  # git treats this file as binary
+                elif a.isdigit() and d.isdigit() and (not exts or fpath.lower().endswith(exts)):
                     loc += int(a) + int(d)
+        # numstat comes after raw, so binary-ness is only known now.
+        entries = [e for e in raw if e[3] not in binary]
         if not entries and not args.include_nonsource:
             continue
         commits.append({
             "hash": h, "name": name, "email": email, "date": date,
-            "msg_lines": msg_line_count(msg, args.count_blank),
+            "msg_lines": msg_line_count(msg, args.count_blank, args.msg_ignore_res),
             "entries": entries, "loc": loc,
         })
     return commits
@@ -283,7 +294,19 @@ def _analyze(path, data):
     return out
 
 
+_SUPPORTED = {}
+
+
+def _supported(path):
+    ext = os.path.splitext(path)[1].lower()
+    if ext not in _SUPPORTED:
+        _SUPPORTED[ext] = bool(ext) and get_reader_for("x" + ext) is not None
+    return _SUPPORTED[ext]
+
+
 def _funcs(sha, path):
+    if not _supported(path):
+        return []  # text file lizard cannot parse: contributes no functions
     key = (sha, os.path.splitext(path)[1].lower())
     cache = _W["cache"]
     if key in cache:
@@ -573,6 +596,11 @@ def cmd_aggregate(args, commits, metric_key, have_scc):
     rows = list(groups.values())
     for g in rows:
         g["ratios"] = [safe_div(g["metric"], g["den"][md]) for md in modes]
+    kept = [g for g in rows if g["commits"] >= args.min_commits and g["loc"] >= args.min_loc]
+    if len(kept) < len(rows):
+        print("%d group(s) hidden by --min-commits/--min-loc; TOTAL still includes them."
+              % (len(rows) - len(kept)), file=sys.stderr)
+    rows = kept
 
     sort_by = args.sort or ("ratio" if args.by == "author" else "key")
     if sort_by == "key":
@@ -658,7 +686,9 @@ def build_parser():
                    metavar="PATH", help="limit to a pathspec (repeatable); "
                    "anything after a bare `--` is also a path")
     g.add_argument("--ext", action="append", metavar=".EXT",
-                   help="source file extension to analyze (repeatable; default: .java)")
+                   help="only analyze files with this extension (repeatable). Default: "
+                        "every file Git treats as text; lizard computes complexity "
+                        "for the languages it supports, others count only toward LOC")
 
     g = common.add_argument_group("Excluding commits")
     g.add_argument("-x", "--exclude", action="append", metavar="COMMIT")
@@ -668,7 +698,7 @@ def build_parser():
     g.add_argument("--include-merges", action="store_true",
                    help="include merge commits (diffed against first parent)")
     g.add_argument("--include-nonsource", action="store_true",
-                   help="also count commits that touch no analyzed source files")
+                   help="also count commits that touch no analyzed files (e.g. binary-only)")
 
     g = common.add_argument_group("Counting")
     g.add_argument("--metric", choices=list(METRICS), default="ccn-net",
@@ -678,6 +708,13 @@ def build_parser():
                         "1+ln(lines), raw = lines, both = plus1 and log columns")
     g.add_argument("--count-blank", action="store_true",
                    help="count blank lines inside commit messages")
+    g.add_argument("--ignore-msg-line", action="append", default=[], metavar="REGEX",
+                   help="drop commit-message lines matching this Python regex before "
+                        "counting (repeatable; use (?i) for case-insensitive)")
+    g.add_argument("--ignore-trailers", action="store_true",
+                   help="preset: drop Signed-off-by, Co-authored-by, Reviewed-by, Acked-by, "
+                        "Tested-by, Reported-by, Suggested-by, Change-Id, Cc and "
+                        "'(cherry picked from commit' lines")
     g.add_argument("--rename-similarity", type=float, default=0.8, metavar="0-1",
                    help="body similarity needed to treat an unmatched removed/added "
                         "function pair as the same function (default 0.8; 1 disables)")
@@ -702,6 +739,10 @@ def build_parser():
 
     a = sub.add_parser("aggregate", parents=[common], help="aggregate commits into groups")
     a.add_argument("--by", choices=["author", "month", "year"], default="author")
+    a.add_argument("--min-commits", type=int, default=0, metavar="N",
+                   help="hide groups with fewer than N commits")
+    a.add_argument("--min-loc", type=int, default=0, metavar="N",
+                   help="hide groups with fewer than N changed lines (the LOC column)")
     a.add_argument("--sort", choices=["ratio", "key"],
                    help="default: ratio for author, key (chronological) for month/year")
     return p
@@ -723,15 +764,21 @@ def main():
     if not 0 < args.rename_similarity <= 1:
         die("--rename-similarity must be in (0, 1]")
 
-    exts = tuple(e.lower() if e.startswith(".") else "." + e.lower()
-                 for e in (args.ext or [".java"]))
-    for e in exts:
-        try:
-            from lizard_languages import get_reader_for
+    exts = None
+    if args.ext:
+        exts = tuple(e.lower() if e.startswith(".") else "." + e.lower() for e in args.ext)
+        for e in exts:
             if get_reader_for("x" + e) is None:
-                die("lizard does not support files ending in '%s'" % e)
-        except ImportError:
-            break
+                print("warning: lizard cannot parse '%s' files; they count only toward LOC"
+                      % e, file=sys.stderr)
+
+    patterns = list(args.ignore_msg_line)
+    if args.ignore_trailers:
+        patterns.append(TRAILER_RE)
+    try:
+        args.msg_ignore_res = [re.compile(p) for p in patterns]
+    except re.error as e:
+        die("bad --ignore-msg-line regex: %s" % e)
 
     if git(args.repo, "rev-parse", "--git-dir", check=False).returncode != 0:
         die("'%s' is not a git repository" % args.repo)
