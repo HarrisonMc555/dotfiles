@@ -1,0 +1,439 @@
+#!/usr/bin/env python3
+"""
+git-branch-compare: show which commits exist on some branches but not others,
+matching commits by message text instead of by SHA, so cherry-picks line up.
+
+Single file, Python 3.7+, standard library only. Put it on your PATH as
+`git-branch-compare` and Git will also run it as `git branch-compare`.
+"""
+
+import argparse
+import os
+import re
+import subprocess
+import sys
+from collections import defaultdict
+from datetime import datetime
+from typing import NamedTuple
+
+RS = "\x1e"  # separates commits in our git-log output
+US = "\x1f"  # separates fields inside one commit record
+PALETTE = ["31", "32", "34", "35", "36", "33"]  # per-branch ANSI colors
+CHERRY_PICK_TRAILER = re.compile(
+    r"^\(cherry picked from commit [0-9a-fA-F]{7,64}\)[ \t]*$", re.M
+)
+MERGE_FLAGS = ("--merges", "--no-merges", "--min-parents", "--max-parents")
+
+EPILOG = """\
+How arguments are split:
+  * Anything before a bare `--` is parsed by this script. Non-flag words are
+    branches (list them together, e.g. `a b c --since=2.weeks`); flags this
+    script does not know (--author=bob, --since=2.weeks, --grep=JIRA-123 ...)
+    are passed straight to `git log`.
+  * Everything after a bare `--` goes to `git log` untouched. Use this for
+    flags whose value is a separate word (e.g. `-- --author bob`) or that
+    clash with this script's own options. A second `--` inside that part
+    starts a path list, exactly as with git log.
+
+Matching:
+  * Commits are matched by normalized subject (default) or full message.
+    Whitespace is normalized, and in message mode "(cherry picked from
+    commit ...)" trailers (from `git cherry-pick -x`) are ignored.
+  * If a subject appears twice on one branch, the Nth newest copy pairs with
+    the Nth newest copy on the other branches, so counts stay honest.
+  * By default only commits after the branches' common merge-base are
+    examined (earlier commits are shared by SHA and would just add noise).
+    Use --full-history to look at everything.
+  * -n/--max-count (passed through to git log) applies to each branch
+    separately, which can make commits look unique that are merely older.
+
+Examples:
+  git-branch-compare release/1.x main
+  git-branch-compare release/1.x main --since=3.months --author=alice
+  git-branch-compare a b c --style matrix
+  git-branch-compare release/1.x main --by message --show-common
+  git-branch-compare release/1.x main --strip '^\\[[^]]*\\] ' --ignore-case
+  git-branch-compare release/1.x main --style diff | grep '^-'
+  git-branch-compare release/1.x main -- --author "Alice Smith" -- src/
+"""
+
+
+class Commit(NamedTuple):
+    sha: str
+    author: str
+    ts: int
+    subject: str
+    message: str
+
+
+class Row(NamedTuple):
+    key: str
+    n: int  # which duplicate of this key (1 = newest)
+    per: dict  # branch index -> Commit
+    rep: Commit  # newest commit in the row, used for display/sorting
+    members: tuple  # sorted branch indexes that have this commit
+
+
+# --------------------------------------------------------------------------- #
+# helpers
+# --------------------------------------------------------------------------- #
+
+
+def die(msg, code=2):
+    print(f"git-branch-compare: {msg}", file=sys.stderr)
+    sys.exit(code)
+
+
+def run_git(repo, *args):
+    cmd = ["git"]
+    if repo:
+        cmd += ["-C", repo]
+    cmd += list(args)
+    try:
+        p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    except FileNotFoundError:
+        die("git not found on PATH")
+    return (
+        p.returncode,
+        p.stdout.decode("utf-8", errors="replace"),
+        p.stderr.decode("utf-8", errors="replace").strip(),
+    )
+
+
+class Painter:
+    def __init__(self, enabled):
+        self.enabled = enabled
+
+    def __call__(self, code, text):
+        if not self.enabled or not code:
+            return text
+        return f"\x1b[{code}m{text}\x1b[0m"
+
+
+def build_parser():
+    p = argparse.ArgumentParser(
+        prog="git-branch-compare",
+        usage="git-branch-compare [options] BRANCH BRANCH [BRANCH...] [-- GIT-LOG-ARGS...]",
+        description=(
+            "Compare commit messages across two or more branches and show which "
+            "commits are unique to each. Handy for long-running branches that "
+            "receive the same changes via cherry-pick."
+        ),
+        epilog=EPILOG,
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        allow_abbrev=False,
+    )
+    p.add_argument("branches", nargs="*", metavar="BRANCH", help="two or more branches, tags or commits")
+    p.add_argument("--repo", metavar="PATH", help="run against the repository at PATH (like git -C)")
+    p.add_argument(
+        "--by",
+        choices=["subject", "message"],
+        default="subject",
+        help="what counts as 'the same commit' (default: subject)",
+    )
+    p.add_argument(
+        "--style",
+        choices=["groups", "diff", "matrix", "tsv"],
+        default="groups",
+        help="groups: sections per branch (default); diff: -/+ lines, exactly 2 branches; "
+        "matrix: one row per commit with a column per branch; tsv: machine-readable",
+    )
+    p.add_argument("--show-common", action="store_true", help="also list commits present on every branch")
+    p.add_argument(
+        "--full-history",
+        action="store_true",
+        help="do not limit to commits after the merge-base of the branches",
+    )
+    p.add_argument("--include-merges", action="store_true", help="include merge commits (excluded by default)")
+    p.add_argument("--ignore-case", action="store_true", help="case-insensitive matching")
+    p.add_argument(
+        "--strip",
+        action="append",
+        default=[],
+        metavar="REGEX",
+        help="remove text matching this Python regex before comparing, e.g. a "
+        "'[release/1.x] ' prefix (repeatable; multiline mode)",
+    )
+    p.add_argument("--color", choices=["auto", "always", "never"], default="auto")
+    return p
+
+
+# --------------------------------------------------------------------------- #
+# gathering commits
+# --------------------------------------------------------------------------- #
+
+
+def resolve(repo, ref):
+    rc, out, _ = run_git(repo, "rev-parse", "--verify", "--quiet", ref + "^{commit}")
+    return out.strip() if rc == 0 else None
+
+
+def collect(repo, branch, base, log_opts, paths, include_merges):
+    cmd = ["log"]
+    if not include_merges and not any(o.split("=")[0] in MERGE_FLAGS for o in log_opts):
+        cmd.append("--no-merges")
+    cmd += log_opts
+    # Our format goes last so a stray --oneline/--stat from the user can't break parsing.
+    cmd += [f"--format={RS}%H{US}%an{US}%at{US}%s{US}%B", "--no-patch", branch]
+    if base:
+        cmd.append("^" + base)
+    cmd.append("--")
+    cmd += paths
+    rc, out, err = run_git(repo, *cmd)
+    if rc != 0:
+        die(f"git log failed for '{branch}':\n{err}", 1)
+    commits = []
+    for rec in out.split(RS):
+        if not rec.strip():
+            continue
+        parts = rec.split(US, 4)
+        if len(parts) != 5:
+            continue
+        sha, author, ts, subject, message = parts
+        commits.append(Commit(sha.strip(), author, int(ts), subject.strip(), message.strip()))
+    return commits  # newest first
+
+
+def make_key(c, by, strips, ignore_case):
+    if by == "subject":
+        text = c.subject
+    else:
+        text = CHERRY_PICK_TRAILER.sub("", c.message)
+    for rx in strips:
+        text = rx.sub("", text)
+    if by == "subject":
+        text = " ".join(text.split())
+    else:
+        text = "\n".join(line.rstrip() for line in text.strip().splitlines())
+    return text.casefold() if ignore_case else text
+
+
+def build_rows(commits_by_branch, by, strips, ignore_case):
+    table = {}
+    for idx, commits in enumerate(commits_by_branch):
+        seen = defaultdict(int)
+        for c in commits:
+            k = make_key(c, by, strips, ignore_case)
+            seen[k] += 1
+            table.setdefault((k, seen[k]), {})[idx] = c
+    rows = []
+    for (k, n), per in table.items():
+        rep = max(per.values(), key=lambda c: c.ts)
+        rows.append(Row(k, n, per, rep, tuple(sorted(per))))
+    rows.sort(key=lambda r: (-r.rep.ts, r.rep.subject))
+    return rows
+
+
+# --------------------------------------------------------------------------- #
+# output
+# --------------------------------------------------------------------------- #
+
+
+def fmt_date(ts):
+    return datetime.fromtimestamp(ts).strftime("%Y-%m-%d")
+
+
+def sha_col(row):
+    return "/".join(row.per[i].sha[:8] for i in row.members)
+
+
+def detail(row, sha_width):
+    dup = f"  [dup #{row.n}]" if row.n > 1 else ""
+    return (
+        f"{sha_col(row).ljust(sha_width)}  {fmt_date(row.rep.ts)}  "
+        f"{row.rep.author[:16].ljust(16)}  {row.rep.subject}{dup}"
+    )
+
+
+def branch_color(i):
+    return PALETTE[i % len(PALETTE)]
+
+
+def group_title(members, branches):
+    n = len(branches)
+    names = [branches[i] for i in members]
+    if len(members) == 1:
+        return f"Only in {names[0]}"
+    if len(members) == n:
+        return "In both" if n == 2 else f"In all {n} branches"
+    missing = [branches[i] for i in range(n) if i not in members]
+    return f"In {' + '.join(names)} (not in {', '.join(missing)})"
+
+
+def print_header(branches, args, base, log_args, paint):
+    scope = f"after merge-base {base[:8]}" if base else "full history"
+    print(paint("1", f"Comparing {len(branches)} branches by {args.by}") + f"  [{scope}]")
+    if log_args:
+        print("git log flags: " + " ".join(log_args))
+    print()
+
+
+def print_summary(rows, branches, paint):
+    n = len(branches)
+    print(paint("1", "Summary"))
+    for i, b in enumerate(branches):
+        total = sum(1 for r in rows if i in r.members)
+        only = sum(1 for r in rows if r.members == (i,))
+        print(f"  {b}: {total} commits, {only} only here")
+    print(f"  on all {n} branches: {sum(1 for r in rows if len(r.members) == n)}")
+
+
+def print_groups(rows, branches, args, base, log_args, paint):
+    n = len(branches)
+    full = tuple(range(n))
+    groups = defaultdict(list)
+    for r in rows:
+        groups[r.members].append(r)
+    for i in range(n):
+        groups.setdefault((i,), [])  # always show "only in X", even if empty
+
+    print_header(branches, args, base, log_args, paint)
+    for members in sorted(groups, key=lambda m: (len(m), m)):
+        items = groups[members]
+        title = group_title(members, branches)
+        color = branch_color(members[0]) if len(members) == 1 else "1"
+        if members == full and not args.show_common:
+            print(paint(color, f"== {title}: {len(items)} commits (use --show-common to list) =="))
+            print()
+            continue
+        print(paint(color, f"== {title} ({len(items)}) =="))
+        if not items:
+            print("  (none)")
+        width = max((len(sha_col(r)) for r in items), default=0)
+        for r in items:
+            print("  " + detail(r, width))
+        print()
+    print_summary(rows, branches, paint)
+
+
+def print_diff(rows, branches, args, paint):
+    a, b = branches
+    print(paint("1", f"--- {a}"))
+    print(paint("1", f"+++ {b}"))
+    shown = [r for r in rows if args.show_common or len(r.members) == 1]
+    width = max((len(sha_col(r)) for r in shown), default=0)
+    for r in shown:
+        if r.members == (0,):
+            sign, color = "-", "31"
+        elif r.members == (1,):
+            sign, color = "+", "32"
+        else:
+            sign, color = " ", None
+        print(paint(color, f"{sign} {detail(r, width)}"))
+
+
+def print_matrix(rows, branches, args, base, log_args, paint):
+    n = len(branches)
+    if n > 26:
+        die("matrix style supports at most 26 branches")
+    letters = [chr(65 + i) for i in range(n)]
+    print_header(branches, args, base, log_args, paint)
+    for i, b in enumerate(branches):
+        print(f"  {paint(branch_color(i), letters[i])} = {b}")
+    print()
+    shown = [r for r in rows if args.show_common or len(r.members) < n]
+    width = max((len(sha_col(r)) for r in shown), default=0)
+    print("  " + " ".join(paint(branch_color(i), letters[i]) for i in range(n)) + "  COMMITS")
+    for r in shown:
+        marks = " ".join(
+            paint(branch_color(i), "X") if i in r.members else "." for i in range(n)
+        )
+        print(f"  {marks}  {detail(r, width)}")
+    if not shown:
+        print("  (nothing differs)")
+    print()
+    print_summary(rows, branches, paint)
+
+
+def print_tsv(rows, branches):
+    def clean(s):
+        return s.replace("\t", " ").replace("\n", " ")
+
+    print("\t".join(["subject", "date", "author"] + branches + ["present_in"]))
+    for r in rows:
+        cols = [clean(r.rep.subject), fmt_date(r.rep.ts), clean(r.rep.author)]
+        cols += [r.per[i].sha if i in r.per else "" for i in range(len(branches))]
+        cols.append(",".join(branches[i] for i in r.members))
+        print("\t".join(cols))
+
+
+# --------------------------------------------------------------------------- #
+# main
+# --------------------------------------------------------------------------- #
+
+
+def main(argv=None):
+    argv = sys.argv[1:] if argv is None else argv
+    if "--" in argv:
+        i = argv.index("--")
+        left, right = argv[:i], argv[i + 1:]
+    else:
+        left, right = argv, []
+
+    parser = build_parser()
+    args, extra = parser.parse_known_intermixed_args(left)
+    log_args = extra + right
+    if "--" in log_args:
+        i = log_args.index("--")
+        log_opts, paths = log_args[:i], log_args[i + 1:]
+    else:
+        log_opts, paths = log_args, []
+
+    branches = args.branches
+    if len(branches) < 2:
+        parser.error("need at least two branches")
+    if len(set(branches)) != len(branches):
+        parser.error("the same branch was given more than once")
+    if args.style == "diff" and len(branches) != 2:
+        parser.error("--style diff needs exactly two branches (try --style matrix)")
+
+    for b in branches:
+        if not resolve(args.repo, b):
+            die(
+                f"'{b}' is not a known branch/commit.\n"
+                "  If it was the value of a git-log flag, write it as --flag=VALUE "
+                "or put the whole flag after a bare `--`."
+            )
+
+    strips = []
+    for s in args.strip:
+        try:
+            strips.append(re.compile(s, re.M))
+        except re.error as e:
+            die(f"bad --strip regex {s!r}: {e}")
+
+    base = None
+    if not args.full_history:
+        rc, out, _ = run_git(args.repo, "merge-base", "--octopus", *branches)
+        if rc == 0 and out.strip():
+            base = out.strip()
+        else:
+            print("git-branch-compare: no common merge-base; using full history", file=sys.stderr)
+
+    commits = [collect(args.repo, b, base, log_opts, paths, args.include_merges) for b in branches]
+    rows = build_rows(commits, args.by, strips, args.ignore_case)
+
+    use_color = args.color == "always" or (
+        args.color == "auto" and sys.stdout.isatty() and "NO_COLOR" not in os.environ
+    )
+    paint = Painter(use_color)
+
+    if args.style == "groups":
+        print_groups(rows, branches, args, base, log_args, paint)
+    elif args.style == "diff":
+        print_diff(rows, branches, args, paint)
+    elif args.style == "matrix":
+        print_matrix(rows, branches, args, base, log_args, paint)
+    else:
+        print_tsv(rows, branches)
+    return 0
+
+
+if __name__ == "__main__":
+    try:
+        code = main()
+        sys.stdout.flush()
+        sys.exit(code)
+    except BrokenPipeError:  # e.g. piping into `head`
+        os.dup2(os.open(os.devnull, os.O_WRONLY), sys.stdout.fileno())
+        sys.exit(0)

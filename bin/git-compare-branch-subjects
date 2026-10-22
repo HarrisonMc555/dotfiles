@@ -1,0 +1,142 @@
+#!/usr/bin/env bash
+
+# This is _my_ version of the script. The following is the prompt I used to
+# prompt Claude to come up with an equivalent script. We'll compare afterwards.
+
+# I have several long-running branches that have some differences but need to
+# receive a lot of the same changes. To support this, I will occasionally do a
+# git log on both branches and compare the subjects of the commits. Commits with
+# the same subjects were usually cherry-picked in one direction or the other and
+# will make equivalent changes. Create a script (Bash, etc.) that will be used
+# to compare the the Git subjects (or possibly entire messages?) for two
+# specified branches. Users should be able to pass in 2 (or more?) branches, as
+# well as an arbitrary amount of other git log​ flags (--author​, --since​,
+# etc.). The output should be some way to easily tell which commits are unique
+# to one branch and which are unique to the other. This could be a simple diff​
+# output (appropriately labeled) or something else that you come up with.
+
+# Required tools:
+required_tools=(
+    git
+    sed
+    cat
+)
+
+function usage() {
+    cat <<EOF
+Usage: git compare-branch-subjects COMMITS [-h|--help] -- [GIT_LOG_ARGS]
+
+COMMITS         A commitish (usually a range of commits) to compare
+GIT_LOG_ARGS    Arbitrary arguments that will be passed to \`git log'
+EOF
+}
+
+function die() {
+    if [[ $# -gt 0 ]]; then
+        >&2 echo "$*"
+    fi
+    exit 1
+}
+
+function die_with_usage() {
+    if [[ $# -gt 0 ]]; then
+        >&2 echo "$*"
+        >&2 echo
+    fi
+    >&2 usage
+    exit 1
+}
+
+__tput_smul="$(tput smul)"
+__tput_rmul="$(tput rmul)"
+
+function e_underline () {
+    if [[ $# != 1 ]]; then
+        echo "usage: e_underline <message>";
+        return;
+    fi;
+    str="$1";
+    echo -e "\n${__tput_smul}${str}${__tput_rmul}"
+}
+
+if [[ -t 1 ]]; then
+    output_is_terminal=true
+fi
+
+function is_available () {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: is_available CMD"
+        echo "CMD can be a binary, alias, function, or anything that can be executed as a command"
+        return 1
+    fi
+    cmd="$1"
+    command -v "$cmd" &> /dev/null
+}
+
+unavailable_tools=()
+for required_tool in "${required_tools[@]}"; do
+    if ! is_available "$required_tool"; then
+        unavailable_tools+=("$required_tool")
+    fi
+done
+
+if [[ "${#unavailable_tools[@]}" -gt 0 ]]; then
+    die "Missing required tools: ${unavailable_tools[*]}"
+fi
+
+pre_double_dash_args=()
+post_double_dash_args=()
+double_dash=false
+args=("$@")
+for ((i = 0; i < $#; i++)); do
+    arg="${args[$i]}"
+    if [[ "$double_dash" = true ]]; then
+       post_double_dash_args+=("$arg")
+       continue
+    fi
+    case "$arg" in
+        -h|--help)
+            usage
+            exit
+            ;;
+        --)
+            double_dash=true
+            ;;
+        -*)
+            >&2 echo "Unrecognized flag '$arg'"
+            exit 1
+            ;;
+        *)
+            pre_double_dash_args+=("$arg")
+            ;;
+    esac
+done
+
+if [[ "${#pre_double_dash_args[@]}" -ne 2 ]]; then
+    die "Requires exactly two branches, found ${#pre_double_dash_args[@]}"
+fi
+
+commits1="${pre_double_dash_args[0]}"
+commits2="${pre_double_dash_args[1]}"
+
+command=(
+    git diff --no-index
+)
+if [[ "${output_is_terminal}" ]]; then
+    command+=(--color=always)
+fi
+command+=(
+    --src-prefix="${commits1}:" --dst-prefix="${commits2}:"
+)
+
+"${command[@]}" \
+        <(git log --format=%s "${commits1}" "${post_double_dash_args[@]}") \
+        <(git log --format=%s "${commits2}" "${post_double_dash_args[@]}") \
+    |
+    sed -E 's|^(.*)(---\|\+\+\+) ([^:]*):([a-zA-Z0-9/_-]*)(.*)$|\1\2 \3\5|' |
+    sed -E 's|^(.*)diff --git ([^:]*):([a-zA-Z0-9/_-]*) ([^:]*):([a-zA-Z0-9/_-]*)(.*)$|\1diff --git \2 \4\6|' |
+    if [[ "${output_is_terminal}" ]] && is_available delta; then
+        delta
+    else
+        cat
+    fi
