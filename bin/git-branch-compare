@@ -2,6 +2,7 @@
 """
 git-branch-compare: show which commits exist on some branches but not others,
 matching commits by message text instead of by SHA, so cherry-picks line up.
+Optionally checks whether commits that match by message really make the same change.
 
 Single file, Python 3.7+, standard library only. Put it on your PATH as
 `git-branch-compare` and Git will also run it as `git branch-compare`.
@@ -23,6 +24,19 @@ CHERRY_PICK_TRAILER = re.compile(
     r"^\(cherry picked from commit [0-9a-fA-F]{7,64}\)[ \t]*$", re.M
 )
 MERGE_FLAGS = ("--merges", "--no-merges", "--min-parents", "--max-parents")
+
+# Classes assigned by --check-diffs (only to commits matched by message that are
+# different commits on different branches). Label and ANSI color for each.
+CLASS_STYLE = {
+    "commit": ("commit", "2"),
+    "same": ("same", "32"),
+    "base": ("base", "33"),
+    "context": ("context", "33"),
+    "CHANGED": ("CHANGED", "1;31"),
+    "DIVERGED": ("DIVERGED", "1;31"),
+}
+NOTABLE = ("CHANGED", "DIVERGED")
+TAG_WIDTH = 8
 
 EPILOG = """\
 How arguments are split:
@@ -49,10 +63,31 @@ Matching:
   * -n/--max-count (passed through to git log) applies to each branch
     separately, which can make commits look unique that are merely older.
 
+Reading the sha column:
+  * One sha means one commit shared by those branches (the exact same commit).
+  * "aaaaaaaa ~ bbbbbbbb" means different commits that merely share a message.
+
+--check-diffs (do commits with the same message really make the same change?):
+  For every message-matched pair of *different* commits it compares
+    - the change: the +/- lines of each commit, ignoring line numbers,
+      whitespace and surrounding context lines (git patch-id on -U0 diffs);
+    - the starting point: the pre-change contents (blob ids) of the files the
+      commits touch, compared on the files both commits touch.
+  and tags each pair:
+    same      same start, same change (a clean cherry-pick)
+    base      same change, files differ elsewhere (cherry-pick should apply)
+    context   same change, but lines near the change differ (may conflict)
+    CHANGED   same start, DIFFERENT change                        [flagged]
+    DIVERGED  different start AND different change                [flagged]
+  Flagged pairs are listed even without --show-common. Limits: a file that was
+  renamed on one branch counts as a different change; changes that differ only
+  in whitespace count as the same; merge commits are not diffed.
+
 Examples:
   git-branch-compare release/1.x main
   git-branch-compare release/1.x main --since=3.months --author=alice
   git-branch-compare a b c --style matrix
+  git-branch-compare release/1.x main --check-diffs
   git-branch-compare release/1.x main --by message --show-common
   git-branch-compare release/1.x main --strip '^\\[[^]]*\\] ' --ignore-case
   git-branch-compare release/1.x main --style diff | grep '^-'
@@ -75,6 +110,13 @@ class Row(NamedTuple):
     per: dict  # branch index -> Commit
     rep: Commit  # newest commit in the row, used for display/sorting
     members: tuple  # sorted branch indexes that have this commit
+    cls: str = None  # --check-diffs class (see CLASS_STYLE), or None
+
+
+class Patch(NamedTuple):
+    files: dict  # path -> blob id of the file before the commit
+    id0: str  # patch-id of just the +/- lines ('' for an empty diff)
+    id3: str  # patch-id including the default 3 lines of context
 
 
 # --------------------------------------------------------------------------- #
@@ -87,20 +129,21 @@ def die(msg, code=2):
     sys.exit(code)
 
 
-def run_git(repo, *args):
+def run_git_raw(repo, *args, inp=None):
     cmd = ["git"]
     if repo:
         cmd += ["-C", repo]
     cmd += list(args)
     try:
-        p = subprocess.run(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        p = subprocess.run(cmd, input=inp, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     except FileNotFoundError:
         die("git not found on PATH")
-    return (
-        p.returncode,
-        p.stdout.decode("utf-8", errors="replace"),
-        p.stderr.decode("utf-8", errors="replace").strip(),
-    )
+    return p.returncode, p.stdout, p.stderr.decode("utf-8", errors="replace").strip()
+
+
+def run_git(repo, *args, inp=None):
+    rc, out, err = run_git_raw(repo, *args, inp=inp)
+    return rc, out.decode("utf-8", errors="replace"), err
 
 
 class Painter:
@@ -142,6 +185,12 @@ def build_parser():
         "matrix: one row per commit with a column per branch; tsv: machine-readable",
     )
     p.add_argument("--show-common", action="store_true", help="also list commits present on every branch")
+    p.add_argument(
+        "--check-diffs",
+        action="store_true",
+        help="for commits matched by message, check whether they really make the same change "
+        "and start from the same file contents (see below)",
+    )
     p.add_argument(
         "--full-history",
         action="store_true",
@@ -242,6 +291,110 @@ def build_rows(commits_by_branch, by, strips, ignore_case):
 
 
 # --------------------------------------------------------------------------- #
+# divergence point and --check-diffs analysis
+# --------------------------------------------------------------------------- #
+
+
+def describe(repo, sha):
+    rc, out, _ = run_git(repo, "log", "-1", f"--format=%H{US}%at{US}%s", sha)
+    h, ts, subj = out.strip().split(US, 2)
+    return f"{h[:8]}  {fmt_date(int(ts))}  {subj}"
+
+
+def divergence_lines(repo, branches, shas):
+    def one(a, b):
+        rc, out, _ = run_git(repo, "merge-base", a, b)
+        if rc == 0 and out.strip():
+            return describe(repo, out.split()[0])
+        return "(no common ancestor)"
+
+    n = len(branches)
+    if n == 2:
+        return [f"Diverged at {one(shas[0], shas[1])}"]
+    return [
+        f"{branches[i]} / {branches[j]} diverged at {one(shas[i], shas[j])}"
+        for i in range(n)
+        for j in range(i + 1, n)
+    ]
+
+
+def analyze_commits(repo, shas):
+    """Return {sha: Patch} using three batched git calls (no per-commit processes)."""
+    shas = sorted(shas)
+    if not shas:
+        return {}
+    inp = ("\n".join(shas) + "\n").encode()
+
+    # Starting point: the pre-change blob id of every file the commit touches.
+    rc, raw, err = run_git(
+        repo, "diff-tree", "--stdin", "-r", "--root", "--no-renames", "--no-abbrev", inp=inp
+    )
+    if rc != 0:
+        die(f"git diff-tree failed:\n{err}", 1)
+    files = {s: {} for s in shas}
+    cur = None
+    for line in raw.splitlines():
+        if line.startswith(":"):
+            meta, _, path = line.partition("\t")
+            if cur in files:
+                files[cur][path] = meta.split()[2]
+        elif line.strip():
+            cur = line.split()[0]
+
+    # The change itself: patch-id of the +/- lines only (-U0), and with context.
+    ids = {}
+    for ctx in (0, 3):
+        args = ["diff-tree", "--stdin", "-p", "--root", "--no-renames", "--no-color"]
+        if ctx == 0:
+            args.append("-U0")
+        rc, diff, err = run_git_raw(repo, *args, inp=inp)
+        if rc != 0:
+            die(f"git diff-tree failed:\n{err}", 1)
+        rc, pid, err = run_git_raw(repo, "patch-id", "--stable", inp=diff)
+        if rc != 0:
+            die(f"git patch-id failed:\n{err}", 1)
+        mapping = {}
+        for line in pid.decode().splitlines():
+            parts = line.split()
+            if len(parts) >= 2:
+                mapping[parts[1]] = parts[0]
+        ids[ctx] = mapping
+    return {s: Patch(files[s], ids[0].get(s, ""), ids[3].get(s, "")) for s in shas}
+
+
+def classify(row, info):
+    uniq = sorted({c.sha for c in row.per.values()})
+    if len(uniq) == 1:
+        return "commit"  # literally the same commit
+    ps = [info[s] for s in uniq]
+    same_change = len({p.id0 for p in ps}) == 1
+    path_sets = [set(p.files) for p in ps]
+    common = set.intersection(*path_sets)
+    if common:
+        same_start = all(len({p.files[f] for p in ps}) == 1 for f in common)
+    else:
+        same_start = not set.union(*path_sets)  # no overlap: only "same" if both empty
+    if same_start and same_change:
+        return "same"
+    if same_start:
+        return "CHANGED"
+    if same_change:
+        return "context" if len({p.id3 for p in ps}) > 1 else "base"
+    return "DIVERGED"
+
+
+def add_classes(repo, rows):
+    need = set()
+    for r in rows:
+        if len(r.members) > 1:
+            uniq = {c.sha for c in r.per.values()}
+            if len(uniq) > 1:
+                need |= uniq
+    info = analyze_commits(repo, need)
+    return [r._replace(cls=classify(r, info)) if len(r.members) > 1 else r for r in rows]
+
+
+# --------------------------------------------------------------------------- #
 # output
 # --------------------------------------------------------------------------- #
 
@@ -251,14 +404,29 @@ def fmt_date(ts):
 
 
 def sha_col(row):
-    return "/".join(row.per[i].sha[:8] for i in row.members)
+    """One sha if every branch has the very same commit, else 'a ~ b' for different commits."""
+    seen = []
+    for i in row.members:
+        s = row.per[i].sha
+        if s not in seen:
+            seen.append(s)
+    return " ~ ".join(s[:8] for s in seen)
 
 
-def detail(row, sha_width):
+def tag_cell(row, paint):
+    if row.cls is None:
+        return " " * (TAG_WIDTH + 2)
+    label, color = CLASS_STYLE[row.cls]
+    return paint(color, label.ljust(TAG_WIDTH)) + "  "
+
+
+def detail(row, sha_width, paint=None, tags=False):
+    paint = paint or Painter(False)
     dup = f"  [dup #{row.n}]" if row.n > 1 else ""
+    cell = tag_cell(row, paint) if tags else ""
     return (
-        f"{sha_col(row).ljust(sha_width)}  {fmt_date(row.rep.ts)}  "
-        f"{row.rep.author[:20].ljust(20)}  {row.rep.subject}{dup}"
+        f"{sha_col(row).ljust(sha_width)}  {cell}{fmt_date(row.rep.ts)}  "
+        f"{row.rep.author[:16].ljust(16)}  {row.rep.subject}{dup}"
     )
 
 
@@ -277,15 +445,29 @@ def group_title(members, branches):
     return f"In {' + '.join(names)} (not in {', '.join(missing)})"
 
 
-def print_header(branches, args, base, log_args, paint):
+def print_header(branches, args, base, divs, log_args, paint):
     scope = f"after merge-base {base[:8]}" if base else "full history"
     print(paint("1", f"Comparing {len(branches)} branches by {args.by}") + f"  [{scope}]")
+    for d in divs:
+        print(d)
     if log_args:
         print("git log flags: " + " ".join(log_args))
+    if args.show_common or args.check_diffs:
+        print('One sha = one commit shared by those branches; "a ~ b" = different commits, same message.')
+    if args.check_diffs:
+        print("Pairs of different commits with the same message are tagged:")
+        for tag, text in [
+            ("same", "same starting files, same change"),
+            ("base", "same change; files differ elsewhere (cherry-pick should apply)"),
+            ("context", "same change; lines near the change differ (cherry-pick may conflict)"),
+            ("CHANGED", "same starting files, DIFFERENT change"),
+            ("DIVERGED", "different starting files AND different change"),
+        ]:
+            print("  " + paint(CLASS_STYLE[tag][1], tag.ljust(TAG_WIDTH)) + "  " + text)
     print()
 
 
-def print_summary(rows, branches, paint):
+def print_summary(rows, branches, args, paint):
     n = len(branches)
     print(paint("1", "Summary"))
     for i, b in enumerate(branches):
@@ -293,9 +475,17 @@ def print_summary(rows, branches, paint):
         only = sum(1 for r in rows if r.members == (i,))
         print(f"  {b}: {total} commits, {only} only here")
     print(f"  on all {n} branches: {sum(1 for r in rows if len(r.members) == n)}")
+    if args.check_diffs:
+        counts = defaultdict(int)
+        for r in rows:
+            if r.cls:
+                counts[r.cls] += 1
+        order = [("same", "same"), ("base", "base"), ("context", "context"),
+                 ("CHANGED", "CHANGED"), ("DIVERGED", "DIVERGED"), ("commit", "identical commit")]
+        print("  shared commits by diff check: " + ", ".join(f"{lbl} {counts[k]}" for k, lbl in order))
 
 
-def print_groups(rows, branches, args, base, log_args, paint):
+def print_groups(rows, branches, args, base, divs, log_args, paint):
     n = len(branches)
     full = tuple(range(n))
     groups = defaultdict(list)
@@ -304,73 +494,98 @@ def print_groups(rows, branches, args, base, log_args, paint):
     for i in range(n):
         groups.setdefault((i,), [])  # always show "only in X", even if empty
 
-    print_header(branches, args, base, log_args, paint)
+    print_header(branches, args, base, divs, log_args, paint)
     for members in sorted(groups, key=lambda m: (len(m), m)):
         items = groups[members]
         title = group_title(members, branches)
         color = branch_color(members[0]) if len(members) == 1 else "1"
-        if members == full and not args.show_common:
-            print(paint(color, f"== {title}: {len(items)} commits (use --show-common to list) =="))
-            print()
-            continue
-        print(paint(color, f"== {title} ({len(items)}) =="))
-        if not items:
+        shown, note = items, ""
+        if members == full:
+            if args.show_common:
+                shown = items
+            elif args.check_diffs:
+                shown = [r for r in items if r.cls in NOTABLE]
+            else:
+                shown = []
+            if not shown:
+                hint = "none flagged; " if args.check_diffs else ""
+                print(paint(color, f"== {title}: {len(items)} commits ({hint}use --show-common to list) =="))
+                print()
+                continue
+            if len(shown) < len(items):
+                note = f", showing {len(shown)} flagged; --show-common lists all"
+        print(paint(color, f"== {title} ({len(items)}{note}) =="))
+        if not shown:
             print("  (none)")
-        width = max((len(sha_col(r)) for r in items), default=0)
-        for r in items:
-            print("  " + detail(r, width))
+        width = max((len(sha_col(r)) for r in shown), default=0)
+        tags = args.check_diffs and len(members) > 1
+        for r in shown:
+            print("  " + detail(r, width, paint, tags))
         print()
-    print_summary(rows, branches, paint)
+    print_summary(rows, branches, args, paint)
 
 
-def print_diff(rows, branches, args, paint):
+def print_diff(rows, branches, args, divs, paint):
     a, b = branches
     print(paint("1", f"--- {a}"))
     print(paint("1", f"+++ {b}"))
-    shown = [r for r in rows if args.show_common or len(r.members) == 1]
+    for d in divs:
+        print(paint("36", f"@@ {d} @@"))
+    shown = [
+        r
+        for r in rows
+        if len(r.members) == 1 or args.show_common or (args.check_diffs and r.cls in NOTABLE)
+    ]
     width = max((len(sha_col(r)) for r in shown), default=0)
     for r in shown:
+        d = detail(r, width, paint, args.check_diffs)
         if r.members == (0,):
-            sign, color = "-", "31"
+            print(paint("31", f"- {d}"))
         elif r.members == (1,):
-            sign, color = "+", "32"
+            print(paint("32", f"+ {d}"))
+        elif r.cls in NOTABLE:
+            print(f"{paint('1;31', '!')} {d}")
         else:
-            sign, color = " ", None
-        print(paint(color, f"{sign} {detail(r, width)}"))
+            print(f"  {d}")
 
 
-def print_matrix(rows, branches, args, base, log_args, paint):
+def print_matrix(rows, branches, args, base, divs, log_args, paint):
     n = len(branches)
     if n > 26:
         die("matrix style supports at most 26 branches")
     letters = [chr(65 + i) for i in range(n)]
-    print_header(branches, args, base, log_args, paint)
+    print_header(branches, args, base, divs, log_args, paint)
     for i, b in enumerate(branches):
         print(f"  {paint(branch_color(i), letters[i])} = {b}")
     print()
-    shown = [r for r in rows if args.show_common or len(r.members) < n]
+    shown = [r for r in rows if args.show_common or len(r.members) < n or r.cls in NOTABLE]
     width = max((len(sha_col(r)) for r in shown), default=0)
     print("  " + " ".join(paint(branch_color(i), letters[i]) for i in range(n)) + "  COMMITS")
     for r in shown:
         marks = " ".join(
             paint(branch_color(i), "X") if i in r.members else "." for i in range(n)
         )
-        print(f"  {marks}  {detail(r, width)}")
+        print(f"  {marks}  {detail(r, width, paint, args.check_diffs)}")
     if not shown:
         print("  (nothing differs)")
     print()
-    print_summary(rows, branches, paint)
+    print_summary(rows, branches, args, paint)
 
 
-def print_tsv(rows, branches):
+def print_tsv(rows, branches, args):
     def clean(s):
         return s.replace("\t", " ").replace("\n", " ")
 
-    print("\t".join(["subject", "date", "author"] + branches + ["present_in"]))
+    head = ["subject", "date", "author"] + branches + ["present_in"]
+    if args.check_diffs:
+        head.append("class")
+    print("\t".join(head))
     for r in rows:
         cols = [clean(r.rep.subject), fmt_date(r.rep.ts), clean(r.rep.author)]
         cols += [r.per[i].sha if i in r.per else "" for i in range(len(branches))]
         cols.append(",".join(branches[i] for i in r.members))
+        if args.check_diffs:
+            cols.append({"commit": "same-commit", None: ""}.get(r.cls, r.cls))
         print("\t".join(cols))
 
 
@@ -433,11 +648,14 @@ def main(argv=None):
         else:
             print("git-branch-compare: no common merge-base; using full history", file=sys.stderr)
 
+    divs = divergence_lines(args.repo, branches, shas)
     commits = [
         collect(args.repo, b, sha, base, log_opts, paths, args.include_merges)
         for b, sha in zip(branches, shas)
     ]
     rows = build_rows(commits, args.by, strips, args.ignore_case)
+    if args.check_diffs:
+        rows = add_classes(args.repo, rows)
 
     use_color = args.color == "always" or (
         args.color == "auto" and sys.stdout.isatty() and "NO_COLOR" not in os.environ
@@ -445,13 +663,13 @@ def main(argv=None):
     paint = Painter(use_color)
 
     if args.style == "groups":
-        print_groups(rows, branches, args, base, log_args, paint)
+        print_groups(rows, branches, args, base, divs, log_args, paint)
     elif args.style == "diff":
-        print_diff(rows, branches, args, paint)
+        print_diff(rows, branches, args, divs, paint)
     elif args.style == "matrix":
-        print_matrix(rows, branches, args, base, log_args, paint)
+        print_matrix(rows, branches, args, base, divs, log_args, paint)
     else:
-        print_tsv(rows, branches)
+        print_tsv(rows, branches, args)
     return 0
 
 
