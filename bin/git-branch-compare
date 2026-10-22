@@ -30,10 +30,12 @@ How arguments are split:
     branches (list them together, e.g. `a b c --since=2.weeks`); flags this
     script does not know (--author=bob, --since=2.weeks, --grep=JIRA-123 ...)
     are passed straight to `git log`.
-  * Everything after a bare `--` goes to `git log` untouched. Use this for
-    flags whose value is a separate word (e.g. `-- --author bob`) or that
-    clash with this script's own options. A second `--` inside that part
-    starts a path list, exactly as with git log.
+  * Everything after a bare `--` goes to `git log`. If it is only plain words
+    (`-- src/ docs/`), they are treated as paths. If it mixes flags and
+    words, it is passed through raw, so use a second `--` to mark where the
+    paths start (`-- --author bob -- src/`), exactly as with git log. This
+    form is also how to pass flags whose value is a separate word or that
+    clash with this script's own options.
 
 Matching:
   * Commits are matched by normalized subject (default) or full message.
@@ -54,6 +56,7 @@ Examples:
   git-branch-compare release/1.x main --by message --show-common
   git-branch-compare release/1.x main --strip '^\\[[^]]*\\] ' --ignore-case
   git-branch-compare release/1.x main --style diff | grep '^-'
+  git-branch-compare release/1.x main -- src/ docs/
   git-branch-compare release/1.x main -- --author "Alice Smith" -- src/
 """
 
@@ -168,20 +171,28 @@ def resolve(repo, ref):
     return out.strip() if rc == 0 else None
 
 
-def collect(repo, branch, base, log_opts, paths, include_merges):
-    cmd = ["log"]
-    if not include_merges and not any(o.split("=")[0] in MERGE_FLAGS for o in log_opts):
-        cmd.append("--no-merges")
-    cmd += log_opts
-    # Our format goes last so a stray --oneline/--stat from the user can't break parsing.
-    cmd += [f"--format={RS}%H{US}%an{US}%at{US}%s{US}%B", "--no-patch", branch]
+def collect(repo, label, sha, base, log_opts, paths, include_merges):
+    # Revisions come first (as resolved SHAs, so a file named like a branch can't
+    # confuse git). `--` is only added for explicit paths.
+    cmd = ["log", sha]
     if base:
         cmd.append("^" + base)
-    cmd.append("--")
-    cmd += paths
+    ours = []
+    if not include_merges and not any(o.split("=")[0] in MERGE_FLAGS for o in log_opts):
+        ours.append("--no-merges")
+    ours += [f"--format={RS}%H{US}%an{US}%at{US}%s{US}%B", "--no-patch"]
+    if any(not o.startswith("-") for o in log_opts):
+        # The user's args contain bare words (flag values or unmarked paths), and
+        # git rejects options that come after a path, so our options go first.
+        cmd += ours + log_opts
+    else:
+        # Our format goes last so a stray --stat/--pretty can't break parsing.
+        cmd += log_opts + ours
+    if paths:
+        cmd += ["--"] + paths
     rc, out, err = run_git(repo, *cmd)
     if rc != 0:
-        die(f"git log failed for '{branch}':\n{err}", 1)
+        die(f"git log failed for '{label}':\n{err}", 1)
     commits = []
     for rec in out.split(RS):
         if not rec.strip():
@@ -191,6 +202,12 @@ def collect(repo, branch, base, log_opts, paths, include_merges):
             continue
         sha, author, ts, subject, message = parts
         commits.append(Commit(sha.strip(), author, int(ts), subject.strip(), message.strip()))
+    if out.strip() and not commits:
+        die(
+            f"could not parse `git log` output for '{label}'; a flag such as "
+            "--oneline/--pretty/--graph probably overrode the output format",
+            1,
+        )
     return commits  # newest first
 
 
@@ -372,12 +389,14 @@ def main(argv=None):
 
     parser = build_parser()
     args, extra = parser.parse_known_intermixed_args(left)
-    log_args = extra + right
-    if "--" in log_args:
-        i = log_args.index("--")
-        log_opts, paths = log_args[:i], log_args[i + 1:]
+    if "--" in right:
+        i = right.index("--")
+        log_opts, paths = extra + right[:i], right[i + 1:]
+    elif right and not any(t.startswith("-") for t in right):
+        log_opts, paths = extra, right  # only plain words after `--`: paths
     else:
-        log_opts, paths = log_args, []
+        log_opts, paths = extra + right, []  # flags (and maybe values): raw git log args
+    log_args = log_opts + (["--"] + paths if paths else [])
 
     branches = args.branches
     if len(branches) < 2:
@@ -387,8 +406,12 @@ def main(argv=None):
     if args.style == "diff" and len(branches) != 2:
         parser.error("--style diff needs exactly two branches (try --style matrix)")
 
+    shas = []
     for b in branches:
-        if not resolve(args.repo, b):
+        sha = resolve(args.repo, b)
+        if sha:
+            shas.append(sha)
+        else:
             die(
                 f"'{b}' is not a known branch/commit.\n"
                 "  If it was the value of a git-log flag, write it as --flag=VALUE "
@@ -410,7 +433,10 @@ def main(argv=None):
         else:
             print("git-branch-compare: no common merge-base; using full history", file=sys.stderr)
 
-    commits = [collect(args.repo, b, base, log_opts, paths, args.include_merges) for b in branches]
+    commits = [
+        collect(args.repo, b, sha, base, log_opts, paths, args.include_merges)
+        for b, sha in zip(branches, shas)
+    ]
     rows = build_rows(commits, args.by, strips, args.ignore_case)
 
     use_color = args.color == "always" or (
