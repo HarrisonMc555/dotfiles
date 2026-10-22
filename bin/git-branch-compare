@@ -9,6 +9,7 @@ Single file, Python 3.7+, standard library only. Put it on your PATH as
 """
 
 import argparse
+import heapq
 import os
 import re
 import subprocess
@@ -24,6 +25,7 @@ CHERRY_PICK_TRAILER = re.compile(
     r"^\(cherry picked from commit [0-9a-fA-F]{7,64}\)[ \t]*$", re.M
 )
 MERGE_FLAGS = ("--merges", "--no-merges", "--min-parents", "--max-parents")
+ORDER_FLAGS = ("--topo-order", "--date-order", "--author-date-order", "--reverse")
 
 # Classes assigned by --check-diffs (only to commits matched by message that are
 # different commits on different branches). Label and ANSI color for each.
@@ -206,6 +208,14 @@ def build_parser():
         help="remove text matching this Python regex before comparing, e.g. a "
         "'[release/1.x] ' prefix (repeatable; multiline mode)",
     )
+    p.add_argument(
+        "--order",
+        choices=["topo", "date"],
+        default="topo",
+        help="row order: topo (default) follows each branch's real commit order, merged into one "
+        "timeline, newest first; date sorts by author date, which is misleading for cherry-picks "
+        "(they keep the original author date)",
+    )
     p.add_argument("--color", choices=["auto", "always", "never"], default="auto")
     return p
 
@@ -229,6 +239,8 @@ def collect(repo, label, sha, base, log_opts, paths, include_merges):
     ours = []
     if not include_merges and not any(o.split("=")[0] in MERGE_FLAGS for o in log_opts):
         ours.append("--no-merges")
+    if not any(o in ORDER_FLAGS for o in log_opts):
+        ours.append("--topo-order")  # real history order, needed for --order topo
     ours += [f"--format={RS}%H{US}%an{US}%at{US}%s{US}%B", "--no-patch"]
     if any(not o.startswith("-") for o in log_opts):
         # The user's args contain bare words (flag values or unmarked paths), and
@@ -274,20 +286,62 @@ def make_key(c, by, strips, ignore_case):
     return text.casefold() if ignore_case else text
 
 
-def build_rows(commits_by_branch, by, strips, ignore_case):
+def topo_merge(ts_of, seqs):
+    """Merge each branch's newest-first sequence into one list that respects every
+    branch's own order. Ties go to the newer author date. If two branches order
+    the same pair of commits oppositely (cherry-picked in a different order),
+    the cycle is broken by taking the newest remaining commit."""
+    succ = defaultdict(set)
+    indeg = {k: 0 for k in ts_of}
+    for seq in seqs:
+        for a, b in zip(seq, seq[1:]):
+            if b not in succ[a]:
+                succ[a].add(b)
+                indeg[b] += 1
+
+    def prio(k):
+        return (-ts_of[k], k[0], k[1])
+
+    heap = [prio(k) for k in indeg if indeg[k] == 0]
+    heapq.heapify(heap)
+    remaining, done, out = set(indeg), set(), []
+    while remaining:
+        if not heap:
+            k = min(remaining, key=lambda k: (indeg[k],) + prio(k))
+            heapq.heappush(heap, prio(k))
+        _, ks, kn = heapq.heappop(heap)
+        k = (ks, kn)
+        if k in done:
+            continue
+        done.add(k)
+        remaining.discard(k)
+        out.append(k)
+        for b in succ[k]:
+            indeg[b] -= 1
+            if indeg[b] == 0 and b not in done:
+                heapq.heappush(heap, prio(b))
+    return out
+
+
+def build_rows(commits_by_branch, by, strips, ignore_case, order="topo"):
     table = {}
+    seqs = []
     for idx, commits in enumerate(commits_by_branch):
         seen = defaultdict(int)
+        seq = []
         for c in commits:
             k = make_key(c, by, strips, ignore_case)
             seen[k] += 1
             table.setdefault((k, seen[k]), {})[idx] = c
-    rows = []
-    for (k, n), per in table.items():
+            seq.append((k, seen[k]))
+        seqs.append(seq)
+    made = {}
+    for ukey, per in table.items():
         rep = max(per.values(), key=lambda c: c.ts)
-        rows.append(Row(k, n, per, rep, tuple(sorted(per))))
-    rows.sort(key=lambda r: (-r.rep.ts, r.rep.subject))
-    return rows
+        made[ukey] = Row(ukey[0], ukey[1], per, rep, tuple(sorted(per)))
+    if order == "date":
+        return sorted(made.values(), key=lambda r: (-r.rep.ts, r.rep.subject))
+    return [made[k] for k in topo_merge({k: r.rep.ts for k, r in made.items()}, seqs)]
 
 
 # --------------------------------------------------------------------------- #
@@ -653,7 +707,7 @@ def main(argv=None):
         collect(args.repo, b, sha, base, log_opts, paths, args.include_merges)
         for b, sha in zip(branches, shas)
     ]
-    rows = build_rows(commits, args.by, strips, args.ignore_case)
+    rows = build_rows(commits, args.by, strips, args.ignore_case, args.order)
     if args.check_diffs:
         rows = add_classes(args.repo, rows)
 
