@@ -258,7 +258,7 @@ def detail(row, sha_width):
     dup = f"  [dup #{row.n}]" if row.n > 1 else ""
     return (
         f"{sha_col(row).ljust(sha_width)}  {fmt_date(row.rep.ts)}  "
-        f"{row.rep.author[:16].ljust(16)}  {row.rep.subject}{dup}"
+        f"{row.rep.author[:20].ljust(20)}  {row.rep.subject}{dup}"
     )
 
 
