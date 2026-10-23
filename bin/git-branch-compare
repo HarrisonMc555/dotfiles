@@ -53,15 +53,26 @@ How arguments are split:
     form is also how to pass flags whose value is a separate word or that
     clash with this script's own options.
 
+Ranges:
+  Any BRANCH argument can instead be a revision range, so you can compare the
+  commits of two ranges rather than two whole branches:
+      git-branch-compare master..feature release/v1.0..hotfix/v1.0/feature
+  A..B means commits reachable from B but not from A. A...B is the symmetric
+  difference. An empty end means HEAD (`..feature`, `master..`). Ranges are
+  used exactly as given: there is no automatic merge-base limit and
+  --full-history has no effect. The divergence line then reports where the
+  range tips diverged. A plain branch mixed with ranges is compared over its
+  full history, so write it as a range if you want it limited.
+
 Matching:
   * Commits are matched by normalized subject (default) or full message.
     Whitespace is normalized, and in message mode "(cherry picked from
     commit ...)" trailers (from `git cherry-pick -x`) are ignored.
   * If a subject appears twice on one branch, the Nth newest copy pairs with
     the Nth newest copy on the other branches, so counts stay honest.
-  * By default only commits after the branches' common merge-base are
-    examined (earlier commits are shared by SHA and would just add noise).
-    Use --full-history to look at everything.
+  * When comparing plain branches, only commits after their common
+    merge-base are examined by default (earlier commits are shared by SHA and
+    would just add noise). Use --full-history to look at everything.
   * -n/--max-count (passed through to git log) applies to each branch
     separately, which can make commits look unique that are merely older.
 
@@ -94,6 +105,7 @@ Examples:
   git-branch-compare release/1.x main --strip '^\\[[^]]*\\] ' --ignore-case
   git-branch-compare release/1.x main --style diff | grep '^-'
   git-branch-compare release/1.x main -- src/ docs/
+  git-branch-compare master..feature release/v1.0..hotfix/v1.0/feature --check-diffs
   git-branch-compare release/1.x main -- --author "Alice Smith" -- src/
 """
 
@@ -161,17 +173,22 @@ class Painter:
 def build_parser():
     p = argparse.ArgumentParser(
         prog="git-branch-compare",
-        usage="git-branch-compare [options] BRANCH BRANCH [BRANCH...] [-- GIT-LOG-ARGS...]",
+        usage="git-branch-compare [options] BRANCH|RANGE BRANCH|RANGE [...] [-- GIT-LOG-ARGS...]",
         description=(
-            "Compare commit messages across two or more branches and show which "
-            "commits are unique to each. Handy for long-running branches that "
+            "Compare commit messages across two or more branches (or revision ranges "
+            "like A..B) and show which commits are unique to each. Handy for long-running branches that "
             "receive the same changes via cherry-pick."
         ),
         epilog=EPILOG,
         formatter_class=argparse.RawDescriptionHelpFormatter,
         allow_abbrev=False,
     )
-    p.add_argument("branches", nargs="*", metavar="BRANCH", help="two or more branches, tags or commits")
+    p.add_argument(
+        "branches",
+        nargs="*",
+        metavar="BRANCH|RANGE",
+        help="two or more branches/tags/commits, or ranges such as A..B or A...B",
+    )
     p.add_argument("--repo", metavar="PATH", help="run against the repository at PATH (like git -C)")
     p.add_argument(
         "--by",
@@ -196,7 +213,7 @@ def build_parser():
     p.add_argument(
         "--full-history",
         action="store_true",
-        help="do not limit to commits after the merge-base of the branches",
+        help="do not limit plain branches to commits after their merge-base (no effect on ranges)",
     )
     p.add_argument("--include-merges", action="store_true", help="include merge commits (excluded by default)")
     p.add_argument("--ignore-case", action="store_true", help="case-insensitive matching")
@@ -230,12 +247,54 @@ def resolve(repo, ref):
     return out.strip() if rc == 0 else None
 
 
-def collect(repo, label, sha, base, log_opts, paths, include_merges):
-    # Revisions come first (as resolved SHAs, so a file named like a branch can't
-    # confuse git). `--` is only added for explicit paths.
-    cmd = ["log", sha]
-    if base:
-        cmd.append("^" + base)
+class Side(NamedTuple):
+    label: str  # the argument as typed
+    tip: str  # commit whose history is shown (right end of a range)
+    left: str = None  # range start (sha); None for a plain branch
+    sym: bool = False  # True for A...B
+
+
+def bad_ref(part, arg):
+    where = "" if part == arg else f" (in '{arg}')"
+    die(
+        f"'{part}'{where} is not a known branch/commit.\n"
+        "  If it was the value of a git-log flag, write it as --flag=VALUE "
+        "or put the whole flag after a bare `--`."
+    )
+
+
+def parse_side(repo, arg):
+    """A side is a plain ref ('main') or a range ('A..B', 'A...B'; empty end = HEAD).
+    Ref names can't contain '..', so its presence always means a range."""
+    i = arg.find("..")
+    if i < 0:
+        sha = resolve(repo, arg)
+        if not sha:
+            bad_ref(arg, arg)
+        return Side(arg, sha)
+    sym = arg[i:i + 3] == "..."
+    ends = []
+    for part in (arg[:i], arg[i + (3 if sym else 2):]):
+        sha = resolve(repo, part or "HEAD")
+        if not sha:
+            bad_ref(part, arg)
+        ends.append(sha)
+    return Side(arg, ends[1], ends[0], sym)
+
+
+def side_revs(side, base):
+    """Revision arguments for git log, as resolved SHAs so a file named like a
+    branch can't confuse git."""
+    if side.left is None:
+        return [side.tip] + (["^" + base] if base else [])
+    if side.sym:
+        return [f"{side.left}...{side.tip}"]
+    return [side.tip, "^" + side.left]
+
+
+def collect(repo, label, revs, log_opts, paths, include_merges):
+    # Revisions come first. `--` is only added for explicit paths.
+    cmd = ["log"] + revs
     ours = []
     if not include_merges and not any(o.split("=")[0] in MERGE_FLAGS for o in log_opts):
         ours.append("--no-merges")
@@ -355,7 +414,7 @@ def describe(repo, sha):
     return f"{h[:8]}  {fmt_date(int(ts))}  {subj}"
 
 
-def divergence_lines(repo, branches, shas):
+def divergence_lines(repo, branches, shas, tips=False):
     def one(a, b):
         rc, out, _ = run_git(repo, "merge-base", a, b)
         if rc == 0 and out.strip():
@@ -363,10 +422,11 @@ def divergence_lines(repo, branches, shas):
         return "(no common ancestor)"
 
     n = len(branches)
+    word = "tips diverged at" if tips else "diverged at"
     if n == 2:
-        return [f"Diverged at {one(shas[0], shas[1])}"]
+        return [f"{word.capitalize()} {one(shas[0], shas[1])}"]
     return [
-        f"{branches[i]} / {branches[j]} diverged at {one(shas[i], shas[j])}"
+        f"{branches[i]} / {branches[j]} {word} {one(shas[i], shas[j])}"
         for i in range(n)
         for j in range(i + 1, n)
     ]
@@ -499,9 +559,8 @@ def group_title(members, branches):
     return f"In {' + '.join(names)} (not in {', '.join(missing)})"
 
 
-def print_header(branches, args, base, divs, log_args, paint):
-    scope = f"after merge-base {base[:8]}" if base else "full history"
-    print(paint("1", f"Comparing {len(branches)} branches by {args.by}") + f"  [{scope}]")
+def print_header(branches, args, scope, divs, log_args, paint):
+    print(paint("1", f"Comparing {len(branches)} {args.noun} by {args.by}") + f"  [{scope}]")
     for d in divs:
         print(d)
     if log_args:
@@ -528,7 +587,7 @@ def print_summary(rows, branches, args, paint):
         total = sum(1 for r in rows if i in r.members)
         only = sum(1 for r in rows if r.members == (i,))
         print(f"  {b}: {total} commits, {only} only here")
-    print(f"  on all {n} branches: {sum(1 for r in rows if len(r.members) == n)}")
+    print(f"  on all {n} {args.noun}: {sum(1 for r in rows if len(r.members) == n)}")
     if args.check_diffs:
         counts = defaultdict(int)
         for r in rows:
@@ -539,7 +598,7 @@ def print_summary(rows, branches, args, paint):
         print("  shared commits by diff check: " + ", ".join(f"{lbl} {counts[k]}" for k, lbl in order))
 
 
-def print_groups(rows, branches, args, base, divs, log_args, paint):
+def print_groups(rows, branches, args, scope, divs, log_args, paint):
     n = len(branches)
     full = tuple(range(n))
     groups = defaultdict(list)
@@ -548,7 +607,7 @@ def print_groups(rows, branches, args, base, divs, log_args, paint):
     for i in range(n):
         groups.setdefault((i,), [])  # always show "only in X", even if empty
 
-    print_header(branches, args, base, divs, log_args, paint)
+    print_header(branches, args, scope, divs, log_args, paint)
     for members in sorted(groups, key=lambda m: (len(m), m)):
         items = groups[members]
         title = group_title(members, branches)
@@ -603,12 +662,12 @@ def print_diff(rows, branches, args, divs, paint):
             print(f"  {d}")
 
 
-def print_matrix(rows, branches, args, base, divs, log_args, paint):
+def print_matrix(rows, branches, args, scope, divs, log_args, paint):
     n = len(branches)
     if n > 26:
         die("matrix style supports at most 26 branches")
     letters = [chr(65 + i) for i in range(n)]
-    print_header(branches, args, base, divs, log_args, paint)
+    print_header(branches, args, scope, divs, log_args, paint)
     for i, b in enumerate(branches):
         print(f"  {paint(branch_color(i), letters[i])} = {b}")
     print()
@@ -669,23 +728,16 @@ def main(argv=None):
 
     branches = args.branches
     if len(branches) < 2:
-        parser.error("need at least two branches")
+        parser.error("need at least two branches or ranges")
     if len(set(branches)) != len(branches):
-        parser.error("the same branch was given more than once")
+        parser.error("the same branch or range was given more than once")
     if args.style == "diff" and len(branches) != 2:
         parser.error("--style diff needs exactly two branches (try --style matrix)")
 
-    shas = []
-    for b in branches:
-        sha = resolve(args.repo, b)
-        if sha:
-            shas.append(sha)
-        else:
-            die(
-                f"'{b}' is not a known branch/commit.\n"
-                "  If it was the value of a git-log flag, write it as --flag=VALUE "
-                "or put the whole flag after a bare `--`."
-            )
+    sides = [parse_side(args.repo, b) for b in branches]
+    shas = [sd.tip for sd in sides]
+    n_ranges = sum(1 for sd in sides if sd.left is not None)
+    args.noun = "ranges" if n_ranges == len(sides) else ("branches" if n_ranges == 0 else "branches/ranges")
 
     strips = []
     for s in args.strip:
@@ -695,17 +747,25 @@ def main(argv=None):
             die(f"bad --strip regex {s!r}: {e}")
 
     base = None
-    if not args.full_history:
-        rc, out, _ = run_git(args.repo, "merge-base", "--octopus", *branches)
+    if n_ranges:
+        scope = "ranges as given"
+        if n_ranges < len(sides):
+            scope += "; plain branches use full history"
+    elif args.full_history:
+        scope = "full history"
+    else:
+        rc, out, _ = run_git(args.repo, "merge-base", "--octopus", *shas)
         if rc == 0 and out.strip():
             base = out.strip()
+            scope = f"after merge-base {base[:8]}"
         else:
             print("git-branch-compare: no common merge-base; using full history", file=sys.stderr)
+            scope = "full history"
 
-    divs = divergence_lines(args.repo, branches, shas)
+    divs = divergence_lines(args.repo, branches, shas, tips=bool(n_ranges))
     commits = [
-        collect(args.repo, b, sha, base, log_opts, paths, args.include_merges)
-        for b, sha in zip(branches, shas)
+        collect(args.repo, sd.label, side_revs(sd, base), log_opts, paths, args.include_merges)
+        for sd in sides
     ]
     rows = build_rows(commits, args.by, strips, args.ignore_case, args.order)
     if args.check_diffs:
@@ -717,11 +777,11 @@ def main(argv=None):
     paint = Painter(use_color)
 
     if args.style == "groups":
-        print_groups(rows, branches, args, base, divs, log_args, paint)
+        print_groups(rows, branches, args, scope, divs, log_args, paint)
     elif args.style == "diff":
         print_diff(rows, branches, args, divs, paint)
     elif args.style == "matrix":
-        print_matrix(rows, branches, args, base, divs, log_args, paint)
+        print_matrix(rows, branches, args, scope, divs, log_args, paint)
     else:
         print_tsv(rows, branches, args)
     return 0
