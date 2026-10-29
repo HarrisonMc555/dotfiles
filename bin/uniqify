@@ -1,5 +1,104 @@
 #!/usr/bin/env bash
 
+# Display unique lines without pre-sorting. Requires storing all unique lines in
+# memory.
+
+required_tools=(
+    awk
+)
+
+function usage() {
+    cat <<EOF
+Usage: template.sh [-h|--help]
+This is a placeholder usage string.
+EOF
+}
+
+function die() {
+    if [[ $# -gt 0 ]]; then
+        >&2 echo "$*"
+    fi
+    exit 1
+}
+
+function die_with_usage() {
+    if [[ $# -gt 0 ]]; then
+        >&2 echo "$*"
+        >&2 echo
+    fi
+    >&2 usage
+    exit 1
+}
+
+__tput_smul="$(tput smul)"
+__tput_rmul="$(tput rmul)"
+
+function e_underline () {
+    if [[ $# != 1 ]]; then
+        echo "usage: e_underline <message>";
+        return;
+    fi;
+    str="$1";
+    echo -e "\n${__tput_smul}${str}${__tput_rmul}"
+}
+
+if [[ -t 1 ]]; then
+    output_is_terminal=true
+fi
+
+function is_available () {
+    if [[ $# -ne 1 ]]; then
+        echo "Usage: is_available CMD"
+        echo "CMD can be a binary, alias, function, or anything that can be executed as a command"
+        return 1
+    fi
+    cmd="$1"
+    command -v "$cmd" &> /dev/null
+}
+
+unavailable_tools=()
+for required_tool in "${required_tools[@]}"; do
+    if ! is_available "$required_tool"; then
+        unavailable_tools+=("$required_tool")
+    fi
+done
+
+if [[ "${#unavailable_tools[@]}" -gt 0 ]]; then
+    die "Missing required tools: ${unavailable_tools[*]}"
+fi
+
+positional_args=()
+double_dash=false
+args=("$@")
+count=
+for ((i = 0; i < $#; i++)); do
+    arg="${args[$i]}"
+    if [[ "$double_dash" = true ]]; then
+       positional_args+=("$arg")
+       continue
+    fi
+    case "$arg" in
+        -h|--help)
+            usage
+            exit
+            ;;
+        -c|--count)
+            count=true
+            ;;
+        --)
+            double_dash=true
+            ;;
+        -*)
+            >&2 echo "Unrecognized flag '$arg'"
+            exit 1
+            ;;
+        *)
+            positional_args+=("$arg")
+            ;;
+    esac
+done
+
+
 die() {
     if [[ $# -gt 1 ]]; then
         >&2 echo "$@"
@@ -7,18 +106,28 @@ die() {
     exit 1
 }
 
-if [[ $# -gt 1 ]]; then
-    die "Usage: $0 [FILE]"
-fi
-
 declare -A lines
-if [[ $# -eq 1 ]]; then
-    cat "$1"
-else
-    cat
-fi | while read -r line; do
-    if [[ "$line" ]] && ! [[ "${lines[$line]+abc}" ]]; then
-        lines["$line"]=present
-        echo "$line"
+while read -r line; do
+    if [[ "$line" ]]; then
+        if [[ "${lines[$line]+abc}" ]]; then
+            lines["$line"]=$((lines["$line"] + 1))
+        else
+            lines["$line"]=1
+            if ! [[ "$count" ]]; then
+                echo "$line"
+            fi
+        fi
     fi
-done
+done < <(
+    if [[ "${#positional_args[@]}" -gt 0 ]]; then
+        cat "${positional_args[@]}"
+    else
+        cat
+    fi
+)
+
+if [[ "$count" ]]; then
+    for line in "${!lines[@]}"; do
+        printf '%s\t%s\n' "${lines[$line]}" "$line"
+    done
+fi
