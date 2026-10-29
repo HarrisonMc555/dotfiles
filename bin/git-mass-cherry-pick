@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
 bitbucket_url="https://git.romariccorp.com:7990"
+camline_gitlab_url="https://gitlab.camline.com"
 default_remote="origin"
 
 function usage() {
-    echo "Usage: git mass-cherry-pick <commit> <branch> [<branch>, ...] [-h|--help] [-n|--no-merge-commit] [-b <branch_name>|--branch <branch_name>|--direct] [-s <strategy>|--strategy <strategy>] [-r|--real] [--dry-run] [--push|--no-push] [-d|--debug]"
+    echo "Usage: git mass-cherry-pick <commit> <branch> [<branch>, ...] [-h|--help] [-n|--no-merge-commit] [--count N] [-b <branch_name>|--branch <branch_name>|--direct] [-s <strategy>|--strategy <strategy>] [-r|--real] [--dry-run] [--push|--no-push] [-d|--debug]"
 }
 
 __red='\033[0;31m'
@@ -70,6 +71,7 @@ function git_contains_uncommitted_changes() {
 
 debug=
 double_dash=
+offline=
 args=()
 for arg in "$@"; do
     if [[ "$double_dash" ]]; then
@@ -83,6 +85,9 @@ for arg in "$@"; do
             ;;
         -d|--debug)
             debug=true
+            ;;
+        -o|--offline)
+            offline=true
             ;;
         -x)
             set_x=true
@@ -112,6 +117,7 @@ fi
 real=
 direct=
 merge=true
+count=
 positional_args=()
 double_dash=
 merge_branch_name=
@@ -131,6 +137,11 @@ for ((i = 0; i < "${#args[@]}"; i++)); do
         -n|--no-merge-commit|--no-merge)
             e_debug "NOT merge commit"
             merge=
+            ;;
+        --count)
+            ((i++))
+            count="${args[i]}"
+            e_debug "Count = ${count}"
             ;;
         -b|--branch)
             ((i++))
@@ -193,7 +204,17 @@ else
     fi
 fi
 
-e_debug "Positional args: ${positional_args[*]}"
+if [[ "$count" ]] && [[ "$merge" ]]; then
+    >&2 echo "The --count flag was provided, but the --no-merge-commit flag was NOT provided"
+    >&2 echo "Re-run command with the --no-merge-commit flag or drop the --count flag"
+    die
+fi
+
+if [[ "$count" ]] && ! [[ "$count" =~ ^[0-9]+$ ]]; then
+    die "Invalid count value '${count}'"
+fi
+
+e_debug "Non-commit positional args: ${positional_args[*]}"
 [[ "${#positional_args[@]}" -ge 1 ]] || die_with_usage "Missing argument BRANCH"
 branches=("${positional_args[@]}")
 
@@ -217,11 +238,29 @@ elif [[ ! "$merge_branch_name" ]]; then
     merge_commit_message=$(git show --quiet --pretty='%B' "${commit}") ||
         die "Could not retrieve commit message for commit: \"${commit}\""
     merge_branch_name=$(echo "$merge_commit_message" |
-                            grep -E '^Merge in ' |
-                            sed -E 's/^Merge in .* from (.*) to .*$/\1/') ||
-        die "Could not find branch name in commit message for commit ${commit}"
+                            sed -n -E 's/^Merge in .* from (.*) to .*$/\1/p')
+    e_debug "\$merge_branch_name = '${merge_branch_name}'"
+    if ! [[ "$merge_branch_name" ]]; then
+        merge_branch_name=$(echo "$merge_commit_message" |
+                                sed -n -E "s/^Merge branch ('([^ ]*)'|([^ ]*)) into '?[^ ]*'?/\\2\\3/p")
+        e_debug "\$merge_branch_name = '${merge_branch_name}'"
+    fi
+    # die "Could not find branch name in commit message for commit ${commit}"
+    # if [[ "$merge_commit_message" =~ Merge\ in\ .*\ from\ (.*)\ to ]]; then
+    #     merge_branch_name="${BASH_REMATCH[1]}"
+    # elif [[ "$merge_commit_message" =~ .*Merge\ branch\ \'?([^\ \']*)\'?\ into ]]; then
+    #     merge_branch_name="${BASH_REMATCH[1]}"
+    # else
+    #     die "Could not find branch name in commit message for commit ${commit}"
+    # fi
+    e_debug "\$merge_branch_name = '${merge_branch_name}'"
 
-    if [[ "$merge_branch_name" = "" ]]; then
+    # merge_branch_name=$(echo "$merge_commit_message" |
+    #                         grep -E '^Merge in ' |
+    #                         sed -E 's/^Merge in .* from (.*) to .*$/\1/') ||
+    #     die "Could not find branch name in commit message for commit ${commit}"
+
+    if ! [[ "$merge_branch_name" ]]; then
         e_err "Could not find merge branch name from git commit message:"
         >&2 echo "${merge_commit_message}"
         die
@@ -236,23 +275,48 @@ if ! [[ "$direct" ]]; then
         branch_remote_ref="${default_remote}"
     fi
 
-    remote="${branch_remote_ref%%/*}"
-    [[ "${remote}" != "${branch}" ]] ||
-        die "Could not extract remote from remote ref \"${branch_remote_ref}\""
+    if [[ "$push" ]]; then
+        remote="${branch_remote_ref%%/*}"
+        [[ "${remote}" != "${branch}" ]] ||
+            die "Could not extract remote from remote ref \"${branch_remote_ref}\""
 
-    remote_url=$(git remote get-url "${remote}") ||
-        die "Could not get URL for remote \"${remote}\""
+        remote_url=$(git remote get-url "${remote}") ||
+            die "Could not get URL for remote \"${remote}\""
 
-    [[ "${remote_url}" =~ ^[^:]*://([^@]+@)?([^/]+)(/.*)?/([^/]*)/([^/.]*).git$ ]] ||
-        die "Pattern does not match URL: \"${remote_url}\""
+        if [[ "${remote_url}" =~ ^[^:]*://([^@]+@)?([^/]+)(/.*)?/([^/]*)/([^/.]*).git$ ]]; then
+            e_debug "Using Romaric Bitbucket style"
+            project="${BASH_REMATCH[4]}"
+            [[ "${project}" != "" ]] ||
+                die "No project found in URL: \"${remote_url}\""
 
-    project="${BASH_REMATCH[4]}"
-    [[ "${project}" != "" ]] ||
-        die "No project found in URL: \"${remote_url}\""
+            repository="${BASH_REMATCH[5]}"
+            [[ "${repository}" != "" ]] ||
+                die "No repository found in URL: \"${remote_url}\""
 
-    repository="${BASH_REMATCH[5]}"
-    [[ "${repository}" != "" ]] ||
-        die "No repository found in URL: \"${remote_url}\""
+            function create_pull_request_url() {
+                local base_branch_name new_branch_name
+                base_branch_name="$1"
+                new_branch_name="$2"
+                echo "${bitbucket_url}/projects/${project}/repos/${repository}/pull-requests?create&sourceBranch=refs/heads/${new_branch_name}&targetBranch=refs/heads/${base_branch_name}"
+            }
+        elif [[ "${remote_url}" =~ .*gitlab.* ]]; then
+            e_debug "Using GitLab style"
+            url_prefix=$(git remote get-url origin | sed -e 's_.*:__' -e 's_\..*__') ||
+                die "Could not extract prefix from URL: \"${remote_url}\""
+
+            project_name=$(git remote get-url origin | sed -e 's_.*/__' -e 's_\..*__') ||
+                die "Could not extract project name from URL: \"${remote_url}\""
+                
+            function create_pull_request_url() {
+                local base_branch_name new_branch_name
+                base_branch_name="$1"
+                new_branch_name="$2"
+                echo "${camline_gitlab_url}/${url_prefix}/-/merge_requests/new?merge_request%5Bsource_project_id%5D=${project_name}&merge_request%5Bsource_branch%5D=${new_branch_name}&merge_request%5Btarget_project_id%5D=${project_name}&merge_request%5Btarget_branch%5D=${base_branch_name}"
+            }
+        else
+            die "URL does not match any recognized pattern: \"${remote_url}\""
+        fi
+    fi
 fi
 
 if git_contains_uncommitted_changes; then
@@ -263,7 +327,9 @@ if git_contains_uncommitted_changes; then
     stashed_changes=true
 fi
 
-if ! run git fetch; then
+if [[ "$offline" ]]; then
+    echo "offline: NOT running git fetch"
+elif ! run git fetch; then
     die "Could not fetch from remote"
 fi
 
@@ -288,13 +354,20 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
             continue
         fi
 
-        if ! target_branch_suffix=$(echo "${branch}" | tr '/' '_'); then
+        target_branch_suffix="${branch#origin/}"
+        target_branch_suffix="${target_branch_suffix#release/}"
+        if ! target_branch_suffix=$(echo "${target_branch_suffix}" |
+                                        tr '_' '-' |
+                                        tr '/' '_'); then
             e_err "Could not clean up branch name \"${branch}\""
             continue
         fi
+        e_debug "Target branch suffix: '${target_branch_suffix}'"
 
         new_branch_name="${merge_branch_name}_${target_branch_suffix}"
-        create_pull_request_url="${bitbucket_url}/projects/${project}/repos/${repository}/pull-requests?create&sourceBranch=refs/heads/${new_branch_name}"
+        e_debug "\$new_branch_name = '${new_branch_name}'"
+        pull_request_url=$(create_pull_request_url "$branch" "${new_branch_name}")
+        e_debug "Pull request URL: <<<${pull_request_url}>>>"
     fi
 
     if ! run git switch "${branch}"; then
@@ -324,14 +397,16 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
         strategy_arg="--strategy="$strategy
     fi
     e_debug "Strategy arg: ${strategy_arg}"
-    if [[ "${merge}" = true ]]; then
+    if [[ "$merge" ]]; then
         cherry_pick_arg="${commit}^..${commit}^2"
+    elif [[ "$count" ]]; then
+        cherry_pick_arg="${commit}~${count}..${commit}"
     else
         cherry_pick_arg="${commit}"
     fi
     e_debug "Cherry pick arg: ${cherry_pick_arg}"
     # shellcheck disable=SC2206
-    cherry_pick_command=(git cherry-pick ${strategy_arg} "${cherry_pick_arg}")
+    cherry_pick_command=(git cherry-pick ${strategy_arg} ${cherry_pick_arg})
     if [[ "$git_supports_empty_flag" ]]; then
         cherry_pick_command+=("--empty=drop")
     fi
@@ -345,7 +420,7 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
             if [[ "$direct" ]]; then
                 command+=" --direct"
             else
-                command+=" --branch \"{$merge_branch_name}\""
+                command+=" --branch \"${merge_branch_name}\""
             fi
             if [[ "$strategy" ]]; then
                 command+=" --strategy ${strategy}"
@@ -376,17 +451,20 @@ while [[ "${#branches[@]}" -gt 0 ]]; do
 
     push_command=(git -c push.default=current push)
     if [[ "$push" ]]; then
-        if ! run "${push_command[@]}"; then
-            e_err "Could not push branch: \"${new_branch_name}\""
-            continue
+        if [[ "$offline" ]]; then
+            echo "offline: NOT running git push"
+        else
+            if ! run "${push_command[@]}"; then
+                e_err "Could not push branch: \"${new_branch_name}\""
+                continue
+            fi
+            if ! [[ "$direct" ]]; then
+                echo "Create pull request: ${pull_request_url}"
+                run open "${pull_request_url}"
+            fi
         fi
     else
         echo "NOT pushing changes"
-    fi
-
-    if ! [[ "$direct" ]]; then
-        run open "${create_pull_request_url}"
-        echo "Create pull request: ${create_pull_request_url}"
     fi
 done
 
