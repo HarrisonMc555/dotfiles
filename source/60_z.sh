@@ -19,10 +19,8 @@ elif [[ -r "$DOTFILES"/vendor/z/z.sh ]]; then
     # Fast directory switching
     mkdir -p "$DOTFILES"/caches/z
     _Z_NO_RESOLVE_SYMLINKS=1
-    _Z_NO_PROMPT_COMMAND=1
     _Z_DATA="$DOTFILES"/caches/z/z
     export _Z_NO_RESOLVE_SYMLINKS
-    export _Z_NO_PROMPT_COMMAND
     export _Z_DATA
     . "$DOTFILES"/vendor/z/z.sh
 
