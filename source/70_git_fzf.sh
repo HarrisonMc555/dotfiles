@@ -125,7 +125,7 @@ if is_available git && is_available fzf; then
                     fi
                     # git rev-parse --verify "$branch" &>/dev/null && echo "$branch"
                 done |
-                head -n 30 |
+                # head -n 30 |
                 perl -e 'print reverse <>' |
                 fzf-down --ansi --multi --tac --preview-window right:70% \
                          --expect=ctrl-o \
