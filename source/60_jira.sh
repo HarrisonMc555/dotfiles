@@ -51,7 +51,8 @@ if is_available jira; then
     # "project IS NOT EMPTY"` JQL argument OR adds a `--jql project IS NOT EMPTY
     # AND (<provided_jql_argument>)` if a -q/--jql flag was provided.
     function __jira_list_helper() {
-        args=()
+        local jql_arg previous_is_jql total_jql_arg
+        local -a args=()
         for arg in "$@"; do
             if [[ "$previous_is_jql" ]]; then
                 jql_arg="$arg"
@@ -65,7 +66,7 @@ if is_available jira; then
         done
 
         if [[ "$jql_arg" ]]; then
-            total_jql_arg="project IS NOT EMPTY AND (${jql_arg})"
+            total_jql_arg="${jql_arg}"
         else
             total_jql_arg="project IS NOT EMPTY"
         fi
