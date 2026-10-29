@@ -54,6 +54,8 @@ if is_available git; then
     function _git_log_on_date() { _git_log; }
     function _git_log_on_author_date() { _git_log; }
     function _git_cherry_pick_pr_and_merge() { _git_log; }
+    function _git_compare_branch_subjects() { _git_log; }
+    function _git_branch_compare() { _git_log; }
     # function _git_alias() { __git_main; }
 
     # Git shortcuts
