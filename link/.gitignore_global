@@ -84,6 +84,7 @@ node_modules/
 *.bak[0-9][0-9][0-9]
 tmp/
 temp/
+*.bundle
 
 
 # Other version control systems #
