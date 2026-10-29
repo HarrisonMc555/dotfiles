@@ -2,6 +2,18 @@
 
 if is_available zoxide; then
     eval "$(zoxide init bash)"
+
+    function zp() {
+        local prev_dir return_code
+        prev_dir=$(pwd)
+        z "$@"
+        return_code=$?
+        # if z "$@"; then
+        if [[ "$return_code" = 0 ]]; then
+            pushd -n "$prev_dir"
+        fi
+        return "$return_code"
+    }
 elif [[ -r "$DOTFILES"/vendor/z/z.sh ]]; then
 
     # Fast directory switching
