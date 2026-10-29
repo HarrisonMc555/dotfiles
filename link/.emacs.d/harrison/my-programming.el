@@ -204,6 +204,21 @@
 
 (add-hook 'markdown-mode-hook #'my-markdown-mode-hook)
 
+(defun my-markdown-indent-list-items (orig-fn &rest args)
+  "Ensure fill-paragraph indents wrapped lines to match markdown bullet text start."
+  (let ((fill-prefix (save-excursion
+                       (beginning-of-line)
+                       (if (looking-at "[ \t]*\\([-*+]|[0-9]+[.)]\\)[ \t]+")
+                           (make-string (match-end 0) ?\s)
+                         (funcall orig-fn)))))
+    ;; Fall back to standard behavior if not on a list item
+    (if fill-prefix
+        (let ((adaptive-fill-string fill-prefix))
+          (apply orig-fn args))
+      (apply orig-fn args))))
+
+(advice-add 'fill-paragraph :around #'my-markdown-indent-list-items)
+
 ;; Rust ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; BEGIN COMMENTED
