@@ -24,6 +24,19 @@
 
 ;;; Code:
 
+;; Tree Sitter ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+(setq treesit-language-source-alist
+      '((markdown
+         "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
+         "split_parser"
+         "tree-sitter-markdown/src")
+        (markdown-inline
+         "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
+         "split_parser"
+         "tree-sitter-markdown-inline/src")
+        (bash "https://github.com/tree-sitter/tree-sitter-bash")))
+
 ;; C ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 (setq c-default-style "k&r"
       c-basic-offset 4)
@@ -194,6 +207,10 @@
 (add-to-list 'auto-mode-alist '("\\.ssh_config$" . conf-mode))
 
 ;; Markdown ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+(require 'md-ts-mode)
+
+(md-ts-mode-enable-global)
+
 (defun my-markdown-mode-hook ()
   (visual-line-mode)
   ;; (visual-fill-column-mode)
@@ -218,16 +235,6 @@
       (apply orig-fn args))))
 
 (advice-add 'fill-paragraph :around #'my-markdown-indent-list-items)
-
-(setq treesit-language-source-alist
-      '((markdown
-         "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
-         "split_parser"
-         "tree-sitter-markdown/src")
-        (markdown-inline
-         "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
-         "split_parser"
-         "tree-sitter-markdown-inline/src")))
 
 ;; Rust ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
