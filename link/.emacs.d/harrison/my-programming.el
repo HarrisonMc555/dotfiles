@@ -219,6 +219,16 @@
 
 (advice-add 'fill-paragraph :around #'my-markdown-indent-list-items)
 
+(setq treesit-language-source-alist
+      '((markdown
+         "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
+         "split_parser"
+         "tree-sitter-markdown/src")
+        (markdown-inline
+         "https://github.com/tree-sitter-grammars/tree-sitter-markdown"
+         "split_parser"
+         "tree-sitter-markdown-inline/src")))
+
 ;; Rust ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ;; BEGIN COMMENTED
