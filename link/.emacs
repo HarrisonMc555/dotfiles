@@ -163,7 +163,7 @@
     epl
     exec-path-from-shell
     flymd
-    git-commit
+    ;; git-commit
     go-autocomplete
     ;; go-complete
     ;; go-mode
