@@ -1,3 +1,5 @@
+;;; xah.el          -*- lexical-binding: nil; -*-
+
 (defun xah-fill-or-unfill ()
   "Reformat current paragraph or region to `fill-column', like `fill-paragraph' or “unfill”.
 When there is a text selection, act on the selection, else, act on a text block separated by blank lines.
