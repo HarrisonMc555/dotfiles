@@ -165,5 +165,9 @@
 
 (define-key isearch-mode-map (kbd "C-S-y") #'isearch-yank-kill-literally)
 
+(require 'eval-copy)
+(global-set-key (kbd "C-c :") #'my/eval-expression-copy)
+(global-set-key (kbd "C-c M-:") #'my/eval-expression-copy-with-code)
+
 (provide 'my-keys)
 ;;; my-keys.el ends here
