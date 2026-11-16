@@ -11,14 +11,18 @@
 
 ;;; Generated autoloads from md-ts-mode.el
 
-(autoload 'md-ts-mode "md-ts-mode" "\
-Major mode for editing Markdown using tree-sitter grammar.
+(autoload 'md-ts-mode "md-ts-mode"
+"Major mode for editing Markdown using tree-sitter grammar.
 
-(fn)" t)
-(autoload 'md-ts-mode-maybe "md-ts-mode" "\
-Enable `md-ts-mode' when its grammar is available.")
-(autoload 'md-ts-mode-enable-global "md-ts-mode" "\
-Explicitly prefer `md-ts-mode' for Markdown buffers globally.
+In addition to any hooks its parent mode `text-mode' might have run, this mode
+runs the hook `md-ts-mode-hook', as the final or penultimate step during
+initialization.
+
+\\{md-ts-mode-map}" t)
+(autoload 'md-ts-mode-maybe "md-ts-mode"
+"Enable `md-ts-mode' when its grammar is available.")
+(autoload 'md-ts-mode-enable-global "md-ts-mode"
+"Explicitly prefer `md-ts-mode' for Markdown buffers globally.
 
 This is safe to call from user init files and is idempotent.
 It adds a `\\.md\\' entry to `auto-mode-alist', remaps
