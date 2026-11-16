@@ -96,7 +96,13 @@ if is_available git; then
     function grps() { git restore --patch --staged "${@:-.}"; } # Restore all files by default
     __my_git_complete grps git_restore
     alias gp='git push -u'
-    __my_git_complete gp git_push
+    _git_gp() {
+        # Shift the words array so git's completion parser thinks 'push' is at index 1
+        words=(git push "${words[@]:1}")
+        ((cword++))
+        _git_push
+    }
+    __my_git_complete gp _git_gp
     # alias gpup='gp --set-upstream origin $(gbs)'
     # alias gpa='gp --all'
     alias gu='git pull --prune'
