@@ -86,6 +86,58 @@ if is_available git; then
         }
     fi
 
+    # Generic completion wrapper for any git alias with arguments/flags. This
+    # can be used instead of the underlying function if the aliased command has
+    # arguments that depend on having the correct "index" (e.g. `git push`
+    # accepts a remote first and then branch names, so if it loses track of the
+    # "index" it will start completing files instead of branches).
+    #
+    # Replace: __git_complete gp _git_push
+    # With:    __git_complete gp _git_alias_completion
+    #
+    # I made this (with Google Gemini) intending to have something that works
+    # consistently. However, gp='git push -u' seems to be the only one that has
+    # this issue ¯\(ツ)/¯
+    _git_alias_completion() {
+        local alias_name="${words[0]}"
+        local alias_def
+
+        # Look up the alias definition (e.g., "alias gp='git push -u'")
+        alias_def=$(alias "$alias_name" 2>/dev/null)
+
+        if [[ -n "$alias_def" ]]; then
+            # Extract the command string from the alias definition and strip quotes
+            local cmd_str="${alias_def#*=}"
+            cmd_str="${cmd_str#[\'\"]}"
+            cmd_str="${cmd_str%[\'\"]}"
+
+            # Split the expanded command into an array (e.g., "git", "push", "-u")
+            read -ra expanded_cmd <<< "$cmd_str"
+
+            # Preserve any arguments the user has already typed (everything after the alias)
+            local original_args=("${words[@]:1}")
+
+            # Reconstruct the words array: [expanded command] + [user arguments]
+            words=("${expanded_cmd[@]}" "${original_args[@]}")
+
+            # Adjust the cursor position index (cword) by the extra words added minus 1
+            (( cword += ${#expanded_cmd[@]} - 1 ))
+
+            # Dynamically find and call the correct underlying git completion function
+            # (e.g., subcommand "push" maps to "_git_push")
+            local subcommand="${expanded_cmd[1]}"
+            local comp_func="_git_${subcommand}"
+
+            if declare -f "$comp_func" >/dev/null; then
+                "$comp_func"
+                return
+            fi
+        fi
+
+        # Fallback to standard git completion if something goes wrong
+        _git
+    }
+
     alias g='git'
     function ga() { git add "${@:-.}"; } # Add all files by default
     __my_git_complete ga git_add
